@@ -17,6 +17,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include "polarssl/aes.h"
 #include <stdio.h>
 #include <string.h>
+#include <sqlite3.h>
+#include <stdlib.h>
 static const unsigned char aes_ecb_dec[3][16] = {
   { 0x44, 0x41, 0x6A, 0xC2, 0xD1, 0xF5, 0x3C, 0x58, 0x33, 0x03, 0x91, 0x7E, 0x6B, 0xE9, 0xEB, 0xE0 },
   { 0x48, 0xE3, 0x1E, 0x9E, 0x25, 0x67, 0x18, 0xF2, 0x92, 0x29, 0x31, 0x9C, 0x19, 0xF1, 0x5B, 0xA4 },
@@ -95,6 +97,25 @@ int main(int argc, char *argv[]) {
 	else if  ( strcmp(argv[1],"test") == 0 ) {
 	  RunTests(1);
 	  return 0;
+	  }
+	else if ( strcmp(argv[1],"read") == 0 ) {
+	  int retval;
+	  // The number of queries to be handled,size of each query and pointer
+	  int q_cnt = 5,q_size = 150,ind = 0;
+	  char **queries = malloc(sizeof(char) * q_cnt * q_size);
+	  // A prepered statement for fetching tables
+	  sqlite3_stmt *stmt;
+	  // Create a handle for database connection, create a pointer to sqlite3
+	  sqlite3 *handle;
+	  // try to create the database. If it doesnt exist, it would be created
+	  // pass a pointer to the pointer to sqlite3, in short sqlite3**
+	  retval = sqlite3_open("base.db3",&handle);
+	  // If connection failed, handle returns NULL
+	  if(retval) {
+		printf("Database connection failed\n");
+		return -1;
+	    }
+	  printf("Connection successful\n");
 	  }
     }
   //TODO

@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-lpolarssl
+CFLAGS=-lpolarssl -lsqlite3
 SRC=sholy.c
 
 sholy: $(SRC)
