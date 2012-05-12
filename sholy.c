@@ -135,6 +135,15 @@ int main(int argc, char *argv[]) {
 		return -1;
 	    }
 	  printf("Connection successful\n");
+	  // select those rows from the table
+	  queries[ind++] = "SELECT * from TODO";
+	  retval = sqlite3_prepare_v2(handle,queries[ind-1],-1,&stmt,0);
+	  if(retval) {
+		printf("Selecting data from DB Failed\n");
+		return -1;
+	    }
+	  // Read the number of rows fetched
+	  int cols = sqlite3_column_count(stmt);
 	  }
     }
   //TODO
