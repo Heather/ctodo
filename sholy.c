@@ -84,7 +84,7 @@ unsigned char* Decrypt(unsigned char* key,unsigned char* buf) {
 }
 int main(int argc, char *argv[]) {
   if ( argc < 2) {
-	printf( "usage: %s read/write\n\n", argv[0] );
+	printf( "usage:\n  %s read/write/test\n\n", argv[0] );
 	return 0;
     }
   else {
@@ -92,14 +92,16 @@ int main(int argc, char *argv[]) {
 	  printf("v0.01\n");
 	  return 0;
 	  }
+	else if  ( strcmp(argv[1],"test") == 0 ) {
+	  RunTests(1);
+	  return 0;
+	  }
     }
-  RunTests(1); // default tests
-  printf("tests passed\n");
+  //TODO
   unsigned char key[32];
   unsigned char buf[64];
   memset( key, 0, 32 );
   memset( buf, 0, 16 );
   Encrypt(key,buf);
   Decrypt(key,buf);
-  printf("bye\n");
 }
