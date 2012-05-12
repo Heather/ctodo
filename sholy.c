@@ -64,27 +64,28 @@ int RunTests(int verbose) {
     }
   return 0;
 }
-unsigned char* Encrypt(unsigned char* key,unsigned char* buf) {
+unsigned char* Encrypt(unsigned char* key,char* buf) {
   int i, j, u, v;
   aes_context ctx;
   u = 2; //5 >> 1; 101 + RSH 1 = 10 
-  v = 1; //Encrypt
+  v = 0; //Encrypt
   aes_setkey_enc( &ctx, key, 128 + u * 64 );
   for( j = 0; j < 10000; j++ ) 
 	aes_crypt_ecb( &ctx, v, buf, buf );
   return buf;
 }
-unsigned char* Decrypt(unsigned char* key,unsigned char* buf) {
+unsigned char* Decrypt(unsigned char* key,char* buf) {
   int i, j, u, v;
   aes_context ctx;
   u = 2; //4 >> 1; 100 + RSH 1 = 10 
-  v = 0; //Decrypt
+  v = 1; //Decrypt
   aes_setkey_enc( &ctx, key, 128 + u * 64 );
   for( j = 0; j < 10000; j++ ) 
 	aes_crypt_ecb( &ctx, v, buf, buf );
   return buf;
 }
 int main(int argc, char *argv[]) {
+  int encryption = 0;
   if ( argc < 2) {
 	printf( "usage:\n  %s initdb/read/write/test\n\n", argv[0] );
 	return 0;
@@ -101,6 +102,7 @@ int main(int argc, char *argv[]) {
 	else if ( strcmp(argv[1],"initdb") == 0 
 			  || strcmp(argv[1],"read") == 0 
 			  || strcmp(argv[1],"clean") == 0
+			  || strcmp(argv[1],"rm") == 0
 			  || strcmp(argv[1],"write") == 0 ) {
 	  int retval, x;
 	  int q_cnt = 5,q_size = 150,ind = 0;
@@ -135,19 +137,31 @@ int main(int argc, char *argv[]) {
 			last =  atoi(sqlite3_column_text(stmt, 0));
 	        }
 		  last++;
-
 		  unsigned char key[32];
 		  memset( key, 0, 32 );
-          unsigned char enc[16];
-		  memcpy( enc, Encrypt(key,argv[2]), 16 );
-
-		  sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, enc);// argv[2]);
+          char enc[16];
+		  if (encryption!=0) {
+			memcpy( enc, Encrypt(key,argv[2]), 16 );
+			sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, enc);
+		    }
+		  else {
+			sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, argv[2]);
+		    }
 		  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 		  }
 	    }
 	  else if ( strcmp(argv[1],"clean") == 0 ) {
 		queries[ind++] = "DELETE FROM TODO";
 		retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
+	    }
+	  else if ( strcmp(argv[1],"rm") == 0 ) {
+	    if ( argc < 3) {
+	 	  printf("rm what?\n");
+	      }
+		else {
+		  sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
+		  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
+		  }
 	    }
 	  else if ( strcmp(argv[1],"read") == 0 ) {
 	    queries[ind++] = "SELECT * from TODO";
@@ -159,10 +173,16 @@ int main(int argc, char *argv[]) {
 		printf("======================================================\n");
 		unsigned char key[32];
 		memset( key, 0, 32 );
-        unsigned char dec[16];
+        char dec[16];
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
-		  memcpy( dec, Decrypt(key, (unsigned char *)sqlite3_column_text(stmt, 1) ), 16 );
-		  printf("%s\n", dec);
+		  if (encryption!=0) {
+		    memcpy( dec, Decrypt(key, (char *)sqlite3_column_text(stmt, 1) ), 16 );
+		    printf("%s\n", dec);
+		    }
+		  else {
+			printf("%s | ", sqlite3_column_text(stmt, 0));
+			printf("%s\n", sqlite3_column_text(stmt, 1));
+		    }
 	      }
 		printf("======================================================\n");
 	    }
