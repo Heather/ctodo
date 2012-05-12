@@ -1,3 +1,19 @@
+/*                 sholy - Light TODO list
+				  Copyright (C)  2012  Sholy
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation; either
+version 3.0 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include "polarssl/aes.h"
 #include <stdio.h>
 #include <string.h>
@@ -66,7 +82,17 @@ unsigned char* Decrypt(unsigned char* key,unsigned char* buf) {
 	aes_crypt_ecb( &ctx, v, buf, buf );
   return buf;
 }
-int main(void) {
+int main(int argc, char *argv[]) {
+  if ( argc < 2) {
+	printf( "usage: %s read/write\n\n", argv[0] );
+	return 0;
+    }
+  else {
+	if ( strcmp(argv[1],"--version") == 0 ) {
+	  printf("v0.01\n");
+	  return 0;
+	  }
+    }
   RunTests(1); // default tests
   printf("tests passed\n");
   unsigned char key[32];
