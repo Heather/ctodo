@@ -98,7 +98,10 @@ int main(int argc, char *argv[]) {
 	  RunTests(1);
 	  return 0;
 	  }
-	else if ( strcmp(argv[1],"initdb") == 0 ) {
+	else if ( strcmp(argv[1],"initdb") == 0 
+			  || strcmp(argv[1],"read") == 0 
+			  || strcmp(argv[1],"clear") == 0
+			  || strcmp(argv[1],"write") == 0 ) {
 	  int retval;
 	  int q_cnt = 5,q_size = 150,ind = 0;
 	  char **queries = malloc(sizeof(char) * q_cnt * q_size);
@@ -110,40 +113,36 @@ int main(int argc, char *argv[]) {
 		return -1;
 	    }
 	  printf("Connection successful\n");
-	  // Create the SQL query for creating a table
-	  char create_table[100] = "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)";
-	  // Execute the query for creating the table
-	  retval = sqlite3_exec(handle,create_table,0,0,0);
-	  // Insert first row and second row
-	  queries[ind++] = "INSERT INTO TODO VALUES(1,'test task')";
-	  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
-	  }
-	else if ( strcmp(argv[1],"write") == 0 ) {
-	  if ( argc < 3) {
-		printf("write what?\n");
+	  if (  strcmp(argv[1],"initdb") == 0 ) {
+		// Create the SQL query for creating a table
+		char create_table[100] = "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)";
+		// Execute the query for creating the table
+		retval = sqlite3_exec(handle,create_table,0,0,0);
+		// Insert first row
+		queries[ind++] = "INSERT INTO TODO VALUES(1,'test task')";
+		retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 	    }
-	  }
-	else if ( strcmp(argv[1],"read") == 0 ) {
-	  int retval;
-	  int q_cnt = 5,q_size = 150,ind = 0;
-	  char **queries = malloc(sizeof(char) * q_cnt * q_size);
-	  sqlite3_stmt *stmt;
-	  sqlite3 *handle;
-	  retval = sqlite3_open("base.db3",&handle);
-	  if(retval) {
-		printf("Database connection failed\n");
-		return -1;
+	  else if ( strcmp(argv[1],"write") == 0 ) {
+	    if ( argc < 3) {
+	 	  printf("write what?\n");
+	      }
+		else {
+		  // Insert row
+		  queries[ind++] = "INSERT INTO TODO VALUES(1,'test task')";
+		  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
+		  }
 	    }
-	  printf("Connection successful\n");
-	  // select those rows from the table
-	  queries[ind++] = "SELECT * from TODO";
-	  retval = sqlite3_prepare_v2(handle,queries[ind-1],-1,&stmt,0);
-	  if(retval) {
-		printf("Selecting data from DB Failed\n");
-		return -1;
+	  else if ( strcmp(argv[1],"read") == 0 ) {
+	    // select those rows from the table
+	    queries[ind++] = "SELECT * from TODO";
+	    retval = sqlite3_prepare_v2(handle,queries[ind-1],-1,&stmt,0);
+	    if(retval) {
+		  printf("Selecting data from DB Failed\n");
+		  return -1;
+	      }
+	    // Read the number of rows fetched
+	    int cols = sqlite3_column_count(stmt);
 	    }
-	  // Read the number of rows fetched
-	  int cols = sqlite3_column_count(stmt);
 	  }
     }
   //TODO
