@@ -14,34 +14,44 @@ General Public License for more details.
 You should have received a copy of the GNU General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
+
 #include "polarssl/aes.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <sqlite3.h>
 #include <stdlib.h>
+
 static const unsigned char aes_ecb_dec[3][16] = {
   { 0x44, 0x41, 0x6A, 0xC2, 0xD1, 0xF5, 0x3C, 0x58, 0x33, 0x03, 0x91, 0x7E, 0x6B, 0xE9, 0xEB, 0xE0 },
   { 0x48, 0xE3, 0x1E, 0x9E, 0x25, 0x67, 0x18, 0xF2, 0x92, 0x29, 0x31, 0x9C, 0x19, 0xF1, 0x5B, 0xA4 },
   { 0x05, 0x8C, 0xCF, 0xFD, 0xBB, 0xCB, 0x38, 0x2D, 0x1F, 0x6F, 0x56, 0x58, 0x5D, 0x8A, 0x4A, 0xDE }
 }; //Testing Array Dec
+
 static const unsigned char aes_ecb_enc[3][16] = {
   { 0xC3, 0x4C, 0x05, 0x2C, 0xC0, 0xDA, 0x8D, 0x73, 0x45, 0x1A, 0xFE, 0x5F, 0x03, 0xBE, 0x29, 0x7F },
   { 0xF3, 0xF6, 0x75, 0x2A, 0xE8, 0xD7, 0x83, 0x11, 0x38, 0xF0, 0x41, 0x56, 0x06, 0x31, 0xB1, 0x14 },
   { 0x8B, 0x79, 0xEE, 0xCC, 0x93, 0xA0, 0xEE, 0x5D, 0xFF, 0x30, 0xB4, 0xEA, 0x21, 0x63, 0x6D, 0xA4 }
 }; //Testing Array Enc
+
 int RunTests(int verbose) {
+
   int i, j, u, v;
   unsigned char key[32];
   unsigned char buf[64];
   aes_context ctx;
+
   memset( key, 0, 32 );
+
   for( i = 0; i < 6; i++ ) {
 	u = i >> 1;
     v = i  & 1;
+
     if( verbose != 0 )
       printf( "  AES-ECB-%3d (%s): ", 128 + u * 64,
         ( v == AES_DECRYPT ) ? "dec" : "enc" );
       memset( buf, 0, 16 );
+
       if( v == AES_DECRYPT ) {
         aes_setkey_dec( &ctx, key, 128 + u * 64 );
         for( j = 0; j < 10000; j++ )
@@ -60,10 +70,13 @@ int RunTests(int verbose) {
           return( 1 );
           }
         }
+
       if( verbose != 0 ) printf( "passed\n" );
+
     }
   return 0;
 }
+
 unsigned char* Encrypt(unsigned char* key,char* buf) {
   int i, j, u, v;
   aes_context ctx;
@@ -74,6 +87,7 @@ unsigned char* Encrypt(unsigned char* key,char* buf) {
 	aes_crypt_ecb( &ctx, v, buf, buf );
   return buf;
 }
+
 unsigned char* Decrypt(unsigned char* key,char* buf) {
   int i, j, u, v;
   aes_context ctx;
@@ -84,47 +98,59 @@ unsigned char* Decrypt(unsigned char* key,char* buf) {
 	aes_crypt_ecb( &ctx, v, buf, buf );
   return buf;
 }
+
 int main(int argc, char *argv[]) {
   int encryption = 0;
+
   if ( argc < 2) {
 	printf( "usage:\n  %s initdb/read/write/test\n\n", argv[0] );
 	return 0;
     }
   else {
+
 	if ( strcmp(argv[1],"--version") == 0 ) {
 	  printf("v0.01\n");
 	  return 0;
 	  }
+
 	else if  ( strcmp(argv[1],"test") == 0 ) {
 	  RunTests(1);
 	  return 0;
 	  }
+
 	else if ( strcmp(argv[1],"initdb") == 0 
 			  || strcmp(argv[1],"read") == 0 
 			  || strcmp(argv[1],"clean") == 0
 			  || strcmp(argv[1],"rm") == 0
 			  || strcmp(argv[1],"write") == 0 ) {
+
 	  int retval, x;
 	  int q_cnt = 5,q_size = 150,ind = 0;
 	  char **queries = (char**)malloc(sizeof(char*) * q_cnt);
+
 	  for (x = 0; x < q_cnt; x++) {
 		queries[x] = (char*)malloc(sizeof(char) * q_size);
 	    }
+
 	  sqlite3_stmt *stmt;
 	  sqlite3 *handle;
+
 	  retval = sqlite3_open("base.db3",&handle);
 	  if(retval) {
 		printf("Database connection failed\n");
 		return -1;
 	    }
+
 	  if (  strcmp(argv[1],"initdb") == 0 ) {
 		char create_table[100] = "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)";
 		retval = sqlite3_exec(handle,create_table,0,0,0);
 	    }
+
 	  else if ( strcmp(argv[1],"write") == 0 ) {
 	    if ( argc < 3) {
 	 	  printf("write what?\n");
 	      }
+
 		else {
 		  queries[ind++] = "SELECT MAX(id) FROM TODO GROUP BY (text)";
 		  retval = sqlite3_prepare_v2(handle,queries[ind-1],-1,&stmt,0);
@@ -132,14 +158,17 @@ int main(int argc, char *argv[]) {
 			printf("Inserting data to DB Failed\n");
 			return -1;
 	        }
+
 		  int last = 0;
 		  while (sqlite3_step(stmt) == SQLITE_ROW) {
 			last =  atoi(sqlite3_column_text(stmt, 0));
 	        }
+
 		  last++;
 		  unsigned char key[32];
 		  memset( key, 0, 32 );
           char enc[16];
+
 		  if (encryption!=0) {
 			memcpy( enc, Encrypt(key,argv[2]), 16 );
 			sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, enc);
@@ -147,13 +176,16 @@ int main(int argc, char *argv[]) {
 		  else {
 			sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, argv[2]);
 		    }
+
 		  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 		  }
 	    }
+
 	  else if ( strcmp(argv[1],"clean") == 0 ) {
 		queries[ind++] = "DELETE FROM TODO";
 		retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 	    }
+
 	  else if ( strcmp(argv[1],"rm") == 0 ) {
 	    if ( argc < 3) {
 	 	  printf("rm what?\n");
@@ -163,17 +195,21 @@ int main(int argc, char *argv[]) {
 		  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 		  }
 	    }
+
 	  else if ( strcmp(argv[1],"read") == 0 ) {
 	    queries[ind++] = "SELECT * from TODO";
 	    retval = sqlite3_prepare_v2(handle,queries[ind-1],-1,&stmt,0);
+
 	    if(retval) {
 		  printf("Selecting data from DB Failed\n");
 		  return -1;
 	      }
+
 		printf("======================================================\n");
 		unsigned char key[32];
 		memset( key, 0, 32 );
         char dec[16];
+
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
 		  if (encryption!=0) {
 		    memcpy( dec, Decrypt(key, (char *)sqlite3_column_text(stmt, 1) ), 16 );
@@ -185,6 +221,7 @@ int main(int argc, char *argv[]) {
 		    }
 	      }
 		printf("======================================================\n");
+
 	    }
 	  sqlite3_close(handle);
 	  }
