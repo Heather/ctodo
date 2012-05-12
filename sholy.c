@@ -133,16 +133,18 @@ int main(int argc, char *argv[]) {
 		  }
 	    }
 	  else if ( strcmp(argv[1],"read") == 0 ) {
-	    // select those rows from the table
 	    queries[ind++] = "SELECT * from TODO";
 	    retval = sqlite3_prepare_v2(handle,queries[ind-1],-1,&stmt,0);
 	    if(retval) {
 		  printf("Selecting data from DB Failed\n");
 		  return -1;
 	      }
-	    // Read the number of rows fetched
-	    int cols = sqlite3_column_count(stmt);
+		while (sqlite3_step(stmt) == SQLITE_ROW) {
+		  printf("%s\n", sqlite3_column_text(stmt, 1));
+	      }
+		printf("fin?\n");
 	    }
+	  sqlite3_close(handle);
 	  }
     }
   //TODO
