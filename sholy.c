@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
 	  }
 	else if ( strcmp(argv[1],"initdb") == 0 
 			  || strcmp(argv[1],"read") == 0 
-			  || strcmp(argv[1],"clear") == 0
+			  || strcmp(argv[1],"clean") == 0
 			  || strcmp(argv[1],"write") == 0 ) {
 	  int retval;
 	  int q_cnt = 5,q_size = 150,ind = 0;
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
 		printf("Database connection failed\n");
 		return -1;
 	    }
-	  printf("Connection successful\n");
+	  //printf("Connection successful\n");
 	  if (  strcmp(argv[1],"initdb") == 0 ) {
 		// Create the SQL query for creating a table
 		char create_table[100] = "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)";
@@ -127,10 +127,13 @@ int main(int argc, char *argv[]) {
 	 	  printf("write what?\n");
 	      }
 		else {
-		  // Insert row
 		  queries[ind++] = "INSERT INTO TODO VALUES(1,'test task')";
 		  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 		  }
+	    }
+	  else if ( strcmp(argv[1],"clean") == 0 ) {
+		queries[ind++] = "DELETE FROM TODO";
+		retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 	    }
 	  else if ( strcmp(argv[1],"read") == 0 ) {
 	    queries[ind++] = "SELECT * from TODO";
@@ -139,10 +142,11 @@ int main(int argc, char *argv[]) {
 		  printf("Selecting data from DB Failed\n");
 		  return -1;
 	      }
+		printf("=========================================\n");
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
 		  printf("%s\n", sqlite3_column_text(stmt, 1));
 	      }
-		printf("fin?\n");
+		printf("=========================================\n");
 	    }
 	  sqlite3_close(handle);
 	  }
