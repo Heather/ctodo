@@ -124,14 +124,15 @@ int main(int argc, char *argv[]) {
 	 	  printf("write what?\n");
 	      }
 		else {
-		  queries[ind++] = "SELECT MAX(id) from TODO";
+		  queries[ind++] = "SELECT MAX(id) FROM TODO GROUP BY (text)";
+		  retval = sqlite3_prepare_v2(handle,queries[ind-1],-1,&stmt,0);
 		  if(retval) {
 			printf("Inserting data to DB Failed\n");
 			return -1;
 	        }
-		  unsigned int last = 0;
+		  int last = 0;
 		  while (sqlite3_step(stmt) == SQLITE_ROW) {
-			last =  (int) sqlite3_column_text(stmt, 0);
+			last =  atoi(sqlite3_column_text(stmt, 0));
 	        }
 		  last++;
 		  sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, argv[2]);
