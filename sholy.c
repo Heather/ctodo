@@ -135,7 +135,13 @@ int main(int argc, char *argv[]) {
 			last =  atoi(sqlite3_column_text(stmt, 0));
 	        }
 		  last++;
-		  sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, argv[2]);
+
+		  unsigned char key[32];
+		  memset( key, 0, 32 );
+          unsigned char enc[16];
+		  memcpy( enc, Encrypt(key,argv[2]), 16 );
+
+		  sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, enc);// argv[2]);
 		  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 		  }
 	    }
@@ -151,19 +157,16 @@ int main(int argc, char *argv[]) {
 		  return -1;
 	      }
 		printf("======================================================\n");
+		unsigned char key[32];
+		memset( key, 0, 32 );
+        unsigned char dec[16];
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
-		  printf("%s\n", sqlite3_column_text(stmt, 1));
+		  memcpy( dec, Decrypt(key, (unsigned char *)sqlite3_column_text(stmt, 1) ), 16 );
+		  printf("%s\n", dec);
 	      }
 		printf("======================================================\n");
 	    }
 	  sqlite3_close(handle);
 	  }
     }
-  //TODO
-  unsigned char key[32];
-  unsigned char buf[64];
-  memset( key, 0, 32 );
-  memset( buf, 0, 16 );
-  Encrypt(key,buf);
-  Decrypt(key,buf);
 }
