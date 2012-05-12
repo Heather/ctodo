@@ -86,7 +86,7 @@ unsigned char* Decrypt(unsigned char* key,unsigned char* buf) {
 }
 int main(int argc, char *argv[]) {
   if ( argc < 2) {
-	printf( "usage:\n  %s read/write/test\n\n", argv[0] );
+	printf( "usage:\n  %s initdb/read/write/test\n\n", argv[0] );
 	return 0;
     }
   else {
@@ -98,19 +98,38 @@ int main(int argc, char *argv[]) {
 	  RunTests(1);
 	  return 0;
 	  }
-	else if ( strcmp(argv[1],"read") == 0 ) {
+	else if ( strcmp(argv[1],"initdb") == 0 ) {
 	  int retval;
-	  // The number of queries to be handled,size of each query and pointer
 	  int q_cnt = 5,q_size = 150,ind = 0;
 	  char **queries = malloc(sizeof(char) * q_cnt * q_size);
-	  // A prepered statement for fetching tables
 	  sqlite3_stmt *stmt;
-	  // Create a handle for database connection, create a pointer to sqlite3
 	  sqlite3 *handle;
-	  // try to create the database. If it doesnt exist, it would be created
-	  // pass a pointer to the pointer to sqlite3, in short sqlite3**
 	  retval = sqlite3_open("base.db3",&handle);
-	  // If connection failed, handle returns NULL
+	  if(retval) {
+		printf("Database connection failed\n");
+		return -1;
+	    }
+	  printf("Connection successful\n");
+	  // Create the SQL query for creating a table
+	  char create_table[100] = "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)";
+	  // Execute the query for creating the table
+	  retval = sqlite3_exec(handle,create_table,0,0,0);
+	  // Insert first row and second row
+	  queries[ind++] = "INSERT INTO TODO VALUES(1,'test task')";
+	  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
+	  }
+	else if ( strcmp(argv[1],"write") == 0 ) {
+	  if ( argc < 3) {
+		printf("write what?\n");
+	    }
+	  }
+	else if ( strcmp(argv[1],"read") == 0 ) {
+	  int retval;
+	  int q_cnt = 5,q_size = 150,ind = 0;
+	  char **queries = malloc(sizeof(char) * q_cnt * q_size);
+	  sqlite3_stmt *stmt;
+	  sqlite3 *handle;
+	  retval = sqlite3_open("base.db3",&handle);
 	  if(retval) {
 		printf("Database connection failed\n");
 		return -1;
