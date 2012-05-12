@@ -102,9 +102,12 @@ int main(int argc, char *argv[]) {
 			  || strcmp(argv[1],"read") == 0 
 			  || strcmp(argv[1],"clean") == 0
 			  || strcmp(argv[1],"write") == 0 ) {
-	  int retval;
+	  int retval, x;
 	  int q_cnt = 5,q_size = 150,ind = 0;
-	  char **queries = malloc(sizeof(char) * q_cnt * q_size);
+	  char **queries = (char**)malloc(sizeof(char*) * q_cnt);
+	  for (x = 0; x < q_cnt; x++) {
+		queries[x] = (char*)malloc(sizeof(char) * q_size);
+	    }
 	  sqlite3_stmt *stmt;
 	  sqlite3 *handle;
 	  retval = sqlite3_open("base.db3",&handle);
@@ -112,22 +115,26 @@ int main(int argc, char *argv[]) {
 		printf("Database connection failed\n");
 		return -1;
 	    }
-	  //printf("Connection successful\n");
 	  if (  strcmp(argv[1],"initdb") == 0 ) {
-		// Create the SQL query for creating a table
 		char create_table[100] = "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)";
-		// Execute the query for creating the table
 		retval = sqlite3_exec(handle,create_table,0,0,0);
-		// Insert first row
-		queries[ind++] = "INSERT INTO TODO VALUES(1,'test task')";
-		retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 	    }
 	  else if ( strcmp(argv[1],"write") == 0 ) {
 	    if ( argc < 3) {
 	 	  printf("write what?\n");
 	      }
 		else {
-		  queries[ind++] = "INSERT INTO TODO VALUES(1,'test task')";
+		  queries[ind++] = "SELECT MAX(id) from TODO";
+		  if(retval) {
+			printf("Inserting data to DB Failed\n");
+			return -1;
+	        }
+		  unsigned int last = 0;
+		  while (sqlite3_step(stmt) == SQLITE_ROW) {
+			last =  (int) sqlite3_column_text(stmt, 0);
+	        }
+		  last++;
+		  sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, argv[2]);
 		  retval = sqlite3_exec(handle,queries[ind-1],0,0,0);
 		  }
 	    }
@@ -142,11 +149,11 @@ int main(int argc, char *argv[]) {
 		  printf("Selecting data from DB Failed\n");
 		  return -1;
 	      }
-		printf("=========================================\n");
+		printf("======================================================\n");
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
 		  printf("%s\n", sqlite3_column_text(stmt, 1));
 	      }
-		printf("=========================================\n");
+		printf("======================================================\n");
 	    }
 	  sqlite3_close(handle);
 	  }
