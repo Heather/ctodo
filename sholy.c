@@ -1,5 +1,5 @@
 /*                 sholy - Light TODO list
-				  Copyright (C)  2012  Sholy
+		  Copyright (C)  2012  Sholy
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public
