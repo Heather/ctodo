@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
   int encryption = 0;
 
   if ( argc < 2) {
-	printf( "usage:\n  %s initdb/read/write/test\n\n", argv[0] );
+	printf( "usage:\n  %s <command>\n   - initdb - init empty database structure (must be automatic later)\n  - read - to read all (must support number later)\n  - write <msg> - add task\n  - test - testing AES encryption\n", argv[0] );
 	return 0;
     }
   else {
