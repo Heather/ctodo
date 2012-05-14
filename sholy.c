@@ -98,6 +98,7 @@ void help(char* argv) {
 }
 int main(int argc, char *argv[]) {
   int encryption = 0;
+  char* key;
   if ( argc < 2 ) {
 	help( argv[0] );
 	return 0;
@@ -139,6 +140,9 @@ int main(int argc, char *argv[]) {
           //printf("Line %d:  option %s value %s\n", linenum, option, value); //DEBUG
 		  if (  strcmp(option,"encryption") == 0 ) {
 			encryption = ( (value[0] == '1') ? 1 : 0);
+		    }
+		  else if (  strcmp(option,"key") == 0 ) {
+			key = value;
 		    }
 	      }
 	    fclose(file);
