@@ -93,16 +93,22 @@ unsigned char* Decrypt(unsigned char* key,char* buf) {
   return buf;
 }
 
+void help(char* argv) {
+	printf( "usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read - to read all\n  - write <msg> - add task\n  - test - testing AES encryption\n", argv );
+}
 int main(int argc, char *argv[]) {
   int encryption = 0;
-
-  if ( argc < 2) {
-	printf( "usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read - to read all\n  - write <msg> - add task\n  - test - testing AES encryption\n", argv[0] );
+  if ( argc < 2 ) {
+	help( argv[0] );
 	return 0;
     }
   else {
 	if ( strcmp(argv[1],"--version") == 0 ) {
 	  printf("v0.01\n");
+	  return 0;
+	  }
+	if ( strcmp(argv[1],"--help") == 0 ) {
+	  help( argv[0] );
 	  return 0;
 	  }
 	else if  ( strcmp(argv[1],"test") == 0 ) {
@@ -114,6 +120,29 @@ int main(int argc, char *argv[]) {
 			  || strcmp(argv[1],"clean") == 0
 			  || strcmp(argv[1],"rm") == 0
 			  || strcmp(argv[1],"write") == 0 ) {
+	  //Read config file here:
+	  char line[256];
+	  int linenum=0;
+	  FILE *file = fopen("sholy.conf", "rw");
+      if (file == NULL) {
+        perror("Failed to open file sholy.conf");
+        }
+	  else {
+	    while(fgets(line, 256, file) != NULL){
+          char option[256], value[256];
+          linenum++;
+          if(line[0] == '#') continue;
+          if(sscanf(line, "%s %s", option, value) != 2) {
+            fprintf(stderr, "Syntax error, line %d\n", linenum);
+            continue;
+            }
+          //printf("Line %d:  option %s value %s\n", linenum, option, value); //DEBUG
+		  if (  strcmp(option,"encryption") == 0 ) {
+			encryption = ( (value[0] == '1') ? 1 : 0);
+		    }
+	      }
+	    fclose(file);
+	  }
 	  int retval, x;
 	  int q_cnt = 5,q_size = 150,ind = 0;
 	  char **queries = (char**)malloc(sizeof(char*) * q_cnt);
