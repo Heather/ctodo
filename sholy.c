@@ -174,11 +174,11 @@ int main(int argc, char *argv[]) {
 		  }
 	    }
 	  else if ( strcmp(argv[1],"read") == 0 ) {
-		if ( argc > 3) {
-		  sprintf(queries[ind++], "SELECT * FROM TODO WHERE id = %s", argv[2]);
+		if ( argc > 2) {
+		  sprintf(queries[ind++], "SELECT id, text FROM TODO WHERE id = %s", argv[2]);
 		  }
 		else {
-	      queries[ind++] = "SELECT * from TODO";
+	      queries[ind++] = "SELECT id, text from TODO";
 		  }
 	    retval = sqlite3_prepare_v2(handle,queries[ind-1],-1,&stmt,0);
 	    if(retval) {
