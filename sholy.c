@@ -199,8 +199,7 @@ int main(int argc, char *argv[]) {
 			printf("%s\n", sqlite3_column_text(stmt, 1));
 		    }
 	      }
-		printf("======================================================\n");
-
+        printf("======================================================\n");
 	    }
 	  sqlite3_close(handle);
 	  }
