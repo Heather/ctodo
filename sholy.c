@@ -137,7 +137,6 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Syntax error, line %d\n", linenum);
             continue;
             }
-          //printf("Line %d:  option %s value %s\n", linenum, option, value); //DEBUG
 		  if (  strcmp(option,"encryption") == 0 ) {
 			encryption = ( (value[0] == '1') ? 1 : 0);
 		    }
