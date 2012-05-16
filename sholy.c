@@ -223,14 +223,14 @@ int main(int argc, char *argv[]) {
         char dec[16];
 		int encryption = 0;
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
-		  printf("%s | ", sqlite3_column_text(stmt, 0));
+		  printf("%s ", sqlite3_column_text(stmt, 0));
 		  encryption =  atoi(sqlite3_column_text(stmt, 2));
 		  if (encryption == 1) {
 		    memcpy( dec, Decrypt(key, (char *)sqlite3_column_text(stmt, 1) ), 16 );
-		    printf("%s\n", dec);
+		    printf(" > %s\n", dec);
 			}
 		  else {
-			printf("%s\n", sqlite3_column_text(stmt, 1));
+			printf(" | %s\n", sqlite3_column_text(stmt, 1));
 		    }
 	      }
         printf("======================================================\n");
