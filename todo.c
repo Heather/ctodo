@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <stdlib.h>
 
 void help(char* argv) {
-    printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read - to read all\n  - write <msg> - add task\n", argv);
+    printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n  - write or w <msg> - add task\n  - rm <number> - delete task\n  - clean - clean all tasks\n", argv);
     }
 int main(int argc, char* argv[]) {
     if(argc < 2) {
@@ -39,9 +39,11 @@ int main(int argc, char* argv[]) {
             }
         if(strcmp(argv[1], "initdb") == 0
                 || strcmp(argv[1], "read") == 0
+                || strcmp(argv[1], "r") == 0
                 || strcmp(argv[1], "clean") == 0
                 || strcmp(argv[1], "rm") == 0
-                || strcmp(argv[1], "write") == 0) {
+                || strcmp(argv[1], "write") == 0
+                || strcmp(argv[1], "w") == 0) {
             int retval, x;
             int q_cnt = 5, q_size = 150, ind = 0;
             char** queries = (char**)malloc(sizeof(char*) * q_cnt);
@@ -59,7 +61,7 @@ int main(int argc, char* argv[]) {
                 char create_table[100] = "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)";
                 retval = sqlite3_exec(handle, create_table, 0, 0, 0);
                 }
-            else if(strcmp(argv[1], "write") == 0) {
+            else if((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0)) {
                 if(argc < 3) {
                     printf("write what?\n");
                     }
@@ -125,7 +127,7 @@ int main(int argc, char* argv[]) {
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     }
                 }
-            else if(strcmp(argv[1], "read") == 0) {
+            else if((strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "r") == 0)) {
                 if(argc > 2) {
                     sprintf(queries[ind++], "SELECT id, text FROM TODO WHERE id = %s", argv[2]);
                     }
