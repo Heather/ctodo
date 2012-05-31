@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
                 }
             sqlite3_stmt* stmt;
             sqlite3* handle;
-            retval = sqlite3_open("~/.todo/base.db3", &handle);
+            retval = sqlite3_open("~/.todo.db3", &handle);
             if(retval) {
                 printf("Database connection failed\n");
                 return -1;
