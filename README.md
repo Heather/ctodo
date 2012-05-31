@@ -1,4 +1,4 @@
-sholy
+todo
 =====
 
 ```c
@@ -17,10 +17,3 @@ sholy
 			  || strcmp(argv[1],"rm") == 0
 			  || strcmp(argv[1],"write") == 0 ) {
 ```
-
-Encripting TODO with SQLITE AES ECB PolarSSL
-
-[status: in progress]
-
-License: GPL :3
----------------

@@ -1,11 +1,11 @@
 CC=gcc
-CFLAGS=-lpolarssl -lsqlite3 -O3
-SRC=sholy.c
+CFLAGS=-lsqlite3 -O3
+SRC=todo.c
 
-sholy: $(SRC)
-	$(CC) -o sholy $^ $(CFLAGS)
+todo: 	$(SRC)
+	$(CC) -o todo $^ $(CFLAGS)
 
 .PHONY: clean
 
 clean:
-	rm -f sholy
+	rm -f todo
