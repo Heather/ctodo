@@ -19,3 +19,4 @@ clean:
 install:
 	$(MKDIR) $(DESTDIR)$(BINDIR)
 	$(INSTALL) todo$(EXE) $(DESTDIR)$(BINDIR)/
+	$(MKDIR) $(DESTDIR)$(MODDIR)
