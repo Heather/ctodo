@@ -21,7 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <stdlib.h>
 
 void help(char* argv) {
-    printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n  - write or w <msg> - add task\n  - rm <number> - delete task\n  - clean - clean all tasks\n", argv);
+    printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n", argv);
+    printf("  - write or w <msg> - add task\n  - rm <number> - delete task\n  - clean - clean all tasks\n");
     }
 int main(int argc, char* argv[]) {
     if(argc < 2) {
