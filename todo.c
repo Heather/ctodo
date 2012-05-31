@@ -101,15 +101,15 @@ int main(int argc, char* argv[]) {
                                 break;
                             case 7:
                                 sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s %s %s %s %s')"
-                                        , last, argv[2], argv[3], argv[4], argv[5], argv[8]);
+                                        , last, argv[2], argv[3], argv[4], argv[5], argv[6]);
                                 break;
                             case 8:
                                 sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s %s %s %s %s')"
-                                        , last, argv[2], argv[3], argv[4], argv[5], argv[8], argv[9]);
+                                        , last, argv[2], argv[3], argv[4], argv[5], argv[7], argv[8]);
                                 break;
                             case 9:
                                 sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s %s %s %s %s %s')"
-                                        , last, argv[2], argv[3], argv[4], argv[5], argv[8], argv[9], argv[10]);
+                                        , last, argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
                                 break;
                             }
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
