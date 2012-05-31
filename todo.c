@@ -52,14 +52,7 @@ int main(int argc, char* argv[]) {
                 }
             sqlite3_stmt* stmt;
             sqlite3* handle;
-            char* resolved_path;
-            if(realpath("~/.todo.db3", resolved_path)) {
-                retval = sqlite3_open(resolved_path, &handle);
-                }
-            else {
-                retval = sqlite3_open(".todo.db3", &handle);
-                printf("failed to get realpath\n");
-                }
+            retval = sqlite3_open(strcat(getenv("HOME"),"/.todo.db3"), &handle);
             if(retval) {
                 printf("Database connection failed\n");
                 return -1;
