@@ -5,8 +5,6 @@ SRC=todo.c
 INSTALL   ?= install
 MKDIR     ?= $(INSTALL) -d
 BINDIR    ?= $(PREFIX)/bin
-MODDIR    ?= $(PREFIX)/usr/share/todo
-DESTDIR   ?=
 
 todo: 	$(SRC)
 	$(CC) -o todo $^ $(CFLAGS)
@@ -17,5 +15,5 @@ clean:
 	rm -f todo
 
 install:
-	$(MKDIR) $(DESTDIR)$(BINDIR)
-	$(INSTALL) todo$(EXE) $(DESTDIR)$(BINDIR)/
+	$(MKDIR) $(BINDIR)
+	$(INSTALL) todo $(BINDIR)/
