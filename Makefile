@@ -13,4 +13,4 @@ clean:
 install:
 	make clean
 	make
-	install todo${EXE} /bin/todo
+	install todo /bin
