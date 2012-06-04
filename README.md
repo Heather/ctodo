@@ -33,5 +33,5 @@ Other
 ---------
 ```bash
 git clone git@github.com:Sholy/todo.git; cd todo
-make; make install
+make install
 ```
