@@ -1,6 +1,10 @@
 CC=gcc
 CFLAGS=-lsqlite3 -O3
 SRC=todo.c
+INSTALL   ?= install
+MKDIR     ?= $(INSTALL) -d
+BINDIR    ?= $(PREFIX)/bin
+DESTDIR   ?=
 
 todo: 	$(SRC)
 	$(CC) -o todo $^ $(CFLAGS)
@@ -11,4 +15,5 @@ clean:
 	rm -f todo
 
 install:
-	install todo /bin
+	$(MKDIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL) ocscm$(EXE) $(DESTDIR)$(BINDIR)/
