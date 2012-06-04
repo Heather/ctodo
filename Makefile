@@ -16,4 +16,4 @@ clean:
 
 install:
 	$(MKDIR) $(DESTDIR)$(BINDIR)
-	$(INSTALL) ocscm$(EXE) $(DESTDIR)$(BINDIR)/
+	$(INSTALL) todo$(EXE) $(DESTDIR)$(BINDIR)/
