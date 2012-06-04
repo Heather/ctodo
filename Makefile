@@ -11,6 +11,5 @@ clean:
 	rm -f todo
 
 install:
-	make
-	rm -f /bin/todo
+	make clean
 	install todo${EXE} /bin/todo
