@@ -78,40 +78,14 @@ int main(int argc, char* argv[]) {
                         last = atoi(sqlite3_column_text(stmt, 0));
                         }
                     last++;
-                    if(argc > 9) {
-                        printf("Maximum 7 words\n");
-                        return 0;
+                    int argi;
+                    char* text;
+                    text = (char*)calloc(200, sizeof(char));
+		    for (argi = 2; argi < argc; argi++) {
+                        strcat(text, argv[argi]);
+                        strcat(text, " ");
                         }
-                    else switch(argc) {
-                            case 3:
-                                sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')"
-                                        , last, argv[2]);
-                                break;
-                            case 4:
-                                sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s %s')"
-                                        , last, argv[2], argv[3]);
-                                break;
-                            case 5:
-                                sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s %s %s')"
-                                        , last, argv[2], argv[3], argv[4]);
-                                break;
-                            case 6:
-                                sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s %s %s %s')"
-                                        , last, argv[2], argv[3], argv[4], argv[5]);
-                                break;
-                            case 7:
-                                sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s %s %s %s %s')"
-                                        , last, argv[2], argv[3], argv[4], argv[5], argv[6]);
-                                break;
-                            case 8:
-                                sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s %s %s %s %s')"
-                                        , last, argv[2], argv[3], argv[4], argv[5], argv[7], argv[8]);
-                                break;
-                            case 9:
-                                sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s %s %s %s %s %s')"
-                                        , last, argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
-                                break;
-                            }
+                    sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, text);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     }
                 }
