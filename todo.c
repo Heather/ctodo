@@ -1,5 +1,5 @@
 /*          todo - Light TODO list
-          Copyright (C)  2012  Sholy
+          Copyright (C)  2012  nCdy
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public
@@ -63,9 +63,7 @@ int main(int argc, char* argv[]) {
                 retval = sqlite3_exec(handle, create_table, 0, 0, 0);
                 }
             else if((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0)) {
-                if(argc < 3) {
-                    printf("write what?\n");
-                    }
+                if(argc < 3) printf("write what?\n");
                 else {
                     queries[ind++] = "SELECT MAX(id) FROM TODO GROUP BY (text)";
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
@@ -81,46 +79,41 @@ int main(int argc, char* argv[]) {
                     int argi;
                     char* text;
                     text = (char*)calloc(200, sizeof(char));
-		    for (argi = 2; argi < argc; argi++) {
+					for (argi = 2; argi < argc; argi++) {
                         strcat(text, argv[argi]);
                         strcat(text, " ");
                         }
                     sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, text);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+					if(retval) { printf("Task were not added!"); }
                     }
-                }
+			    }
             else if(strcmp(argv[1], "clean") == 0) {
                 queries[ind++] = "DELETE FROM TODO";
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 }
             else if(strcmp(argv[1], "rm") == 0) {
-                if(argc < 3) {
-                    printf("rm what?\n");
-                    }
+                if(argc < 3) printf("rm what?\n");
                 else {
                     sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     }
                 }
             else if((strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "r") == 0)) {
-                if(argc > 2) {
-                    sprintf(queries[ind++], "SELECT id, text FROM TODO WHERE id = %s", argv[2]);
-                    }
-                else {
-                    queries[ind++] = "SELECT id, text from TODO";
-                    }
+                if(argc > 2) sprintf(queries[ind++], "SELECT id, text FROM TODO WHERE id = %s", argv[2]);
+                else queries[ind++] = "SELECT id, text from TODO";
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if(retval) {
                     printf("Selecting data from DB Failed, run initdb first\n");
                     return -1;
                     }
-                printf("======================================================\n");
+                printf("-------------------------------------->\n");
                 while(sqlite3_step(stmt) == SQLITE_ROW) {
                     printf("%s | %s\n"
                            , sqlite3_column_text(stmt, 0)
                            , sqlite3_column_text(stmt, 1));
                     }
-                printf("======================================================\n");
+                printf("-------------------------------------->\n");
                 }
             sqlite3_close(handle);
             }
