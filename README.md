@@ -32,6 +32,6 @@ emerge todo
 Other
 ---------
 ```bash
-git clone git@github.com:Sholy/todo.git; cd todo
+git clone git@github.com:nCdy/todo.git; cd todo
 make install
 ```
