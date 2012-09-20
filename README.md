@@ -18,10 +18,10 @@ TODO List management util: Usage & Version
 Synchronization
 ===============
 
-Easy, seens everyone here have got his ~ in git all you need is just
-git add .todo.db3 so you sync you todo list in binary way with .git
-Yes encrytion doesn't supported but I don't need it because I will be
-happy if you take some task from my todo list and make it for me ;)
+Easy, seens everyone here have got her ~ in git all you need is just
+git add .todo.db3 so you sync your todo list in binary way with git.
+Yes encrytion doesn't supported yet but I don't need it because I will be
+happy if you will take some tasks from my todo list and make them for me ;)
 
 Installation
 ============
