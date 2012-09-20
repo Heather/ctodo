@@ -1,8 +1,5 @@
-todo - todo list management util
-================================
-
-Usage
-=====
+TODO List management util: Usage & Version
+==========================================
 
 ```c
        if(strcmp(argv[1], "--version") == 0) {
@@ -43,3 +40,9 @@ git clone git@github.com:nCdy/todo.git; cd todo
 make
 make install
 ```
+
+License
+=======
+
+GPL v3
+------
