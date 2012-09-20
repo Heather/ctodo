@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 
 void help(char* argv) {
     printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n", argv);
-    printf("  - write or w <msg> - add task\n  - rm <number> - delete task\n  - clean - clean all tasks\n");
+    printf("  - write or w <msg> - add task\n  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
     }
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
         }
     else {
         if (strcmp(argv[1], "--version") == 0) {
-            printf("v0.01\n");
+            printf("v0.01\n\r");
             return 0;
             }
         if (strcmp(argv[1], "--help") == 0) {
@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
             sqlite3* handle;
             retval = sqlite3_open(strcat(getenv("HOME"), "/.todo.db3"), &handle);
             if (retval) {
-                printf("Database connection failed\n");
+                printf("Database connection failed\n\r");
                 return -1;
                 }
             if (strcmp(argv[1], "initdb") == 0) {
@@ -63,12 +63,12 @@ int main(int argc, char* argv[]) {
                 retval = sqlite3_exec(handle, create_table, 0, 0, 0);
                 }
             else if ((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0)) {
-                if (argc < 3) printf("write what?\n");
+                if (argc < 3) printf("write what?\n\r");
                 else {
                     queries[ind++] = "SELECT MAX(id) FROM TODO GROUP BY (text)";
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                     if (retval) {
-                        printf("Inserting data to DB Failed, run initdb first\n");
+                        printf("Inserting data to DB Failed, run initdb first\n\r");
                         return -1;
                         }
                     int last = 0;
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
                     sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, text);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
-                        printf("Task were not added!");
+                        printf("Task were not added!\n\r");
                         }
                     }
                 }
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 }
             else if (strcmp(argv[1], "rm") == 0) {
-                if (argc < 3) printf("rm what?\n");
+                if (argc < 3) printf("rm what?\n\r");
                 else {
                     sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
                 else queries[ind++] = "SELECT MAX(LENGTH(text)) from TODO";
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
-                    printf("Reading data from DB Failed, run initdb first\n");
+                    printf("Reading data from DB Failed, run initdb first\n\r");
                     return -1;
                     }
                 int last = 0;
@@ -118,17 +118,17 @@ int main(int argc, char* argv[]) {
                 else queries[ind++] = "SELECT id, text from TODO";
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
-                    printf("Selecting data from DB Failed, run initdb first\n");
+                    printf("Selecting data from DB Failed, run initdb first\n\r");
                     return -1;
                     }
                 char lineborder[255];
                 int i;
-                for (i = 0; i < (maxl + 5); i++) {
-                    strcat(lineborder, "-");
+                for (i = 0; i < (maxl + 7); i++) {
+                    strcat(lineborder, "_");
                     }
-                printf("%s>\n\r", lineborder);
+                printf("+%s+\n\r", lineborder);
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
-                    printf("%s | %s\n"
+                    printf("| %s >> %s\n"
                            , sqlite3_column_text(stmt, 0)
                            , sqlite3_column_text(stmt, 1));
                     }
