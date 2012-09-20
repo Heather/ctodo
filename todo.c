@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
                         }
                     last++;
                     int argi;
-                    char text[200]; //(char*)calloc(200, sizeof(char));
+                    char text[200];
                     for (argi = 2; argi < argc; argi++) {
                         strcat(text, argv[argi]);
                         strcat(text, " ");
@@ -113,31 +113,38 @@ int main(int argc, char* argv[]) {
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
                     maxl = atoi(sqlite3_column_text(stmt, 0));
                     }
-                if (argc > 2) sprintf(queries[ind++], "SELECT id, text FROM TODO WHERE id = %s", argv[2]);
-                else queries[ind++] = "SELECT id, text from TODO";
+                if (argc > 2) sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %s", argv[2]);
+                else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
                     printf("Selecting data from DB Failed, run initdb first\n\r");
                     return -1;
                     }
                 char lineborder[255];
-                int i;
+                char spaces[200];
+                int i, maxi;
                 for (i = 0; i < (maxl + 7); i++) {
                     strcat(lineborder, "-");
                     }
                 printf("+%s+\n\r", lineborder);
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
-                    printf("| %s >> %s\n"
+                    maxi = maxl - atoi(sqlite3_column_text(stmt, 2));
+                    strcpy(spaces, "");
+                    for (i = 0; i < maxi; i++) {
+                        strcat(spaces, " ");
+                        }
+                    printf("| %s >> %s %s|\n"
                            , sqlite3_column_text(stmt, 0)
-                           , sqlite3_column_text(stmt, 1));
+                           , sqlite3_column_text(stmt, 1)
+                           , spaces);
                     }
                 printf("+%s+\n\r", lineborder);
                 }
             sqlite3_close(handle);
             }
-	else {
-	    printf("What?\n\n");
-	    help(argv[0]);
-	    }
+        else {
+            printf("What?\n\n");
+            help(argv[0]);
+            }
         }
     }
