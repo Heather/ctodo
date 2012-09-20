@@ -1,13 +1,12 @@
-todo
+todo - todo list management util
+================================
+
+Usage
 =====
 
 ```c
        if(strcmp(argv[1], "--version") == 0) {
             printf("v0.01\n");
-            return 0;
-            }
-        if(strcmp(argv[1], "--help") == 0) {
-            help(argv[0]);
             return 0;
             }
         if(strcmp(argv[1], "initdb") == 0
@@ -18,6 +17,14 @@ todo
                 || strcmp(argv[1], "write") == 0
                 || strcmp(argv[1], "w") == 0) {
 ```
+
+Synchronization
+===============
+
+Easy, seens everyone here have got his ~ in git all you need is just
+git add .todo.db3 so you sync you todo list in binary way with .git
+Yes encrytion doesn't supported but I don't need it because I will be
+happy if you take some task from my todo list and make it for me ;)
 
 Installation
 ============
