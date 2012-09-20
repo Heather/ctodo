@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
                     sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, text);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
-                        printf("Task were not added!\n\r");
+                        printf("Task were not added! (shit happens)\n\r");
                         }
                     }
                 }
