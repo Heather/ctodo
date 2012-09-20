@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
                 char lineborder[255];
                 int i;
                 for (i = 0; i < (maxl + 7); i++) {
-                    strcat(lineborder, "_");
+                    strcat(lineborder, "-");
                     }
                 printf("+%s+\n\r", lineborder);
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
                            , sqlite3_column_text(stmt, 0)
                            , sqlite3_column_text(stmt, 1));
                     }
-                printf("%s>\n\r", lineborder);
+                printf("+%s+\n\r", lineborder);
                 }
             sqlite3_close(handle);
             }
