@@ -135,5 +135,9 @@ int main(int argc, char* argv[]) {
                 }
             sqlite3_close(handle);
             }
+	else {
+	    printf("What?\n\n");
+	    help(argv[0]);
+	    }
         }
     }
