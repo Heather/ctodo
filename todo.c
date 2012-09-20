@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
                 || strcmp(argv[1], "write") == 0
                 || strcmp(argv[1], "w") == 0) {
             int retval, x;
-            int q_cnt = 5, q_size = 150, ind = 0;
+            int q_cnt = 10, q_size = 255, ind = 0;
             char** queries = (char**)malloc(sizeof(char*) * q_cnt);
             for (x = 0; x < q_cnt; x++) {
                 queries[x] = (char*)malloc(sizeof(char) * q_size);
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
             else if ((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0)) {
                 if (argc < 3) printf("write what?\n\r");
                 else {
-                    queries[ind++] = "SELECT MAX(id) FROM TODO GROUP BY (text)";
+                    queries[ind++] = "SELECT MAX(id) FROM TODO";
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                     if (retval) {
                         printf("Inserting data to DB Failed, run initdb first\n\r");
@@ -77,8 +77,7 @@ int main(int argc, char* argv[]) {
                         }
                     last++;
                     int argi;
-                    char* text;
-                    text = (char*)calloc(200, sizeof(char));
+                    char text[200]; //(char*)calloc(200, sizeof(char));
                     for (argi = 2; argi < argc; argi++) {
                         strcat(text, argv[argi]);
                         strcat(text, " ");
