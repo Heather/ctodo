@@ -1,8 +1,5 @@
-todo - todo list management util
-================================
-
-Usage
-=====
+TODO List management util: Usage & Version
+==========================================
 
 ```c
        if(strcmp(argv[1], "--version") == 0) {
