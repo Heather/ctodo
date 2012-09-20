@@ -44,5 +44,4 @@ make install
 License
 =======
 
-GPL v3
-------
+The GNU General Public License v3.0
