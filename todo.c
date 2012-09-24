@@ -41,6 +41,8 @@ int main(int argc, char* argv[]) {
         if (strcmp(argv[1], "initdb") == 0
                 || strcmp(argv[1], "read") == 0
                 || strcmp(argv[1], "r") == 0
+                || strcmp(argv[1], "edit") == 0
+                || strcmp(argv[1], "e") == 0
                 || strcmp(argv[1], "clean") == 0
                 || strcmp(argv[1], "rm") == 0
                 || strcmp(argv[1], "write") == 0
@@ -87,6 +89,24 @@ int main(int argc, char* argv[]) {
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Task were not added! (shit happens)\n\r");
+                        }
+                    free(text);
+                    }
+                }
+            else if ((strcmp(argv[1], "edit") == 0) || (strcmp(argv[1], "e") == 0)) {
+                if (argc < 3) printf("edit what?\n\r");
+                else {
+                    int argi;
+                    char* text;
+		     text = (char*)calloc(200, sizeof(char));
+                    for (argi = 2; argi < argc; argi++) {
+                        strcat(text, argv[argi]);
+                        strcat(text, " ");
+                        }
+                    sprintf(queries[ind++], "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
+                    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                    if (retval) {
+                        printf("Task were not edited! (shit happens)\n\r");
                         }
                     free(text);
                     }
