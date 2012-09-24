@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 
 void help(char* argv) {
     printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n", argv);
-    printf("  - write or w <msg> - add task\n  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
+    printf("  - write or w <msg> - add task\n  - edit or e <n> <msg> - edit task\n  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
     }
 int main(int argc, char* argv[]) {
     if (argc < 2) {
