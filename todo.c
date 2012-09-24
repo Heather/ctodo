@@ -77,7 +77,8 @@ int main(int argc, char* argv[]) {
                         }
                     last++;
                     int argi;
-                    char text[200];
+                    char* text;
+		     text = (char*)calloc(200, sizeof(char));
                     for (argi = 2; argi < argc; argi++) {
                         strcat(text, argv[argi]);
                         strcat(text, " ");
@@ -87,6 +88,7 @@ int main(int argc, char* argv[]) {
                     if (retval) {
                         printf("Task were not added! (shit happens)\n\r");
                         }
+                    free(text);
                     }
                 }
             else if (strcmp(argv[1], "clean") == 0) {
@@ -120,8 +122,10 @@ int main(int argc, char* argv[]) {
                     printf("Selecting data from DB Failed, run initdb first\n\r");
                     return -1;
                     }
-                char lineborder[255];
-                char spaces[200];
+                char *lineborder;
+                char *spaces;
+		 lineborder 	= (char*)calloc(255, sizeof(char));
+		 spaces 	= (char*)calloc(200, sizeof(char));
                 int i, maxi;
                 for (i = 0; i < (maxl + 7); i++) {
                     strcat(lineborder, "-");
@@ -139,6 +143,8 @@ int main(int argc, char* argv[]) {
                            , spaces);
                     }
                 printf("+%s+\n\r", lineborder);
+		 free(lineborder);
+		 free(spaces);
                 }
             sqlite3_close(handle);
             }
