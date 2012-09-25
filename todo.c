@@ -131,7 +131,14 @@ int main(int argc, char* argv[]) {
 		     f = fopen(filename, "w+");
 		     time_t now = time(0);
 		     rewind(f); 
-		     fprintf(f, "%d\n %s", (int)now, "changed");
+		     queries[ind++] = "SELECT id, text from TODO";
+		     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
+		     fprintf(f, "%d\n", (int)now);
+		     while (sqlite3_step(stmt) == SQLITE_ROW) {
+                        fprintf(f,"%s|%s\n"
+                           , sqlite3_column_text(stmt, 0)
+                           , sqlite3_column_text(stmt, 1));
+		         }
 		     fclose(f);
 		     }
                 free(filename);
