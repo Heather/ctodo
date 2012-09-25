@@ -27,6 +27,14 @@ void help(char* argv) {
     printf("  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
     printf("  - sync - text synchronization to avoid binaries in vcs");
     }
+char* rtrim(char* str) {
+    char* ptr;
+    int   len;
+    len = strlen(str);
+    for (ptr = str + len - 1; ptr >= str && isspace((int)*ptr); --ptr);
+    ptr[1] = '\0';
+    return str;
+    }
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         help(argv[0]);
@@ -93,54 +101,71 @@ int main(int argc, char* argv[]) {
                     return -1;
                     }
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
-		     if (strcmp(sqlite3_column_text(stmt, 0),"0") == 0) {
+                    if (strcmp(sqlite3_column_text(stmt, 0), "0") == 0) {
                         sprintf(filename, "%s", sqlite3_column_text(stmt, 1));
-		         }
-		     else {
-		         timeDB = atoi(sqlite3_column_text(stmt, 1));
-		         }
+                        }
+                    else {
+                        timeDB = atoi(sqlite3_column_text(stmt, 1));
+                        }
                     }
                 printf("Sync file: %s\n\r", filename);
                 FILE* f;
-                f = fopen(filename, "r+");
+                f = fopen(filename, "a+");
                 if (f == NULL) {
                     printf("There is no such file and it's failed to create it\n\r");
                     return -1;
                     }
-                char line[80];
+                char line[150];
                 int i = 0;
                 int timefile = 0;
                 char write = 1;
-                while (fgets(line, 80, f)) {
+                char* token1;
+                char* token2;
+                char* search = "|";
+                while (fgets(line, 150, f)) {
                     if (i == 0) {
                         timefile = atoi(line);
                         printf("Timefile: %d\n\r", timefile);
-			 if (timeDB > timefile) {
-			     break;
-			     }
-			 else write = 0;
+                        if (timeDB > timefile) {
+                            break;
+                            }
+                        else write = 0;
                         }
                     else {
-                        printf("%s", line);
-		         }
+                        if (i == 1) {
+                            queries[ind++] = "DELETE FROM TODO";
+                            retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                            if (retval) {
+                                printf("failed to clean db, run initdb first\n\r");
+                                }
+                            }
+                        token1 = strtok(line, search);
+                        token2 = strtok(NULL, search);
+                        rtrim(token2);
+                        sprintf(queries[ind++], "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
+                        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                        if (retval) {
+                            printf("Task were not added! (shit happens)\n\r");
+                            }
+                        }
                     i++;
                     }
                 printf("\n");
                 fclose(f);
                 if (write) {
-		     f = fopen(filename, "w+");
-		     time_t now = time(0);
-		     rewind(f); 
-		     queries[ind++] = "SELECT id, text from TODO";
-		     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
-		     fprintf(f, "%d\n", (int)now);
-		     while (sqlite3_step(stmt) == SQLITE_ROW) {
-                        fprintf(f,"%s|%s\n"
-                           , sqlite3_column_text(stmt, 0)
-                           , sqlite3_column_text(stmt, 1));
-		         }
-		     fclose(f);
-		     }
+                    f = fopen(filename, "w+");
+                    time_t now = time(0);
+                    rewind(f);
+                    queries[ind++] = "SELECT id, text from TODO";
+                    retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
+                    fprintf(f, "%d\n", (int)now);
+                    while (sqlite3_step(stmt) == SQLITE_ROW) {
+                        fprintf(f, "%s|%s\n"
+                                , sqlite3_column_text(stmt, 0)
+                                , sqlite3_column_text(stmt, 1));
+                        }
+                    fclose(f);
+                    }
                 free(filename);
                 }
             else if ((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0)) {
