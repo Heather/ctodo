@@ -16,13 +16,16 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 
 #include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include <sqlite3.h>
 #include <stdlib.h>
 
 void help(char* argv) {
     printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n", argv);
-    printf("  - write or w <msg> - add task\n  - edit or e <n> <msg> - edit task\n  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
+    printf("  - write or w <msg> - add task\n  - edit or e <n> <msg> - edit task\n");
+    printf("  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
+    printf("  - sync - text synchronization to avoid binaries in vcs");
     }
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -46,7 +49,8 @@ int main(int argc, char* argv[]) {
                 || strcmp(argv[1], "clean") == 0
                 || strcmp(argv[1], "rm") == 0
                 || strcmp(argv[1], "write") == 0
-                || strcmp(argv[1], "w") == 0) {
+                || strcmp(argv[1], "w") == 0
+                || strcmp(argv[1], "sync") == 0) {
             int retval, x;
             int q_cnt = 10, q_size = 255, ind = 0;
             char** queries = (char**)malloc(sizeof(char*) * q_cnt);
@@ -61,13 +65,54 @@ int main(int argc, char* argv[]) {
                 return -1;
                 }
             if (strcmp(argv[1], "initdb") == 0) {
-                char create_table[100] = "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)";
-                retval = sqlite3_exec(handle, create_table, 0, 0, 0);
+                sprintf(queries[ind++], "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
+                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                if (retval) {
+                    printf("Init DB Failed, Shit happens?\n\r");
+                    return -1;
+                    }
+                sprintf(queries[ind++], "CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
+                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.todo.sync')");
+                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+		 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)(time(0)));
+		 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                if (retval) {
+                    printf("Instert deafaults options Failed, Shit happens?\n\r");
+                    return -1;
+                    }
+                }
+            if (strcmp(argv[1], "sync") == 0) {
+                char* filename;
+                filename = (char*)calloc(200, sizeof(char));
+                sprintf(queries[ind++], "SELECT text FROM OPTIONS WHERE option = 0");
+                retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
+                if (retval) {
+                    printf("Sync data Failed, run initdb first\n\r");
+                    return -1;
+                    }
+                while (sqlite3_step(stmt) == SQLITE_ROW) {
+                    sprintf(filename, "%s", sqlite3_column_text(stmt, 0));
+                    }
+                printf("Sync file: %s\n\r", filename);
+                FILE* fr;
+                fr = fopen(filename, "a+");
+		 if( fr == NULL ) {
+		     printf("There is no such file and it's failed to create it\n\r");
+                    return -1;
+		     }
+		 time_t now = time(0);
+                char line[80];
+                while(fgets(line, 80, fr)) {
+                    printf("%s", line);
+                    }
+                fclose(fr);
+                free(filename);
                 }
             else if ((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0)) {
                 if (argc < 3) printf("write what?\n\r");
                 else {
-                    queries[ind++] = "SELECT MAX(id) FROM TODO";
+                    sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO");
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                     if (retval) {
                         printf("Inserting data to DB Failed, run initdb first\n\r");
@@ -80,7 +125,7 @@ int main(int argc, char* argv[]) {
                     last++;
                     int argi;
                     char* text;
-		     text = (char*)calloc(200, sizeof(char));
+                    text = (char*)calloc(200, sizeof(char));
                     for (argi = 2; argi < argc; argi++) {
                         strcat(text, argv[argi]);
                         strcat(text, " ");
@@ -98,7 +143,7 @@ int main(int argc, char* argv[]) {
                 else {
                     int argi;
                     char* text;
-		     text = (char*)calloc(200, sizeof(char));
+                    text = (char*)calloc(200, sizeof(char));
                     for (argi = 2; argi < argc; argi++) {
                         strcat(text, argv[argi]);
                         strcat(text, " ");
@@ -124,8 +169,8 @@ int main(int argc, char* argv[]) {
                 }
             else if ((strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "r") == 0)) {
                 int maxl = 0;
-                if (argc > 2) sprintf(queries[ind++], "SELECT MAX(LENGTH(text)) FROM TODO WHERE id = %s", argv[2]);
-                else queries[ind++] = "SELECT MAX(LENGTH(text)) from TODO";
+                if (argc > 2) sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %s", argv[2]);
+                else queries[ind++] = "SELECT COALESCE(MAX(LENGTH(text)),0) from TODO";
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
                     printf("Reading data from DB Failed, run initdb first\n\r");
@@ -133,7 +178,7 @@ int main(int argc, char* argv[]) {
                     }
                 int last = 0;
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
-                    maxl = atoi(sqlite3_column_text(stmt, 0));
+		     maxl = atoi(sqlite3_column_text(stmt, 0));
                     }
                 if (argc > 2) sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %s", argv[2]);
                 else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";
@@ -142,10 +187,10 @@ int main(int argc, char* argv[]) {
                     printf("Selecting data from DB Failed, run initdb first\n\r");
                     return -1;
                     }
-                char *lineborder;
-                char *spaces;
-		 lineborder 	= (char*)calloc(255, sizeof(char));
-		 spaces 	= (char*)calloc(200, sizeof(char));
+                char* lineborder;
+                char* spaces;
+                lineborder = (char*)calloc(255, sizeof(char));
+                spaces     = (char*)calloc(200, sizeof(char));
                 int i, maxi;
                 for (i = 0; i < (maxl + 7); i++) {
                     strcat(lineborder, "-");
@@ -163,8 +208,8 @@ int main(int argc, char* argv[]) {
                            , spaces);
                     }
                 printf("+%s+\n\r", lineborder);
-		 free(lineborder);
-		 free(spaces);
+                free(lineborder);
+                free(spaces);
                 }
             sqlite3_close(handle);
             }
