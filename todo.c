@@ -155,6 +155,12 @@ int main(int argc, char* argv[]) {
                 if (write) {
                     f = fopen(filename, "w+");
                     time_t now = time(0);
+                    sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)now);
+                    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                    if (retval) {
+                        printf("Failed to update db time\n\r");
+                        return -1;
+                        }
                     rewind(f);
                     queries[ind++] = "SELECT id, text from TODO";
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
