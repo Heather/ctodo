@@ -25,7 +25,7 @@ void help(char* argv) {
     printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n", argv);
     printf("  - write or w <msg> - add task\n  - edit or e <n> <msg> - edit task\n");
     printf("  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
-    printf("  - sync - text synchronization to avoid binaries in vcs");
+    printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
     }
 char* rtrim(char* str) {
     char* ptr;
