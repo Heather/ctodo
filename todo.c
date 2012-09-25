@@ -75,8 +75,8 @@ int main(int argc, char* argv[]) {
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.todo.sync')");
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-		 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)(time(0)));
-		 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)(time(0)));
+                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
                     return -1;
@@ -84,29 +84,56 @@ int main(int argc, char* argv[]) {
                 }
             if (strcmp(argv[1], "sync") == 0) {
                 char* filename;
+                int timeDB;
                 filename = (char*)calloc(200, sizeof(char));
-                sprintf(queries[ind++], "SELECT text FROM OPTIONS WHERE option = 0");
+                sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 0 OR option = 1");
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
                     printf("Sync data Failed, run initdb first\n\r");
                     return -1;
                     }
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
-                    sprintf(filename, "%s", sqlite3_column_text(stmt, 0));
+		     if (strcmp(sqlite3_column_text(stmt, 0),"0") == 0) {
+                        sprintf(filename, "%s", sqlite3_column_text(stmt, 1));
+		         }
+		     else {
+		         timeDB = atoi(sqlite3_column_text(stmt, 1));
+		         }
                     }
                 printf("Sync file: %s\n\r", filename);
-                FILE* fr;
-                fr = fopen(filename, "a+");
-		 if( fr == NULL ) {
-		     printf("There is no such file and it's failed to create it\n\r");
+                FILE* f;
+                f = fopen(filename, "r+");
+                if (f == NULL) {
+                    printf("There is no such file and it's failed to create it\n\r");
                     return -1;
-		     }
-		 time_t now = time(0);
-                char line[80];
-                while(fgets(line, 80, fr)) {
-                    printf("%s", line);
                     }
-                fclose(fr);
+                char line[80];
+                int i = 0;
+                int timefile = 0;
+                char write = 1;
+                while (fgets(line, 80, f)) {
+                    if (i == 0) {
+                        timefile = atoi(line);
+                        printf("Timefile: %d\n\r", timefile);
+			 if (timeDB > timefile) {
+			     break;
+			     }
+			 else write = 0;
+                        }
+                    else {
+                        printf("%s", line);
+		         }
+                    i++;
+                    }
+                printf("\n");
+                fclose(f);
+                if (write) {
+		     f = fopen(filename, "w+");
+		     time_t now = time(0);
+		     rewind(f); 
+		     fprintf(f, "%d\n %s", (int)now, "changed");
+		     fclose(f);
+		     }
                 free(filename);
                 }
             else if ((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0)) {
@@ -178,7 +205,7 @@ int main(int argc, char* argv[]) {
                     }
                 int last = 0;
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
-		     maxl = atoi(sqlite3_column_text(stmt, 0));
+                    maxl = atoi(sqlite3_column_text(stmt, 0));
                     }
                 if (argc > 2) sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %s", argv[2]);
                 else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";
