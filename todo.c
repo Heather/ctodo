@@ -21,11 +21,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <sqlite3.h>
 #include <stdlib.h>
 
+int retval, x;
+int q_cnt = 10, q_size = 255, ind = 0;
+char** queries;
+sqlite3* handle;
 void help(char* argv) {
     printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n", argv);
     printf("  - write or w <msg> - add task\n  - edit or e <n> <msg> - edit task\n");
     printf("  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
     printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
+    }
+void timeUpdate(time_t t) {
+    sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    if (retval) {
+        printf("Failed to update db time\n\r");
+        return;
+        }
     }
 char* rtrim(char* str) {
     char* ptr;
@@ -59,14 +71,11 @@ int main(int argc, char* argv[]) {
                 || strcmp(argv[1], "write") == 0
                 || strcmp(argv[1], "w") == 0
                 || strcmp(argv[1], "sync") == 0) {
-            int retval, x;
-            int q_cnt = 10, q_size = 255, ind = 0;
-            char** queries = (char**)malloc(sizeof(char*) * q_cnt);
+            queries = (char**)malloc(sizeof(char*) * q_cnt);
             for (x = 0; x < q_cnt; x++) {
                 queries[x] = (char*)malloc(sizeof(char) * q_size);
                 }
             sqlite3_stmt* stmt;
-            sqlite3* handle;
             retval = sqlite3_open(strcat(getenv("HOME"), "/.todo.db3"), &handle);
             if (retval) {
                 printf("Database connection failed\n\r");
@@ -150,17 +159,12 @@ int main(int argc, char* argv[]) {
                         }
                     i++;
                     }
+                time_t now = time(0);
+                timeUpdate(now);
                 printf("\n");
                 fclose(f);
                 if (write) {
                     f = fopen(filename, "w+");
-                    time_t now = time(0);
-                    sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)now);
-                    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                    if (retval) {
-                        printf("Failed to update db time\n\r");
-                        return -1;
-                        }
                     rewind(f);
                     queries[ind++] = "SELECT id, text from TODO";
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
@@ -199,8 +203,10 @@ int main(int argc, char* argv[]) {
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Task were not added! (shit happens)\n\r");
+			 return -1;
                         }
                     free(text);
+		     timeUpdate(time(0));
                     }
                 }
             else if ((strcmp(argv[1], "edit") == 0) || (strcmp(argv[1], "e") == 0)) {
@@ -219,17 +225,20 @@ int main(int argc, char* argv[]) {
                         printf("Task were not edited! (shit happens)\n\r");
                         }
                     free(text);
+		     timeUpdate(time(0));
                     }
                 }
             else if (strcmp(argv[1], "clean") == 0) {
                 queries[ind++] = "DELETE FROM TODO";
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+		 timeUpdate(time(0));
                 }
             else if (strcmp(argv[1], "rm") == 0) {
                 if (argc < 3) printf("rm what?\n\r");
                 else {
                     sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+		     timeUpdate(time(0));
                     }
                 }
             else if ((strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "r") == 0)) {
