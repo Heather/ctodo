@@ -21,8 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <sqlite3.h>
 #include <stdlib.h>
 
-int retval, x;
-int q_cnt = 10, q_size = 255, ind = 0;
+int retval, x, q_cnt = 10, q_size = 255, ind = 0;
 char** queries;
 sqlite3* handle;
 void help(char* argv) {
@@ -41,7 +40,7 @@ void timeUpdate(time_t t) {
     }
 char* rtrim(char* str) {
     char* ptr;
-    int   len;
+    int len;
     len = strlen(str);
     for (ptr = str + len - 1; ptr >= str && isspace((int)*ptr); --ptr);
     ptr[1] = '\0';
@@ -54,7 +53,7 @@ int main(int argc, char* argv[]) {
         }
     else {
         if (strcmp(argv[1], "--version") == 0) {
-            printf("v0.01\n\r");
+            printf("v1.00\n\r");
             return 0;
             }
         if (strcmp(argv[1], "--help") == 0) {
@@ -118,15 +117,13 @@ int main(int argc, char* argv[]) {
                         }
                     }
                 printf("Sync file: %s\n\r", filename);
-                FILE* f;
-                f = fopen(filename, "a+");
+                FILE* f = fopen(filename, "a+");
                 if (f == NULL) {
                     printf("There is no such file and it's failed to create it\n\r");
                     return -1;
                     }
+                int i = 0, timefile = 0;
                 char line[150];
-                int i = 0;
-                int timefile = 0;
                 char write = 1;
                 char* token1;
                 char* token2;
@@ -203,10 +200,10 @@ int main(int argc, char* argv[]) {
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Task were not added! (shit happens)\n\r");
-			 return -1;
+                        return -1;
                         }
                     free(text);
-		     timeUpdate(time(0));
+                    timeUpdate(time(0));
                     }
                 }
             else if ((strcmp(argv[1], "edit") == 0) || (strcmp(argv[1], "e") == 0)) {
@@ -225,20 +222,20 @@ int main(int argc, char* argv[]) {
                         printf("Task were not edited! (shit happens)\n\r");
                         }
                     free(text);
-		     timeUpdate(time(0));
+                    timeUpdate(time(0));
                     }
                 }
             else if (strcmp(argv[1], "clean") == 0) {
                 queries[ind++] = "DELETE FROM TODO";
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-		 timeUpdate(time(0));
+                timeUpdate(time(0));
                 }
             else if (strcmp(argv[1], "rm") == 0) {
                 if (argc < 3) printf("rm what?\n\r");
                 else {
                     sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-		     timeUpdate(time(0));
+                    timeUpdate(time(0));
                     }
                 }
             else if ((strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "r") == 0)) {
