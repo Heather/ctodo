@@ -190,6 +190,11 @@ int main(int argc, char* argv[]) {
                         if (timeDB > timefile) {
                             break;
                             }
+                        else if (timeDB == timefile) {
+                            printf("Everything is up to date\n\r");
+                            close();
+                            return 0;
+                            }
                         else write = 0;
                         }
                     else {
@@ -211,16 +216,15 @@ int main(int argc, char* argv[]) {
                         }
                     i++;
                     }
-                time_t now = time(0);
-                timeUpdate(now);
-                printf("\n");
                 fclose(f);
                 if (write) {
+                    time_t now = time(0);
                     f = fopen(filename, "w+");
                     rewind(f);
                     queries[ind++] = "SELECT id, text from TODO";
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                     fprintf(f, "%d\n", (int)now);
+                    timeUpdate(now);
                     while (sqlite3_step(stmt) == SQLITE_ROW) {
                         fprintf(f, "%s|%s\n"
                                 , sqlite3_column_text(stmt, 0)
@@ -228,10 +232,15 @@ int main(int argc, char* argv[]) {
                         }
                     fclose(f);
                     if (git == 1) {
-			 putenv("HOME=/home/nen");
+                        putenv("HOME=/home/nen");
                         if (system("git commit -am \"TODO LIST UPDATE\"") == -1) return -1;
                         if (system("git push") == -1) return -1;
                         }
+                    printf("synchronization complete, syncfile updated");
+                    }
+                else {
+                    timeUpdate(timefile);
+                    printf("synchronization complete, local database updated");
                     }
                 free(filename);
                 }
