@@ -361,18 +361,27 @@ int main(int argc, char* argv[]) {
                     printf("Selecting data from DB Failed, run initdb first\n\r");
                     return -1;
                     }
-                char* lineborder;
+                char* lineborder1;
+                char* lineborder2;
                 char* spaces1;
                 char* spaces2;
-                lineborder = (char*)calloc(255, sizeof(char));
+                lineborder1 = (char*)calloc(255, sizeof(char));
+                lineborder2 = (char*)calloc(255, sizeof(char));
                 spaces1    = (char*)calloc(200, sizeof(char));
                 spaces2    = (char*)calloc(200, sizeof(char));
                 int i, maxi1, maxi2;
-                for (i = 0; i < ((maxl2 + maxl1) + 6); i++) {
-                    strcat(lineborder, "-");
+                for (i = 0; i < ((maxl2 + maxl1) + 5); i++) {
+                    if (i == 2 + maxl1) {
+                        strcat(lineborder1, "╤");
+                        strcat(lineborder2, "╧");
+                        }
+                    else {
+                        strcat(lineborder1, "═");
+                        strcat(lineborder2, "═");
+                        }
                     }
-                printf("%c[%d;%d;%dm", 0x1B, 1, 31, 40);
-                printf("+%s+", lineborder);
+                printf("%c[%d;%d;%dm", 0x1B, 1, 37, 41);
+                printf("╔%s╗", lineborder1);
                 printf("%c[%dm\n\r", 0x1B, 0); // 27
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
                     maxi1 = maxl1 - strlen(sqlite3_column_text(stmt, 0));
@@ -385,20 +394,24 @@ int main(int argc, char* argv[]) {
                     for (i = 0; i < maxi2; i++) {
                         strcat(spaces2, " ");
                         }
-                    printf("%c[%d;%d;%dm|", 0x1B, 1, 31, 40);
+                    printf("%c[%d;%d;%dm║", 0x1B, 1, 37, 41);
                     printf("%c[%dm", 0x1B, 0);
-                    printf(" %s %s>> %s %s"
-                           , sqlite3_column_text(stmt, 0)
-                           , spaces1
+                    printf(" %s %s",
+                           sqlite3_column_text(stmt, 0)
+                           , spaces1);
+		    printf("%c[%d;%d;%dm│", 0x1B, 1, 37, 41);
+		    printf("%c[%dm", 0x1B, 0);
+		    printf(" %s %s"
                            , sqlite3_column_text(stmt, 1)
                            , spaces2);
-                    printf("%c[%d;%d;%dm|", 0x1B, 1, 31, 40);
+                    printf("%c[%d;%d;%dm║", 0x1B, 1, 37, 41);
                     printf("%c[%dm\n", 0x1B, 0);
                     }
-                printf("%c[%d;%d;%dm", 0x1B, 1, 31, 40);
-                printf("+%s+", lineborder);
+                printf("%c[%d;%d;%dm", 0x1B, 1, 37, 41);
+                printf("╚%s╝", lineborder2);
                 printf("%c[%dm\n\r", 0x1B, 0);
-                free(lineborder);
+                free(lineborder1);
+                free(lineborder2);
                 free(spaces1);
                 free(spaces2);
                 }
