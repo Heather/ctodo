@@ -388,17 +388,31 @@ int main(int argc, char* argv[]) {
                 spaces2    = (char*)calloc(200, sizeof(char));
                 for (i = 0; i < ((maxl2 + maxl1) + 5); i++) {
                     if (i == 2 + maxl1) {
+#ifdef WIN32
+                        strcat(lineborder1, "+");
+                        strcat(lineborder2, "+");
+#else
                         strcat(lineborder1, "╤");
                         strcat(lineborder2, "╧");
+#endif
                         }
                     else {
+#ifdef WIN32
+                        strcat(lineborder1, "-");
+                        strcat(lineborder2, "-");
+#else
                         strcat(lineborder1, "═");
                         strcat(lineborder2, "═");
+#endif
                         }
                     }
+#ifdef WIN32
+                printf("+%s+\n\r", lineborder1);
+#else
                 printf("%c[%d;%d;%dm", 0x1B, 1, 37, 41);
                 printf("╔%s╗", lineborder1);
                 printf("%c[%dm\n\r", 0x1B, 0); // 27
+#endif
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
                     maxi1 = maxl1 - strlen((const char*)sqlite3_column_text(stmt, 0));
                     maxi2 = maxl2 - atoi((const char*)sqlite3_column_text(stmt, 2));
@@ -410,6 +424,13 @@ int main(int argc, char* argv[]) {
                     for (i = 0; i < maxi2; i++) {
                         strcat(spaces2, " ");
                         }
+#ifdef WIN32
+                    printf("| %s %s| %s %s|\n\r",
+                           sqlite3_column_text(stmt, 0)
+                           , spaces1
+                           , sqlite3_column_text(stmt, 1)
+                           , spaces2);
+#else
                     printf("%c[%d;%d;%dm║", 0x1B, 1, 37, 41);
                     printf("%c[%dm", 0x1B, 0);
                     printf(" %s %s",
@@ -422,10 +443,15 @@ int main(int argc, char* argv[]) {
                            , spaces2);
                     printf("%c[%d;%d;%dm║", 0x1B, 1, 37, 41);
                     printf("%c[%dm\n", 0x1B, 0);
+#endif
                     }
+#ifdef WIN32
+                printf("+%s+\n\r", lineborder2);
+#else
                 printf("%c[%d;%d;%dm", 0x1B, 1, 37, 41);
                 printf("╚%s╝", lineborder2);
                 printf("%c[%dm\n\r", 0x1B, 0);
+#endif
                 free(lineborder1);
                 free(lineborder2);
                 free(spaces1);
