@@ -28,6 +28,8 @@ void help(char* argv) {
     printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n", argv);
     printf("  - write or w <msg> - add task\n  - edit or e <n> <msg> - edit task\n");
     printf("  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
+    printf("  - set <option> <value> - todo options, available options:\n\r");
+    printf("      - syncfile - file for text serialization for synchronization (default '.todo.sync')\n\r");
     printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
     }
 void timeUpdate(time_t t) {
@@ -69,6 +71,7 @@ int main(int argc, char* argv[]) {
                 || strcmp(argv[1], "rm") == 0
                 || strcmp(argv[1], "write") == 0
                 || strcmp(argv[1], "w") == 0
+                || strcmp(argv[1], "set") == 0
                 || strcmp(argv[1], "sync") == 0) {
             queries = (char**)malloc(sizeof(char*) * q_cnt);
             for (x = 0; x < q_cnt; x++) {
@@ -96,6 +99,20 @@ int main(int argc, char* argv[]) {
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
                     return -1;
+                    }
+                }
+            if (strcmp(argv[1], "set") == 0) {
+                if (argc < 4) printf("set what?\n\r");
+                else {
+                    if (strcmp(argv[2], "syncfile") == 0) {
+                        sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", 0, argv[3]);
+                        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                        if (retval) {
+                            printf("Optione is not changed! (shit happens)\n\r");
+                            return -1;
+                            }
+                        timeUpdate(time(0));
+                        }
                     }
                 }
             if (strcmp(argv[1], "sync") == 0) {
