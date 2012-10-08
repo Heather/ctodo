@@ -50,6 +50,9 @@ char* rtrim(char* str) {
     ptr[1] = '\0';
     return str;
     }
+void close() {
+    sqlite3_close(handle);
+    }
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         help(argv[0]);
@@ -91,6 +94,7 @@ int main(int argc, char* argv[]) {
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
                     printf("Init DB Failed, Shit happens?\n\r");
+                    close();
                     return -1;
                     }
                 sprintf(queries[ind++], "CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
@@ -112,6 +116,7 @@ int main(int argc, char* argv[]) {
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
+                    close();
                     return -1;
                     }
                 }
@@ -123,6 +128,7 @@ int main(int argc, char* argv[]) {
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                         if (retval) {
                             printf("Option syncfile is not changed! (shit happens)\n\r");
+                            close();
                             return -1;
                             }
                         }
@@ -132,6 +138,7 @@ int main(int argc, char* argv[]) {
                             retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                             if (retval) {
                                 printf("Option git is not changed! (shit happens)\n\r");
+                                close();
                                 return -1;
                                 }
                             }
@@ -167,6 +174,7 @@ int main(int argc, char* argv[]) {
                 FILE* f = fopen(filename, "a+");
                 if (f == NULL) {
                     printf("There is no such file and it's failed to create it\n\r");
+                    close();
                     return -1;
                     }
                 int i = 0, timefile = 0;
@@ -220,6 +228,8 @@ int main(int argc, char* argv[]) {
                         }
                     fclose(f);
                     if (git == 1) {
+			 char home[]="HOME=/home/nen";
+			 putenv(home);
                         if (system("git config --global user.email \"X@nCdy.org\"")) return -1;
                         if (system("git config --global user.name \"CToDo\"")) return -1;
                         if (system("git commit -am \"TODO LIST UPDATE\"") == -1) return -1;
@@ -253,6 +263,7 @@ int main(int argc, char* argv[]) {
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Task were not added! (shit happens)\n\r");
+                        close();
                         return -1;
                         }
                     free(text);
@@ -384,7 +395,7 @@ int main(int argc, char* argv[]) {
                 free(spaces1);
                 free(spaces2);
                 }
-            sqlite3_close(handle);
+            close();
             }
         else {
             printf("What?\n\n");
