@@ -178,7 +178,8 @@ int main(int argc, char* argv[]) {
                     close();
                     return -1;
                     }
-                int i = 0, timefile = 0;
+                int i = 0;
+                time_t timefile = 0;
                 char line[150];
                 char write = 1;
                 char* token1;
@@ -187,7 +188,7 @@ int main(int argc, char* argv[]) {
                 while (fgets(line, 150, f)) {
                     if (i == 0) {
                         timefile = atoi(line);
-                        printf("Timefile: %d\n\r", timefile);
+                        printf("Timefile: %s\n\r", ctime(&timefile));
                         if (timeDB > timefile) {
                             break;
                             }
@@ -399,9 +400,9 @@ int main(int argc, char* argv[]) {
                     printf(" %s %s",
                            sqlite3_column_text(stmt, 0)
                            , spaces1);
-		    printf("%c[%d;%d;%dm│", 0x1B, 1, 37, 41);
-		    printf("%c[%dm", 0x1B, 0);
-		    printf(" %s %s"
+                    printf("%c[%d;%d;%dm│", 0x1B, 1, 37, 41);
+                    printf("%c[%dm", 0x1B, 0);
+                    printf(" %s %s"
                            , sqlite3_column_text(stmt, 1)
                            , spaces2);
                     printf("%c[%d;%d;%dm║", 0x1B, 1, 37, 41);
