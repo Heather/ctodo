@@ -28,6 +28,7 @@ void help(char* argv) {
     printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n", argv);
     printf("  - write or w <msg> - add task\n  - edit or e <n> <msg> - edit task\n");
     printf("  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
+    printf("  - swap <number1> <number2> - swap elements\n\r");
     printf("  - set <option> <value> - todo options, available options:\n\r");
     printf("      - syncfile - file for text serialization for synchronization (default '.todo.sync')\n\r");
     printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
@@ -55,7 +56,7 @@ int main(int argc, char* argv[]) {
         }
     else {
         if (strcmp(argv[1], "--version") == 0) {
-            printf("v1.00\n\r");
+            printf("v1.01\n\r");
             return 0;
             }
         if (strcmp(argv[1], "--help") == 0) {
@@ -72,6 +73,7 @@ int main(int argc, char* argv[]) {
                 || strcmp(argv[1], "write") == 0
                 || strcmp(argv[1], "w") == 0
                 || strcmp(argv[1], "set") == 0
+                || strcmp(argv[1], "swap") == 0
                 || strcmp(argv[1], "sync") == 0) {
             queries = (char**)malloc(sizeof(char*) * q_cnt);
             for (x = 0; x < q_cnt; x++) {
@@ -239,6 +241,29 @@ int main(int argc, char* argv[]) {
                         printf("Task were not edited! (shit happens)\n\r");
                         }
                     free(text);
+                    timeUpdate(time(0));
+                    }
+                }
+            else if (strcmp(argv[1], "swap") == 0) {
+                if (argc < 3) printf("swap what?\n\r");
+                else {
+		     int val1 = atoi(argv[2]);
+		     int val2 = atoi(argv[3]);
+                    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
+                    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                    if (retval) {
+                        printf("Swap failed! (shit happens)\n\r");
+                        }
+                    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
+                    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                    if (retval) {
+                        printf("Swap failed! (shit happens)\n\r");
+                        }
+                    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+                    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                    if (retval) {
+                        printf("Swap failed! (shit happens)\n\r");
+                        }
                     timeUpdate(time(0));
                     }
                 }

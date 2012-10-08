@@ -17,7 +17,7 @@ Sync file: .todo.sync
 
 ```c
         if (strcmp(argv[1], "--version") == 0) {
-            printf("v1.00\n\r");
+            printf("v1.01\n\r");
             return 0;
             }
         if (strcmp(argv[1], "initdb") == 0
@@ -29,6 +29,8 @@ Sync file: .todo.sync
                 || strcmp(argv[1], "rm") == 0
                 || strcmp(argv[1], "write") == 0
                 || strcmp(argv[1], "w") == 0
+                || strcmp(argv[1], "set") == 0
+                || strcmp(argv[1], "swap") == 0
                 || strcmp(argv[1], "sync") == 0) {
 ```
 
