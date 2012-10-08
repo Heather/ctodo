@@ -31,6 +31,7 @@ void help(char* argv) {
     printf("  - swap <number1> <number2> - swap elements\n\r");
     printf("  - set <option> <value> - todo options, available options:\n\r");
     printf("      - syncfile - file for text serialization for synchronization (default '.todo.sync')\n\r");
+    printf("      - git - execute git synchronization 1/0 for enable/disable (default 1)\n\r");
     printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
     }
 void timeUpdate(time_t t) {
@@ -94,9 +95,20 @@ int main(int argc, char* argv[]) {
                     }
                 sprintf(queries[ind++], "CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                ///<Option>
+                ///Sync file for tex serialization
+                ///</Option>
                 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.todo.sync')");
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                ///<Option>
+                ///Time of last synchronization
+                ///</Option>
                 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)(time(0)));
+                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                ///<Option>
+                ///Using git for synchronization
+                ///</Option>
+                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (2,1)");
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
@@ -110,18 +122,31 @@ int main(int argc, char* argv[]) {
                         sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                         if (retval) {
-                            printf("Optione is not changed! (shit happens)\n\r");
+                            printf("Option syncfile is not changed! (shit happens)\n\r");
                             return -1;
                             }
-                        timeUpdate(time(0));
+                        }
+                    if (strcmp(argv[2], "git") == 0) {
+                        if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0)) {
+                            sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 2", argv[3]);
+                            retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                            if (retval) {
+                                printf("Option git is not changed! (shit happens)\n\r");
+                                return -1;
+                                }
+                            }
+                        else {
+                            printf("Use 1 or 0 for this option\n\r");
+                            }
                         }
                     }
                 }
             if (strcmp(argv[1], "sync") == 0) {
                 char* filename;
                 int timeDB;
+                int git;
                 filename = (char*)calloc(200, sizeof(char));
-                sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 0 OR option = 1");
+                sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 0 OR option = 1 OR option = 2");
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
                     printf("Sync data Failed, run initdb first\n\r");
@@ -131,8 +156,11 @@ int main(int argc, char* argv[]) {
                     if (strcmp(sqlite3_column_text(stmt, 0), "0") == 0) {
                         sprintf(filename, "%s", sqlite3_column_text(stmt, 1));
                         }
-                    else {
+                    else if (strcmp(sqlite3_column_text(stmt, 0), "1") == 0) {
                         timeDB = atoi(sqlite3_column_text(stmt, 1));
+                        }
+                    else if (strcmp(sqlite3_column_text(stmt, 0), "2") == 0) {
+                        git = atoi(sqlite3_column_text(stmt, 1));
                         }
                     }
                 printf("Sync file: %s\n\r", filename);
@@ -191,6 +219,10 @@ int main(int argc, char* argv[]) {
                                 , sqlite3_column_text(stmt, 1));
                         }
                     fclose(f);
+                    if (git == 1) {
+                        if (system("git commit -am \"TODO LIST UPDATE\"") == -1) return -1;
+                        if (system("git push") == -1) return -1;
+                        }
                     }
                 free(filename);
                 }
@@ -247,8 +279,8 @@ int main(int argc, char* argv[]) {
             else if (strcmp(argv[1], "swap") == 0) {
                 if (argc < 3) printf("swap what?\n\r");
                 else {
-		     int val1 = atoi(argv[2]);
-		     int val2 = atoi(argv[3]);
+                    int val1 = atoi(argv[2]);
+                    int val2 = atoi(argv[3]);
                     sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
