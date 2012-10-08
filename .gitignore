@@ -1,0 +1,14 @@
+/Debug
+/ipch
+/*.opensdf
+/*.sdf
+/*.sln
+/*.suo
+/*.filters
+/*.user
+/shell.c
+/sqlite3.c
+/sqlite3.def
+/sqlite3.dll
+/sqlite3.h
+/sqlite3ext.h

@@ -37,6 +37,14 @@ Sync file: .todo.sync
 Installation
 ============
 
+For Unix-like
+---------
+```bash
+git clone git@github.com:nCdy/todo.git; cd todo
+make
+make install
+```
+
 For Gentoo
 ----------
 ```bash
@@ -44,14 +52,9 @@ layman -a nengraphy
 emerge todo
 ```
 
-Other
----------
-```bash
-git clone git@github.com:nCdy/todo.git; cd todo
-make
-make install
-```
-not that you need to have sqlite3 installed for this way
+For Windows
+----------
+Compilable with MSVC 2010, there is project file
 
 License
 -------
