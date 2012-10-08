@@ -201,7 +201,9 @@ int main(int argc, char* argv[]) {
                     return -1;
                     }
                 if (git == 1) {
+#ifndef WIN32
                     putenv("HOME=/home/nen");
+#endif
                     if (system("git pull") == -1) return -1;
                     }
                 while (fgets(line, 150, f)) {
@@ -253,7 +255,9 @@ int main(int argc, char* argv[]) {
                         }
                     fclose(f);
                     if (git == 1) {
+#ifndef WIN32
                         putenv("HOME=/home/nen");
+#endif
                         if (system("git commit -am \"TODO LIST UPDATE\"") == -1) return -1;
                         if (system("git push") == -1) return -1;
                         }
