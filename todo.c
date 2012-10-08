@@ -238,11 +238,11 @@ int main(int argc, char* argv[]) {
                         if (system("git commit -am \"TODO LIST UPDATE\"") == -1) return -1;
                         if (system("git push") == -1) return -1;
                         }
-                    printf("synchronization complete, syncfile updated");
+                    printf("synchronization complete, syncfile updated\n\r");
                     }
                 else {
                     timeUpdate(timefile);
-                    printf("synchronization complete, local database updated");
+                    printf("synchronization complete, local database updated\n\r");
                     }
                 free(filename);
                 }
