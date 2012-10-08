@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
                 if (argc < 4) printf("set what?\n\r");
                 else {
                     if (strcmp(argv[2], "syncfile") == 0) {
-                        sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", 0, argv[3]);
+                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                         if (retval) {
                             printf("Optione is not changed! (shit happens)\n\r");
