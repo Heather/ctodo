@@ -59,16 +59,4 @@ The GNU General Public License v3.0
             printf("v1.01\n\r");
             return 0;
             }
-        if (strcmp(argv[1], "initdb") == 0
-                || strcmp(argv[1], "read") == 0
-                || strcmp(argv[1], "r") == 0
-                || strcmp(argv[1], "edit") == 0
-                || strcmp(argv[1], "e") == 0
-                || strcmp(argv[1], "clean") == 0
-                || strcmp(argv[1], "rm") == 0
-                || strcmp(argv[1], "write") == 0
-                || strcmp(argv[1], "w") == 0
-                || strcmp(argv[1], "set") == 0
-                || strcmp(argv[1], "swap") == 0
-                || strcmp(argv[1], "sync") == 0) {
 ```
