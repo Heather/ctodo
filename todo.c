@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <string.h>
 #include <sqlite3.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 int retval, x, q_cnt = 10, q_size = 255, ind = 0;
 char** queries;
