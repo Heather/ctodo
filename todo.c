@@ -277,7 +277,9 @@ int main(int argc, char* argv[]) {
                 for (i = 0; i < ((maxl2 + maxl1) + 6); i++) {
                     strcat(lineborder, "-");
                     }
-                printf("+%s+\n\r", lineborder);
+                printf("%c[%d;%d;%dm", 0x1B, 1, 31, 40);
+                printf("+%s+", lineborder);
+                printf("%c[%dm\n\r", 0x1B, 0); // 27
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
                     maxi1 = maxl1 - strlen(sqlite3_column_text(stmt, 0));
                     maxi2 = maxl2 - atoi(sqlite3_column_text(stmt, 2));
@@ -289,13 +291,19 @@ int main(int argc, char* argv[]) {
                     for (i = 0; i < maxi2; i++) {
                         strcat(spaces2, " ");
                         }
-                    printf("| %s %s>> %s %s|\n"
+                    printf("%c[%d;%d;%dm|", 0x1B, 1, 31, 40);
+                    printf("%c[%dm", 0x1B, 0);
+                    printf(" %s %s>> %s %s"
                            , sqlite3_column_text(stmt, 0)
                            , spaces1
                            , sqlite3_column_text(stmt, 1)
                            , spaces2);
+                    printf("%c[%d;%d;%dm|", 0x1B, 1, 31, 40);
+                    printf("%c[%dm\n", 0x1B, 0);
                     }
-                printf("+%s+\n\r", lineborder);
+                printf("%c[%d;%d;%dm", 0x1B, 1, 31, 40);
+                printf("+%s+", lineborder);
+                printf("%c[%dm\n\r", 0x1B, 0);
                 free(lineborder);
                 free(spaces1);
                 free(spaces2);
