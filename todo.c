@@ -239,7 +239,17 @@ int main(int argc, char* argv[]) {
                     }
                 }
             else if ((strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "r") == 0)) {
-                int maxl = 0;
+                int maxl2 = 0, maxl1 = 0;
+                if (argc > 2) sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %s", argv[2]);
+                else queries[ind++] = "SELECT COALESCE(MAX(id),0) from TODO";
+                retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
+                if (retval) {
+                    printf("Reading data from DB Failed, run initdb first\n\r");
+                    return -1;
+                    }
+                while (sqlite3_step(stmt) == SQLITE_ROW) {
+                    maxl1 = strlen(sqlite3_column_text(stmt, 0));
+                    }
                 if (argc > 2) sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %s", argv[2]);
                 else queries[ind++] = "SELECT COALESCE(MAX(LENGTH(text)),0) from TODO";
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
@@ -247,9 +257,8 @@ int main(int argc, char* argv[]) {
                     printf("Reading data from DB Failed, run initdb first\n\r");
                     return -1;
                     }
-                int last = 0;
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
-                    maxl = atoi(sqlite3_column_text(stmt, 0));
+                    maxl2 = atoi(sqlite3_column_text(stmt, 0));
                     }
                 if (argc > 2) sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %s", argv[2]);
                 else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";
@@ -259,28 +268,37 @@ int main(int argc, char* argv[]) {
                     return -1;
                     }
                 char* lineborder;
-                char* spaces;
+                char* spaces1;
+                char* spaces2;
                 lineborder = (char*)calloc(255, sizeof(char));
-                spaces     = (char*)calloc(200, sizeof(char));
-                int i, maxi;
-                for (i = 0; i < (maxl + 7); i++) {
+                spaces1    = (char*)calloc(200, sizeof(char));
+                spaces2    = (char*)calloc(200, sizeof(char));
+                int i, maxi1, maxi2;
+                for (i = 0; i < ((maxl2 + maxl1) + 6); i++) {
                     strcat(lineborder, "-");
                     }
                 printf("+%s+\n\r", lineborder);
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
-                    maxi = maxl - atoi(sqlite3_column_text(stmt, 2));
-                    strcpy(spaces, "");
-                    for (i = 0; i < maxi; i++) {
-                        strcat(spaces, " ");
+                    maxi1 = maxl1 - strlen(sqlite3_column_text(stmt, 0));
+                    maxi2 = maxl2 - atoi(sqlite3_column_text(stmt, 2));
+                    strcpy(spaces1, "");
+                    strcpy(spaces2, "");
+                    for (i = 0; i < maxi1; i++) {
+                        strcat(spaces1, " ");
                         }
-                    printf("| %s >> %s %s|\n"
+                    for (i = 0; i < maxi2; i++) {
+                        strcat(spaces2, " ");
+                        }
+                    printf("| %s %s>> %s %s|\n"
                            , sqlite3_column_text(stmt, 0)
+                           , spaces1
                            , sqlite3_column_text(stmt, 1)
-                           , spaces);
+                           , spaces2);
                     }
                 printf("+%s+\n\r", lineborder);
                 free(lineborder);
-                free(spaces);
+                free(spaces1);
+                free(spaces2);
                 }
             sqlite3_close(handle);
             }
