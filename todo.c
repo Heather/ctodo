@@ -26,9 +26,9 @@ int retval, x, q_cnt = 10, q_size = 255, ind = 0;
 char** queries;
 sqlite3* handle;
 void help(char* argv) {
-    printf("CToDo: CLI TODO List Management Util");  
-    printf("usage:\n\r");  
-    printf(" %s <command> <arguments>\n\r", argv);
+    printf("CToDo: CLI TODO List Management Util\n\r");  
+    printf(" * usage:\n\r");  
+    printf("  %s <command> <arguments>\n\r", argv);
     printf("  - initdb - init empty database structure\n\r");
     printf("  - read or r - to read all\n\r");
     printf("  - write or w <msg> - add task\n\r");
