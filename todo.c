@@ -26,9 +26,15 @@ int retval, x, q_cnt = 10, q_size = 255, ind = 0;
 char** queries;
 sqlite3* handle;
 void help(char* argv) {
-    printf("usage:\n  %s <command>\n  - initdb - init empty database structure\n  - read or r - to read all\n", argv);
-    printf("  - write or w <msg> - add task\n  - edit or e <n> <msg> - edit task\n");
-    printf("  - rm <number> - delete task\n  - clean - clean all tasks\n\r");
+    printf("CToDo: CLI TODO List Management Util");  
+    printf("usage:\n\r");  
+    printf(" %s <command> <arguments>\n\r", argv);
+    printf("  - initdb - init empty database structure\n\r");
+    printf("  - read or r - to read all\n\r");
+    printf("  - write or w <msg> - add task\n\r");
+    printf("  - edit or e <n> <msg> - edit task\n\r");
+    printf("  - rm <number> - delete task\n\r");
+    printf("  - clean - clean all tasks\n\r");
     printf("  - swap <number1> <number2> - swap elements\n\r");
     printf("  - set <option> <value> - todo options, available options:\n\r");
     printf("      - syncfile - file for text serialization for synchronization (default '.todo.sync')\n\r");
