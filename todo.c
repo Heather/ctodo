@@ -220,6 +220,8 @@ int main(int argc, char* argv[]) {
                         }
                     fclose(f);
                     if (git == 1) {
+                        if (system("git config --global user.email \"X@nCdy.org\"")) return -1;
+                        if (system("git config --global user.name \"CToDo\"")) return -1;
                         if (system("git commit -am \"TODO LIST UPDATE\"") == -1) return -1;
                         if (system("git push") == -1) return -1;
                         }
