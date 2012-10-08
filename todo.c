@@ -30,8 +30,8 @@ int retval, x, q_cnt = 10, q_size = 255, ind = 0;
 char** queries;
 sqlite3* handle;
 void help(char* argv) {
-    printf("CToDo: CLI TODO List Management Util\n\r");  
-    printf(" * usage:\n\r");  
+    printf("CToDo: CLI TODO List Management Util\n\r");
+    printf(" * usage:\n\r");
     printf("  %s <command> <arguments>\n\r", argv);
     printf("  - initdb - init empty database structure\n\r");
     printf("  - read or r - to read all\n\r");
@@ -199,6 +199,10 @@ int main(int argc, char* argv[]) {
                     printf("There is no such file and it's failed to create it\n\r");
                     close();
                     return -1;
+                    }
+                if (git == 1) {
+                    putenv("HOME=/home/nen");
+                    if (system("git pull") == -1) return -1;
                     }
                 while (fgets(line, 150, f)) {
                     if (i == 0) {
