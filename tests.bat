@@ -30,6 +30,14 @@ echo ---------------------------
 %todo% edit 2 test4
 %todo% read
 echo ---------------------------
+echo        Sync
+echo ---------------------------
+%todo% set git 0
+%todo% set syncfile testout
+%todo% sync
+echo ---------------------------
+type testout
+echo ---------------------------
 echo        tests passed
 echo ---------------------------
 pause
