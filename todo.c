@@ -132,9 +132,9 @@ int main(int argc, char* argv[]) {
                 ///Sync file for tex serialization
                 ///</Option>
 #ifdef WIN32
-                sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.todo.sync')");
+                sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'readme.md')");
 #else
-                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.todo.sync')");
+                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'readme.md')");
 #endif
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 ///<Option>
