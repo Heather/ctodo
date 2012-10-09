@@ -129,7 +129,12 @@ int main(int argc, char* argv[]) {
                 ///<Option>
                 ///Using git for synchronization
                 ///</Option>
-                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (2,1)");
+                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (2,'1')");
+                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                ///<Option>
+                ///Path for HOME (only for linux)
+                ///</Option>
+                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (3,'/home/nen')");
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
