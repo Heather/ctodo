@@ -437,7 +437,7 @@ int main(int argc, char* argv[]) {
 #ifdef WIN32
                     sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
 #else
-                    sprintf(queries[ind++] "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+                    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
 #endif
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
