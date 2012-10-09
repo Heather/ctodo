@@ -307,7 +307,7 @@ int main(int argc, char* argv[]) {
                     int argi;
                     char* text;
                     text = (char*)calloc(200, sizeof(char));
-                    for (argi = 2; argi < argc; argi++) {
+                    for (argi = 3; argi < argc; argi++) {
                         strcat(text, argv[argi]);
                         strcat(text, " ");
                         }
