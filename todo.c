@@ -111,35 +111,57 @@ int main(int argc, char* argv[]) {
                 return -1;
                 }
             if (strcmp(argv[1], "initdb") == 0) {
+#ifdef WIN32
+                sprintf_s(queries[ind++], 255, "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
+#else
                 sprintf(queries[ind++], "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
+#endif
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
                     printf("Init DB Failed, Shit happens?\n\r");
                     close();
                     return -1;
                     }
+#ifdef WIN32
+                sprintf_s(queries[ind++], 255, "CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
+#else
                 sprintf(queries[ind++], "CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
+#endif
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 ///<Option>
                 ///Sync file for tex serialization
                 ///</Option>
+#ifdef WIN32
+                sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.todo.sync')");
+#else
                 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.todo.sync')");
+#endif
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 ///<Option>
                 ///Time of last synchronization
                 ///</Option>
+#ifdef WIN32
+                sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)(time(0)));
+#else
                 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)(time(0)));
+#endif
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 ///<Option>
                 ///Using git for synchronization
                 ///</Option>
+#ifdef WIN32
+                sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (2,'1')");
+#else
                 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (2,'1')");
+#endif
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 ///<Option>
                 ///Path for HOME (only for linux)
                 ///</Option>
+#ifndef WIN32
                 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (3,'/home/nen')");
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+#endif
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
                     close();
@@ -150,7 +172,11 @@ int main(int argc, char* argv[]) {
                 if (argc < 4) printf("set what?\n\r");
                 else {
                     if (strcmp(argv[2], "syncfile") == 0) {
+#ifdef WIN32
+                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
+#else
                         sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
+#endif
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                         if (retval) {
                             printf("Option syncfile is not changed! (shit happens)\n\r");
@@ -160,7 +186,11 @@ int main(int argc, char* argv[]) {
                         }
                     if (strcmp(argv[2], "git") == 0) {
                         if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0)) {
+#ifdef WIN32
+                            sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 2", argv[3]);
+#else
                             sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 2", argv[3]);
+#endif
                             retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                             if (retval) {
                                 printf("Option git is not changed! (shit happens)\n\r");
@@ -188,7 +218,11 @@ int main(int argc, char* argv[]) {
                 char* context = NULL;
 #endif
                 filename = (char*)calloc(200, sizeof(char));
+#ifdef WIN32
+                sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS WHERE option = 0 OR option = 1 OR option = 2");
+#else
                 sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 0 OR option = 1 OR option = 2");
+#endif
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
                     printf("Sync data Failed, run initdb first\n\r");
@@ -196,7 +230,11 @@ int main(int argc, char* argv[]) {
                     }
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
                     if (strcmp((const char*)sqlite3_column_text(stmt, 0), "0") == 0) {
+#ifdef WIN32
+                        sprintf_s(filename, 200, "%s", sqlite3_column_text(stmt, 1));
+#else
                         sprintf(filename, "%s", sqlite3_column_text(stmt, 1));
+#endif
                         }
                     else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "1") == 0) {
                         timeDB = atoi((const char*)sqlite3_column_text(stmt, 1));
@@ -212,7 +250,11 @@ int main(int argc, char* argv[]) {
                     if (system("git pull") == -1) return -1;
                     }
                 printf("Sync file: %s\n\r", filename);
+#ifdef WIN32
+                fopen_s(&f, filename, "a+");
+#else
                 f = fopen(filename, "a+");
+#endif
                 if (f == NULL) {
                     printf("There is no such file and it's failed to create it\n\r");
                     close();
@@ -221,7 +263,9 @@ int main(int argc, char* argv[]) {
                 while (fgets(line, 150, f)) {
                     if (i == 0) {
                         timefile = atoi(line);
+#ifndef WIN32
                         printf("Timefile: %s\n\r", ctime(&timefile));
+#endif
                         if (timeDB > (int)timefile) {
                             break;
                             }
@@ -248,7 +292,11 @@ int main(int argc, char* argv[]) {
                         token2 = strtok(NULL, search);
 #endif
                         rtrim(token2);
+#ifdef WIN32
+                        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
+#else
                         sprintf(queries[ind++], "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
+#endif
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                         if (retval) {
                             printf("Task were not added! (shit happens)\n\r");
@@ -259,7 +307,11 @@ int main(int argc, char* argv[]) {
                 fclose(f);
                 if (write) {
                     time_t now = time(0);
+#ifdef WIN32
+                    fopen_s(&f, filename, "w+");
+#else
                     f = fopen(filename, "w+");
+#endif
                     rewind(f);
                     queries[ind++] = "SELECT id, text from TODO";
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
@@ -292,7 +344,11 @@ int main(int argc, char* argv[]) {
                     int last = 0;
                     int argi;
                     char* text;
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO");
+#else
                     sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO");
+#endif
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                     if (retval) {
                         printf("Inserting data to DB Failed, run initdb first\n\r");
@@ -312,7 +368,11 @@ int main(int argc, char* argv[]) {
                         strcat(text, " ");
 #endif
                         }
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s')", last, text);
+#else
                     sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, text);
+#endif
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Task were not added! (shit happens)\n\r");
@@ -338,7 +398,11 @@ int main(int argc, char* argv[]) {
                         strcat(text, " ");
 #endif
                         }
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
+#else
                     sprintf(queries[ind++], "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
+#endif
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Task were not edited! (shit happens)\n\r");
@@ -352,17 +416,29 @@ int main(int argc, char* argv[]) {
                 else {
                     int val1 = atoi(argv[2]);
                     int val2 = atoi(argv[3]);
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
+#else
                     sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
+#endif
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Swap failed! (shit happens)\n\r");
                         }
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
+#else
                     sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
+#endif
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Swap failed! (shit happens)\n\r");
                         }
-                    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+#else
+                    sprintf(queries[ind++] "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+#endif
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Swap failed! (shit happens)\n\r");
@@ -378,7 +454,11 @@ int main(int argc, char* argv[]) {
             else if (strcmp(argv[1], "rm") == 0) {
                 if (argc < 3) printf("rm what?\n\r");
                 else {
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "DELETE FROM TODO WHERE id = %s", argv[2]);
+#else
                     sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
+#endif
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     timeUpdate(time(0));
                     }
@@ -390,7 +470,13 @@ int main(int argc, char* argv[]) {
                 char* spaces2;
                 int maxl2 = 0, maxl1 = 0;
                 int i, maxi1, maxi2;
-                if (argc > 2) sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %s", argv[2]);
+                if (argc > 2) {
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %s", argv[2]);
+#else
+                    sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %s", argv[2]);
+#endif
+                    }
                 else queries[ind++] = "SELECT COALESCE(MAX(id),0) from TODO";
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
@@ -400,7 +486,13 @@ int main(int argc, char* argv[]) {
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
                     maxl1 = strlen((const char*)sqlite3_column_text(stmt, 0));
                     }
-                if (argc > 2) sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %s", argv[2]);
+                if (argc > 2) {
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %s", argv[2]);
+#else
+                    sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %s", argv[2]);
+#endif
+                    }
                 else queries[ind++] = "SELECT COALESCE(MAX(LENGTH(text)),0) from TODO";
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
@@ -410,7 +502,13 @@ int main(int argc, char* argv[]) {
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
                     maxl2 = atoi((const char*)sqlite3_column_text(stmt, 0));
                     }
-                if (argc > 2) sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %s", argv[2]);
+                if (argc > 2) {
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %s", argv[2]);
+#else
+                    sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %s", argv[2]);
+#endif
+                    }
                 else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
