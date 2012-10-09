@@ -542,7 +542,7 @@ int main(int argc, char* argv[]) {
 #ifdef WIN32
                 printf("+%s+\n\r", lineborder1);
 #else
-                printf("%c[%d;%d;%dm", 0x1B, 1, 37, 41);
+                printf(" %c[%d;%d;%dm", 0x1B, 1, 37, 41);
                 printf("╔%s╗", lineborder1);
                 printf("%c[%dm\n\r", 0x1B, 0); // 27
 #endif
@@ -577,7 +577,7 @@ int main(int argc, char* argv[]) {
                            , sqlite3_column_text(stmt, 1)
                            , spaces2);
 #else
-                    printf("%c[%d;%d;%dm║", 0x1B, 1, 37, 41);
+                    printf(" %c[%d;%d;%dm║", 0x1B, 1, 37, 41);
                     printf("%c[%dm", 0x1B, 0);
                     printf(" %s %s",
                            sqlite3_column_text(stmt, 0)
@@ -594,7 +594,7 @@ int main(int argc, char* argv[]) {
 #ifdef WIN32
                 printf("+%s+\n\r", lineborder2);
 #else
-                printf("%c[%d;%d;%dm", 0x1B, 1, 37, 41);
+                printf(" %c[%d;%d;%dm", 0x1B, 1, 37, 41);
                 printf("╚%s╝", lineborder2);
                 printf("%c[%dm\n\r", 0x1B, 0);
 #endif
