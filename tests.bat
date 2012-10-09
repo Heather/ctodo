@@ -10,9 +10,9 @@ echo ---------------------------
 echo ---------------------------
 echo        Write
 echo ---------------------------
-%todo% write test1
-%todo% write test2
-%todo% write test3
+%todo% write I am very long string and there is no mistakes parsing me. My maximum is 255 so Im not 255
+%todo% write I contain weird symbols alike -+=!@#$%^&*() and there is still no errors
+%todo% write I am Chuck Norris
 %todo% read
 echo ---------------------------
 echo        Swap
@@ -27,7 +27,7 @@ echo ---------------------------
 echo ---------------------------
 echo        Edit
 echo ---------------------------
-%todo% edit 2 test4
+%todo% edit 2 Im new string and now Im replacing Chuck Norris
 %todo% read
 echo ---------------------------
 echo        Sync
