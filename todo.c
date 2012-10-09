@@ -193,18 +193,18 @@ int main(int argc, char* argv[]) {
                         git = atoi((const char*)sqlite3_column_text(stmt, 1));
                         }
                     }
+                if (git == 1) {
+#ifndef WIN32
+                    putenv("HOME=/home/nen");
+#endif
+                    if (system("git pull") == -1) return -1;
+                    }
                 printf("Sync file: %s\n\r", filename);
                 f = fopen(filename, "a+");
                 if (f == NULL) {
                     printf("There is no such file and it's failed to create it\n\r");
                     close();
                     return -1;
-                    }
-                if (git == 1) {
-#ifndef WIN32
-                    putenv("HOME=/home/nen");
-#endif
-                    if (system("git pull") == -1) return -1;
                     }
                 while (fgets(line, 150, f)) {
                     if (i == 0) {
