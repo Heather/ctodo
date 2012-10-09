@@ -1,4 +1,7 @@
 @echo off
+echo ---------------------------
+echo   Running CToDo Tests
+echo ---------------------------
 set todo=Release\ctodo.exe
 %todo% --version
 %todo% --help

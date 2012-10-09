@@ -13,3 +13,5 @@
 /sqlite3.dll
 /sqlite3.h
 /sqlite3ext.h
+/testout
+/*.db3
