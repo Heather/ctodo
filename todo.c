@@ -46,7 +46,11 @@ void help(char* argv) {
     printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
     }
 void timeUpdate(time_t t) {
+#ifdef WIN32
+    sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
+#else
     sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
+#endif
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     if (retval) {
         printf("Failed to update db time\n\r");
@@ -180,6 +184,9 @@ int main(int argc, char* argv[]) {
                 char* token1;
                 char* token2;
                 char* search = "|";
+#ifdef WIN32
+                char* context = NULL;
+#endif
                 filename = (char*)calloc(200, sizeof(char));
                 sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 0 OR option = 1 OR option = 2");
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
@@ -233,8 +240,13 @@ int main(int argc, char* argv[]) {
                                 printf("failed to clean db, run initdb first\n\r");
                                 }
                             }
+#ifdef WIN32
+                        token1 = strtok_s(line, search, &context);
+                        token2 = strtok_s(NULL, search, &context);
+#else
                         token1 = strtok(line, search);
                         token2 = strtok(NULL, search);
+#endif
                         rtrim(token2);
                         sprintf(queries[ind++], "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
@@ -292,8 +304,13 @@ int main(int argc, char* argv[]) {
                     last++;
                     text = (char*)calloc(200, sizeof(char));
                     for (argi = 2; argi < argc; argi++) {
+#ifdef WIN32
+                        strcat_s(text, 200, argv[argi]);
+                        strcat_s(text, 200, " ");
+#else
                         strcat(text, argv[argi]);
                         strcat(text, " ");
+#endif
                         }
                     sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, text);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
@@ -313,8 +330,13 @@ int main(int argc, char* argv[]) {
                     char* text;
                     text = (char*)calloc(200, sizeof(char));
                     for (argi = 3; argi < argc; argi++) {
+#ifdef WIN32
+                        strcat_s(text, 200, argv[argi]);
+                        strcat_s(text, 200, " ");
+#else
                         strcat(text, argv[argi]);
                         strcat(text, " ");
+#endif
                         }
                     sprintf(queries[ind++], "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
@@ -402,8 +424,8 @@ int main(int argc, char* argv[]) {
                 for (i = 0; i < ((maxl2 + maxl1) + 5); i++) {
                     if (i == 2 + maxl1) {
 #ifdef WIN32
-                        strcat(lineborder1, "+");
-                        strcat(lineborder2, "+");
+                        strcat_s(lineborder1, 200, "+");
+                        strcat_s(lineborder2, 200, "+");
 #else
                         strcat(lineborder1, "╤");
                         strcat(lineborder2, "╧");
@@ -411,8 +433,8 @@ int main(int argc, char* argv[]) {
                         }
                     else {
 #ifdef WIN32
-                        strcat(lineborder1, "-");
-                        strcat(lineborder2, "-");
+                        strcat_s(lineborder1, 200, "-");
+                        strcat_s(lineborder2, 200, "-");
 #else
                         strcat(lineborder1, "═");
                         strcat(lineborder2, "═");
@@ -429,13 +451,26 @@ int main(int argc, char* argv[]) {
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
                     maxi1 = maxl1 - strlen((const char*)sqlite3_column_text(stmt, 0));
                     maxi2 = maxl2 - atoi((const char*)sqlite3_column_text(stmt, 2));
+#ifdef WIN32
+                    strcpy_s(spaces1, 200, "");
+                    strcpy_s(spaces2, 200, "");
+#else
                     strcpy(spaces1, "");
                     strcpy(spaces2, "");
+#endif
                     for (i = 0; i < maxi1; i++) {
+#ifdef WIN32
+                        strcat_s(spaces1, 200, " ");
+#else
                         strcat(spaces1, " ");
+#endif
                         }
                     for (i = 0; i < maxi2; i++) {
+#ifdef WIN32
+                        strcat_s(spaces2, 200, " ");
+#else
                         strcat(spaces2, " ");
+#endif
                         }
 #ifdef WIN32
                     printf("| %s %s| %s %s|\n\r",
