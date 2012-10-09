@@ -284,22 +284,26 @@ int main(int argc, char* argv[]) {
                                 printf("failed to clean db, run initdb first\n\r");
                                 }
                             }
+                        else {
 #ifdef WIN32
-                        token1 = strtok_s(line, search, &context);
-                        token2 = strtok_s(NULL, search, &context);
+                            token1 = strtok_s(line, search, &context);
+                            token2 = strtok_s(NULL, search, &context);
 #else
-                        token1 = strtok(line, search);
-                        token2 = strtok(NULL, search);
+                            token1 = strtok(line, search);
+                            token2 = strtok(NULL, search);
 #endif
-                        rtrim(token2);
+                            if (token1[1] == '-') token1 += 3;
+                            if (token2[1] == '-') token2 += 3;
+                            rtrim(token2);
 #ifdef WIN32
-                        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
+                            sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
 #else
-                        sprintf(queries[ind++], "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
+                            sprintf(queries[ind++], "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
 #endif
-                        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                        if (retval) {
-                            printf("Task were not added! (shit happens)\n\r");
+                            retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                            if (retval) {
+                                printf("Task were not added! (shit happens)\n\r");
+                                }
                             }
                         }
                     i++;
@@ -316,9 +320,10 @@ int main(int argc, char* argv[]) {
                     queries[ind++] = "SELECT id, text from TODO";
                     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                     fprintf(f, "%d\n", (int)now);
+                    fprintf(f, "\n");
                     timeUpdate(now);
                     while (sqlite3_step(stmt) == SQLITE_ROW) {
-                        fprintf(f, "%s|%s\n"
+                        fprintf(f, " - %s|%s\n"
                                 , sqlite3_column_text(stmt, 0)
                                 , sqlite3_column_text(stmt, 1));
                         }
