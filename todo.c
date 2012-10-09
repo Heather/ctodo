@@ -293,7 +293,6 @@ int main(int argc, char* argv[]) {
                             token2 = strtok(NULL, search);
 #endif
                             if (token1[1] == '-') token1 += 3;
-                            if (token2[1] == '-') token2 += 3;
                             rtrim(token2);
 #ifdef WIN32
                             sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
