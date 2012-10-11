@@ -57,6 +57,14 @@ void timeUpdate(time_t t) {
         return;
         }
     }
+void sql(char* command) {
+#ifdef WIN32
+    sprintf_s(queries[ind++], 255, "%s", command);
+#else
+    sprintf(queries[ind++], "%s", command);
+#endif
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    }
 char* rtrim(char* str) {
     char* ptr;
     int len;
@@ -111,32 +119,18 @@ int main(int argc, char* argv[]) {
                 return -1;
                 }
             if (strcmp(argv[1], "initdb") == 0) {
-#ifdef WIN32
-                sprintf_s(queries[ind++], 255, "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
-#else
-                sprintf(queries[ind++], "CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
-#endif
-                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
                 if (retval) {
                     printf("Init DB Failed, Shit happens?\n\r");
                     close();
                     return -1;
                     }
-#ifdef WIN32
-                sprintf_s(queries[ind++], 255, "CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
-#else
-                sprintf(queries[ind++], "CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
-#endif
-                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                sql("CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
+
                 ///<Option>
                 ///Sync file for tex serialization
                 ///</Option>
-#ifdef WIN32
-                sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'readme.md')");
-#else
-                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'readme.md')");
-#endif
-                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'readme.md')");
                 ///<Option>
                 ///Time of last synchronization
                 ///</Option>
@@ -149,18 +143,12 @@ int main(int argc, char* argv[]) {
                 ///<Option>
                 ///Using git for synchronization
                 ///</Option>
-#ifdef WIN32
-                sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (2,'1')");
-#else
-                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (2,'1')");
-#endif
-                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (2,'1')");
                 ///<Option>
                 ///Path for HOME (only for linux)
                 ///</Option>
 #ifndef WIN32
-                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (3,'/home/nen')");
-                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (10,'/home/nen')");
 #endif
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
