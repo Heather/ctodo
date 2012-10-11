@@ -3,23 +3,23 @@ TODO List management util: Usage & Version
 
  - example usage on windows
 
-![source-code](https://raw.github.com/nCdy/ctodo/master/ss/w1.JPG)
+![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/w1.JPG)
 
  - example on linux + synchronization
 
-![source-code](https://raw.github.com/nCdy/ctodo/master/ss/nix1.JPG)
+![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/nix1.JPG)
 
  - sync changes to windows
 
-![source-code](https://raw.github.com/nCdy/ctodo/master/ss/w2.JPG)
+![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/w2.JPG)
 
  - see changes
 
-![source-code](https://raw.github.com/nCdy/ctodo/master/ss/w3.JPG)
+![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/w3.JPG)
 
  - work from web also possible via GitHub \o/
 
-![source-code](https://raw.github.com/nCdy/ctodo/master/ss/h1.JPG)
+![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/h1.JPG)
 
 Have fun...
 
