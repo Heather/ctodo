@@ -241,7 +241,7 @@ int main(int argc, char* argv[]) {
             if (strcmp(argv[1], "sync") == 0) {
                 char* filename;
 #ifndef WIN32
-                char* home = "HOME=";
+                char* home;
 #endif
                 int timeDB;
                 int git, hg, svn;
@@ -253,6 +253,8 @@ int main(int argc, char* argv[]) {
                 char* search = "|";
 #ifdef WIN32
                 char* context = NULL;
+#else
+                home = (char*)calloc(200, sizeof(char));
 #endif
                 filename = (char*)calloc(200, sizeof(char));
 #ifdef WIN32
@@ -287,7 +289,7 @@ int main(int argc, char* argv[]) {
                         }
 #ifndef WIN32
                     else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "20") == 0) {
-                        sprintf(home, "%s%s", home, sqlite3_column_text(stmt, 1));
+                        sprintf(home, "HOME=%s", sqlite3_column_text(stmt, 1));
                         }
 #endif
                     }
