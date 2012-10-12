@@ -244,7 +244,7 @@ int main(int argc, char* argv[]) {
                 char* home = "HOME=";
 #endif
                 int timeDB;
-                int git;
+                int git, hg, svn;
                 int i = 0;
                 char line[150];
                 char write = 1;
@@ -256,9 +256,9 @@ int main(int argc, char* argv[]) {
 #endif
                 filename = (char*)calloc(200, sizeof(char));
 #ifdef WIN32
-                sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS WHERE option = 0 OR option = 1 OR option = 2 or option = 20");
+                sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS");
 #else
-                sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 0 OR option = 1 OR option = 2 or option = 20");
+                sprintf(queries[ind++], "SELECT option, text FROM OPTIONS");
 #endif
                 retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
                 if (retval) {
@@ -279,17 +279,31 @@ int main(int argc, char* argv[]) {
                     else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "2") == 0) {
                         git = atoi((const char*)sqlite3_column_text(stmt, 1));
                         }
+                    else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "3") == 0) {
+                        hg = atoi((const char*)sqlite3_column_text(stmt, 1));
+                        }
+                    else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "4") == 0) {
+                        svn = atoi((const char*)sqlite3_column_text(stmt, 1));
+                        }
                     else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "20") == 0) {
 #ifndef WIN32
                         strcat(home, sqlite3_column_text(stmt, 1));
 #endif
                         }
                     }
-                if (git == 1) {
+                if (git == 1 || hg == 1 || svn == 1) {
 #ifndef WIN32
                     putenv(home);
 #endif
-                    if (system("git pull") == -1) return -1;
+                    if (git == 1) {
+                        if (system("git pull") == -1) return -1;
+                        }
+                    else if (hg == 1) {
+                        if (system("hg pull --update") == -1) return -1;
+                        }
+                    else if (svn == 1) {
+                        if (system("svn update") == -1) return -1;
+                        }
                     }
                 printf("Sync file: %s\n\r", filename);
 #ifdef WIN32
@@ -369,12 +383,21 @@ int main(int argc, char* argv[]) {
                                 , sqlite3_column_text(stmt, 1));
                         }
                     fclose(f);
-                    if (git == 1) {
+                    if (git == 1 || hg == 1 || svn == 1) {
 #ifndef WIN32
                         putenv(home);
 #endif
-                        if (system("git commit -am \"TODO LIST UPDATE\"") == -1) return -1;
-                        if (system("git push") == -1) return -1;
+                        if (git == 1) {
+                            if (system("git commit -am \"TODO LIST UPDATE\"") == -1) return -1;
+                            if (system("git push") == -1) return -1;
+                            }
+                        else if (hg == 1) {
+                            if (system("hg commit -m \"TODO LIST UPDATE\"") == -1) return -1;
+                            if (system("hg push") == -1) return -1;
+                            }
+                        else if (svn == 1) {
+                            if (system("svn commit  -m \"TODO LIST UPDATE\"") == -1) return -1;
+                            }
                         }
                     printf("synchronization complete, syncfile updated\n\r");
                     }
