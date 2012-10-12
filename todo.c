@@ -285,11 +285,11 @@ int main(int argc, char* argv[]) {
                     else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "4") == 0) {
                         svn = atoi((const char*)sqlite3_column_text(stmt, 1));
                         }
-                    else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "20") == 0) {
 #ifndef WIN32
-                        strcat(home, sqlite3_column_text(stmt, 1));
-#endif
+                    else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "20") == 0) {
+                        sprintf(home, "%s%s", home, sqlite3_column_text(stmt, 1));
                         }
+#endif
                     }
                 if (git == 1 || hg == 1 || svn == 1) {
 #ifndef WIN32
