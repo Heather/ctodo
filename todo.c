@@ -124,6 +124,9 @@ int main(int argc, char* argv[]) {
                 return -1;
                 }
             if (strcmp(argv[1], "initdb") == 0) {
+#ifndef WIN32
+                char* home = (char*)getenv("HOME");
+#endif
                 sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
                 if (retval) {
                     printf("Init DB Failed, Shit happens?\n\r");
@@ -161,7 +164,8 @@ int main(int argc, char* argv[]) {
                 ///Path for HOME (only for linux)
                 ///</Option>
 #ifndef WIN32
-                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (20,'/home/nen')");
+                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (20,'%s')", home);
+                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
 #endif
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
