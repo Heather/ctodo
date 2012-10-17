@@ -431,13 +431,18 @@ int main(int argc, char* argv[]) {
                     last++;
                     text = (char*)calloc(200, sizeof(char));
                     for (argi = 2; argi < argc; argi++) {
+                        if (strlen(text) + strlen(argv[argi]) + sizeof(char)  >= 200) {
+                            break;
+                            }
+                        else {
 #ifdef WIN32
-                        strcat_s(text, 200, argv[argi]);
-                        strcat_s(text, 200, " ");
+                            strcat_s(text, 200, argv[argi]);
+                            strcat_s(text, 200, " ");
 #else
-                        strcat(text, argv[argi]);
-                        strcat(text, " ");
+                            strcat(text, argv[argi]);
+                            strcat(text, " ");
 #endif
+                            }
                         }
 #ifdef WIN32
                     sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s')", last, text);
