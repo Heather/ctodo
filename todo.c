@@ -36,6 +36,7 @@ void help(char* argv) {
     printf("  - initdb - init empty database structure\n\r");
     printf("  - read or r - to read all\n\r");
     printf("  - write or w <msg> - add task\n\r");
+    printf("      --motivate - end todo note with additional word (see ending option)\n\r");
     printf("  - edit or e <n> <msg> - edit task\n\r");
     printf("  - rm <number> - delete task\n\r");
     printf("  - clean - clean all tasks\n\r");
@@ -49,7 +50,7 @@ void help(char* argv) {
     printf("      - git - execute git synchronization 1/0 for enable/disable (default 1)\n\r");
     printf("      - hg - execute mercurial synchronization 1/0 for enable/disable (default 1)\n\r");
     printf("      - svn - execute subversion synchronization 1/0 for enable/disable (default 1)\n\r");
-    printf("      - end - end todo notes with additional word (default 1)\n\r");
+    printf("      - end - always end todo notes with additional word (default 0)\n\r");
     printf("      - ending - word, using for end feature (default 'be a man')\n\r");
     printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
     }
@@ -167,7 +168,7 @@ int main(int argc, char* argv[]) {
                 ///<Option>
                 ///Add ending word to each todo row
                 ///</Option>
-                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (12,'1')");
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (12,'0')");
                 ///<Option>
                 ///Ending word
                 ///</Option>
@@ -559,7 +560,7 @@ int main(int argc, char* argv[]) {
                         }
                     last++;
                     text = (char*)calloc(200, sizeof(char));
-                    if (useending) {
+                    if (useending == 1) {
                         limit = 200 - strlen(ending);
                         }
                     for (argi = 2; argi < argc; argi++) {
@@ -567,16 +568,21 @@ int main(int argc, char* argv[]) {
                             break;
                             }
                         else {
+                            if ((strcmp(argv[argi], "--motivate") == 0)) {
+				  useending = 1;
+                                }
+                            else {
 #ifdef WIN32
-                            strcat_s(text, 200, argv[argi]);
-                            strcat_s(text, 200, " ");
+                                strcat_s(text, 200, argv[argi]);
+                                strcat_s(text, 200, " ");
 #else
-                            strcat(text, argv[argi]);
-                            strcat(text, " ");
+                                strcat(text, argv[argi]);
+                                strcat(text, " ");
 #endif
+                                }
                             }
                         }
-                    if (useending) {
+                    if (useending == 1) {
 #ifdef WIN32
                         strcat_s(text, 200, ending);
 #else
