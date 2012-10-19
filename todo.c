@@ -119,16 +119,17 @@ int main(int argc, char* argv[]) {
 #ifdef WIN32
             retval = sqlite3_open("todo.db3", &handle);
 #else
-            retval = sqlite3_open(strcat(getenv("HOME"), "/.todo.db3"), &handle);
+            char* home = (char*)getenv("HOME");
+            char* temp = (char*)calloc(200, sizeof(char));
+            strcpy(temp, home);
+            retval = sqlite3_open(strcat(temp, "/.todo.db3"), &handle);
+            free(temp);
 #endif
             if (retval) {
                 printf("Database connection failed\n\r");
                 return -1;
                 }
             if (strcmp(argv[1], "initdb") == 0) {
-#ifndef WIN32
-                char* home = (char*)getenv("HOME");
-#endif
                 sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
                 if (retval) {
                     printf("Init DB Failed, Shit happens?\n\r");
