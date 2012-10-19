@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <stdlib.h>
 #include <ctype.h>
 
-int retval, x, q_cnt = 10, q_size = 255, ind = 0;
+int retval, x, q_cnt = 11, q_size = 255, ind = 0;
 char** queries;
 sqlite3* handle;
 void help(char* argv) {
@@ -42,6 +42,7 @@ void help(char* argv) {
     printf("  - swap <number1> <number2> - swap elements\n\r");
     printf("  - set <option> <value> - todo options, available options:\n\r");
     printf("      - syncfile - file for text serialization for synchronization (default '.todo.sync')\n\r");
+    printf("      - syncdir - directory for vcs synchronization\n\r");
 #ifndef WIN32
     printf("      - home - file for home path (request for synchronization)\n\r");
 #endif
@@ -172,6 +173,10 @@ int main(int argc, char* argv[]) {
                 ///</Option>
                 sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (13,'блеать')");
                 ///<Option>
+                ///Synchronization directory
+                ///</Option>
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (15,'/home/nen/todo')");
+                ///<Option>
                 ///Path for HOME (only for linux)
                 ///</Option>
 #ifndef WIN32
@@ -196,6 +201,19 @@ int main(int argc, char* argv[]) {
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                         if (retval) {
                             printf("Option syncfile is not changed! (shit happens)\n\r");
+                            close();
+                            return -1;
+                            }
+                        }
+                    if (strcmp(argv[2], "syncdir") == 0) {
+#ifdef WIN32
+                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 15", argv[3]);
+#else
+                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 15", argv[3]);
+#endif
+                        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                        if (retval) {
+                            printf("Option syncdir is not changed! (shit happens)\n\r");
                             close();
                             return -1;
                             }
