@@ -50,7 +50,7 @@ void help(char* argv) {
     printf("      - hg - execute mercurial synchronization 1/0 for enable/disable (default 1)\n\r");
     printf("      - svn - execute subversion synchronization 1/0 for enable/disable (default 1)\n\r");
     printf("      - end - end todo notes with additional word (default 1)\n\r");
-    printf("      - ending - word, using for end feature (default 'блеать')\n\r");
+    printf("      - ending - word, using for end feature (default 'be a man')\n\r");
     printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
     }
 void timeUpdate(time_t t) {
@@ -171,7 +171,7 @@ int main(int argc, char* argv[]) {
                 ///<Option>
                 ///Ending word
                 ///</Option>
-                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (13,'блеать')");
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (13,'be a man')");
                 ///<Option>
                 ///Synchronization directory
                 ///</Option>
