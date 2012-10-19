@@ -29,8 +29,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 int retval, x, q_cnt = 11, q_size = 255, ind = 0;
 char** queries;
 sqlite3* handle;
+void version() {
+  printf("CToDo: CLI TODO List Management Uti v1.02\n\r");
+  }
 void help(char* argv) {
-    printf("CToDo: CLI TODO List Management Util\n\r");
+    version();
     printf(" * usage:\n\r");
     printf("  %s <command> <arguments>\n\r", argv);
     printf("  - initdb - init empty database structure\n\r");
@@ -95,7 +98,7 @@ int main(int argc, char* argv[]) {
         }
     else {
         if (strcmp(argv[1], "--version") == 0) {
-            printf("v1.01\n\r");
+            version();
             return 0;
             }
         if (strcmp(argv[1], "--help") == 0) {
