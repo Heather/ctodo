@@ -41,8 +41,8 @@ void help(char* argv) {
     printf("  - clean - clean all tasks\n\r");
     printf("  - swap <number1> <number2> - swap elements\n\r");
     printf("  - set <option> <value> - todo options, available options:\n\r");
-    printf("      - syncfile - file for text serialization for synchronization (default '.todo.sync')\n\r");
     printf("      - syncdir - directory for vcs synchronization\n\r");
+    printf("      - syncfile - file for text serialization for synchronization (default 'readme.md')\n\r");
 #ifndef WIN32
     printf("      - home - file for home path (request for synchronization)\n\r");
 #endif
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
                 ///<Option>
                 ///Sync file for tex serialization
                 ///</Option>
-                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'readme.md')");
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (15,'readme.md')");
                 ///<Option>
                 ///Time of last synchronization
                 ///</Option>
@@ -175,7 +175,7 @@ int main(int argc, char* argv[]) {
                 ///<Option>
                 ///Synchronization directory
                 ///</Option>
-                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (15,'/home/nen/todo')");
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'/home/nen/todo')");
                 ///<Option>
                 ///Path for HOME (only for linux)
                 ///</Option>
@@ -194,9 +194,9 @@ int main(int argc, char* argv[]) {
                 else {
                     if (strcmp(argv[2], "syncfile") == 0) {
 #ifdef WIN32
-                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
+                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 15", argv[3]);
 #else
-                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
+                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 15", argv[3]);
 #endif
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                         if (retval) {
@@ -207,9 +207,9 @@ int main(int argc, char* argv[]) {
                         }
                     if (strcmp(argv[2], "syncdir") == 0) {
 #ifdef WIN32
-                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 15", argv[3]);
+                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
 #else
-                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 15", argv[3]);
+                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
 #endif
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                         if (retval) {
@@ -311,12 +311,15 @@ int main(int argc, char* argv[]) {
                 char* token1;
                 char* token2;
                 char* search = "|";
+                char* syncdir;
+                char* cmd;
 #ifdef WIN32
                 char* context = NULL;
 #else
                 home = (char*)calloc(200, sizeof(char));
 #endif
                 filename = (char*)calloc(200, sizeof(char));
+                syncdir = (char*)calloc(200, sizeof(char));
 #ifdef WIN32
                 sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS");
 #else
@@ -330,9 +333,9 @@ int main(int argc, char* argv[]) {
                 while (sqlite3_step(stmt) == SQLITE_ROW) {
                     if (strcmp((const char*)sqlite3_column_text(stmt, 0), "0") == 0) {
 #ifdef WIN32
-                        sprintf_s(filename, 200, "%s", sqlite3_column_text(stmt, 1));
+                        sprintf_s(syncdir, 200, "%s", sqlite3_column_text(stmt, 1));
 #else
-                        sprintf(filename, "%s", sqlite3_column_text(stmt, 1));
+                        sprintf(syncdir, "%s", sqlite3_column_text(stmt, 1));
 #endif
                         }
                     else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "1") == 0) {
@@ -347,6 +350,13 @@ int main(int argc, char* argv[]) {
                     else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "4") == 0) {
                         svn = atoi((const char*)sqlite3_column_text(stmt, 1));
                         }
+                    if (strcmp((const char*)sqlite3_column_text(stmt, 0), "15") == 0) {
+#ifdef WIN32
+                        sprintf_s(filename, 200, "%s/%s", syncdir, sqlite3_column_text(stmt, 1));
+#else
+                        sprintf(filename, "%s/%s", syncdir, sqlite3_column_text(stmt, 1));
+#endif
+                        }
 #ifndef WIN32
                     else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "20") == 0) {
                         sprintf(home, "HOME=%s", sqlite3_column_text(stmt, 1));
@@ -354,18 +364,32 @@ int main(int argc, char* argv[]) {
 #endif
                     }
                 if (git == 1 || hg == 1 || svn == 1) {
+                    cmd = (char*)calloc(200, sizeof(char));
 #ifndef WIN32
                     putenv(home);
 #endif
                     if (git == 1) {
-                        if (system("git pull") == -1) return -1;
+#ifdef WIN32
+                        sprintf_s(cmd, 200, "cd %s;git pull", syncdir);
+#else
+                        sprintf(cmd, "cd %s;git pull", syncdir);
+#endif
                         }
                     else if (hg == 1) {
-                        if (system("hg pull --update") == -1) return -1;
+#ifdef WIN32
+                        sprintf_s(cmd, 200, "cd %s;hg pull --update", syncdir);
+#else
+                        sprintf(cmd, "cd %s;hg pull --update", syncdir);
+#endif
                         }
                     else if (svn == 1) {
-                        if (system("svn update") == -1) return -1;
+#ifdef WIN32
+                        sprintf_s(cmd, 200, "cd %s;svn update", syncdir);
+#else
+                        sprintf(cmd, "cd %s;svn update", syncdir);
+#endif
                         }
+                    if (system(cmd)) return -1;
                     }
                 printf("Sync file: %s\n\r", filename);
 #ifdef WIN32
@@ -450,16 +474,27 @@ int main(int argc, char* argv[]) {
                         putenv(home);
 #endif
                         if (git == 1) {
-                            if (system("git commit -am \"TODO LIST UPDATE\"") == -1) return -1;
-                            if (system("git push") == -1) return -1;
+#ifdef WIN32
+                            sprintf_s(cmd, 200, "cd %s;git commit -am \"TODO LIST UPDATE\";git push", syncdir);
+#else
+                            sprintf(cmd, "cd %s;git commit -am \"TODO LIST UPDATE\";git push", syncdir);
+#endif
                             }
                         else if (hg == 1) {
-                            if (system("hg commit -m \"TODO LIST UPDATE\"") == -1) return -1;
-                            if (system("hg push") == -1) return -1;
+#ifdef WIN32
+                            sprintf_s(cmd, 200, "cd %s;hg commit -m \"TODO LIST UPDATE\";hg push", syncdir);
+#else
+                            sprintf(cmd, "cd %s;hg commit -m \"TODO LIST UPDATE\";hg push", syncdir);
+#endif
                             }
                         else if (svn == 1) {
-                            if (system("svn commit  -m \"TODO LIST UPDATE\"") == -1) return -1;
+#ifdef WIN32
+                            sprintf_s(cmd, 200, "cd %s;svn commit  -m \"TODO LIST UPDATE\"", syncdir);
+#else
+                            sprintf(cmd, "cd %s;svn commit  -m \"TODO LIST UPDATE\"", syncdir);
+#endif
                             }
+                        if (system(cmd) == -1) return -1;
                         }
                     printf("synchronization complete, syncfile updated\n\r");
                     }
@@ -467,6 +502,8 @@ int main(int argc, char* argv[]) {
                     timeUpdate(timefile);
                     printf("synchronization complete, local database updated\n\r");
                     }
+                free(home);
+                free(syncdir);
                 free(filename);
                 }
             else if ((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0)) {
@@ -558,6 +595,7 @@ int main(int argc, char* argv[]) {
                         return -1;
                         }
                     free(text);
+                    free(ending);
                     timeUpdate(time(0));
                     }
                 }
@@ -789,3 +827,4 @@ int main(int argc, char* argv[]) {
             }
         }
     }
+
