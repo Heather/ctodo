@@ -48,6 +48,8 @@ void help(char* argv) {
     printf("      - git - execute git synchronization 1/0 for enable/disable (default 1)\n\r");
     printf("      - hg - execute mercurial synchronization 1/0 for enable/disable (default 1)\n\r");
     printf("      - svn - execute subversion synchronization 1/0 for enable/disable (default 1)\n\r");
+    printf("      - end - end todo notes with additional word (default 1)\n\r");
+    printf("      - ending - word, using for end feature (default 'блеать')\n\r");
     printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
     }
 void timeUpdate(time_t t) {
@@ -161,6 +163,14 @@ int main(int argc, char* argv[]) {
                 ///</Option>
                 sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (4,'0')");
                 ///<Option>
+                ///Add ending word to each todo row
+                ///</Option>
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (12,'1')");
+                ///<Option>
+                ///Ending word
+                ///</Option>
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (13,'блеать')");
+                ///<Option>
                 ///Path for HOME (only for linux)
                 ///</Option>
 #ifndef WIN32
@@ -187,6 +197,37 @@ int main(int argc, char* argv[]) {
                             printf("Option syncfile is not changed! (shit happens)\n\r");
                             close();
                             return -1;
+                            }
+                        }
+                    if (strcmp(argv[2], "ending") == 0) {
+#ifdef WIN32
+                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 13", argv[3]);
+#else
+                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 13", argv[3]);
+#endif
+                        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                        if (retval) {
+                            printf("Option ending is not changed! (shit happens)\n\r");
+                            close();
+                            return -1;
+                            }
+                        }
+                    if (strcmp(argv[2], "end") == 0) {
+                        if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0)) {
+#ifdef WIN32
+                            sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 12", argv[3]);
+#else
+                            sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 12", argv[3]);
+#endif
+                            retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                            if (retval) {
+                                printf("Option end is not changed! (shit happens)\n\r");
+                                close();
+                                return -1;
+                                }
+                            }
+                        else {
+                            printf("Use 1 or 0 for this option\n\r");
                             }
                         }
                     if ((strcmp(argv[2], "git") == 0)
@@ -415,6 +456,38 @@ int main(int argc, char* argv[]) {
                     int last = 0;
                     int argi;
                     char* text;
+                    char* ending;
+                    int useending = 0;
+                    int limit = 200;
+                    ///<Summary>
+                    ///Getting options from local database
+                    ///<Summary>
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
+#else
+                    sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
+#endif
+                    retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
+                    if (retval) {
+                        printf("Sync data Failed, run initdb first\n\r");
+                        return -1;
+                        }
+                    while (sqlite3_step(stmt) == SQLITE_ROW) {
+                        if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0) {
+                            ending = (char*)calloc(200, sizeof(char));
+#ifdef WIN32
+                            sprintf_s(ending, 200, "%s", sqlite3_column_text(stmt, 1));
+#else
+                            sprintf(ending, "%s", sqlite3_column_text(stmt, 1));
+#endif
+                            }
+                        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "12") == 0) {
+                            useending = atoi((const char*)sqlite3_column_text(stmt, 1));
+                            }
+                        }
+                    ///<Summary>
+                    ///Writing to local database
+                    ///<Summary>
 #ifdef WIN32
                     sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO");
 #else
@@ -430,8 +503,11 @@ int main(int argc, char* argv[]) {
                         }
                     last++;
                     text = (char*)calloc(200, sizeof(char));
+                    if (useending) {
+                        limit = 200 - strlen(ending);
+                        }
                     for (argi = 2; argi < argc; argi++) {
-                        if (strlen(text) + strlen(argv[argi]) + sizeof(char)  >= 200) {
+                        if (strlen(text) + strlen(argv[argi]) + sizeof(char)  >= limit) {
                             break;
                             }
                         else {
@@ -443,6 +519,13 @@ int main(int argc, char* argv[]) {
                             strcat(text, " ");
 #endif
                             }
+                        }
+                    if (useending) {
+#ifdef WIN32
+                        strcat_s(text, 200, ending);
+#else
+                        strcat(text, ending);
+#endif
                         }
 #ifdef WIN32
                     sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s')", last, text);
