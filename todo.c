@@ -26,15 +26,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <stdlib.h>
 #include <ctype.h>
 
-int retval, x, q_cnt = 11, q_size = 255, ind = 0;
+int retval, x, q_cnt = 12, q_size = 255, ind = 0;
 char** queries;
 sqlite3* handle;
 void version() {
-  printf("CToDo: CLI TODO List Management Uti v1.02\n\r");
-  }
+    printf("  CTODO: CLI TODO List Management Uti v1.0.3\n\r");
+    }
 void help(char* argv) {
     version();
-    printf(" * usage:\n\r");
+    printf("  * usage:\n\r");
     printf("  %s <command> <arguments>\n\r", argv);
     printf("  - initdb - init empty database structure\n\r");
     printf("  - read or r - to read all\n\r");
@@ -44,18 +44,19 @@ void help(char* argv) {
     printf("  - rm <number> - delete task\n\r");
     printf("  - clean - clean all tasks\n\r");
     printf("  - swap <number1> <number2> - swap elements\n\r");
+    printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
     printf("  - set <option> <value> - todo options, available options:\n\r");
     printf("      - syncdir - directory for vcs synchronization\n\r");
     printf("      - syncfile - file for text serialization for synchronization (default 'readme.md')\n\r");
 #ifndef WIN32
     printf("      - home - file for home path (request for synchronization)\n\r");
 #endif
-    printf("      - git - execute git synchronization 1/0 for enable/disable (default 1)\n\r");
-    printf("      - hg - execute mercurial synchronization 1/0 for enable/disable (default 1)\n\r");
-    printf("      - svn - execute subversion synchronization 1/0 for enable/disable (default 1)\n\r");
     printf("      - end - always end todo notes with additional word (default 0)\n\r");
     printf("      - ending - word, using for end feature (default 'be a man')\n\r");
-    printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
+    printf("        - git - execute git synchronization 1/0 for enable/disable (default 1)\n\r");
+    printf("        - hg - execute mercurial synchronization 1/0 for enable/disable (default 0)\n\r");
+    printf("        - svn - execute subversion synchronization 1/0 for enable/disable (default 0)\n\r");
+    printf("        - vv - execute veracity synchronization 1/0 for enable/disable (default 0)\n\r");
     }
 void timeUpdate(time_t t) {
 #ifdef WIN32
@@ -169,6 +170,10 @@ int main(int argc, char* argv[]) {
                 ///</Option>
                 sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (4,'0')");
                 ///<Option>
+                ///Use veracity (vv) for synchronization
+                ///</Option>
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (5'0')");
+                ///<Option>
                 ///Add ending word to each todo row
                 ///</Option>
                 sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (12,'0')");
@@ -194,95 +199,42 @@ int main(int argc, char* argv[]) {
                     }
                 }
             if (strcmp(argv[1], "set") == 0) {
+                int opt = 0;
                 if (argc < 4) printf("set what?\n\r");
                 else {
                     if (strcmp(argv[2], "syncfile") == 0) {
-#ifdef WIN32
-                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 15", argv[3]);
-#else
-                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 15", argv[3]);
-#endif
-                        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                        if (retval) {
-                            printf("Option syncfile is not changed! (shit happens)\n\r");
-                            close();
-                            return -1;
-                            }
+                        opt = 15;
                         }
-                    if (strcmp(argv[2], "syncdir") == 0) {
-#ifdef WIN32
-                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
-#else
-                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 0", argv[3]);
-#endif
-                        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                        if (retval) {
-                            printf("Option syncdir is not changed! (shit happens)\n\r");
-                            close();
-                            return -1;
-                            }
+                    else if (strcmp(argv[2], "syncdir") == 0) {
+                        opt = 0;
                         }
                     if (strcmp(argv[2], "ending") == 0) {
-#ifdef WIN32
-                        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 13", argv[3]);
-#else
-                        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 13", argv[3]);
-#endif
-                        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                        if (retval) {
-                            printf("Option ending is not changed! (shit happens)\n\r");
-                            close();
-                            return -1;
-                            }
+                        opt = 13;
                         }
                     if (strcmp(argv[2], "end") == 0) {
                         if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0)) {
-#ifdef WIN32
-                            sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 12", argv[3]);
-#else
-                            sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 12", argv[3]);
-#endif
-                            retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                            if (retval) {
-                                printf("Option end is not changed! (shit happens)\n\r");
-                                close();
-                                return -1;
-                                }
+                            opt = 12;
                             }
                         else {
                             printf("Use 1 or 0 for this option\n\r");
                             }
                         }
-                    if ((strcmp(argv[2], "git") == 0)
-                            || (strcmp(argv[2], "hg") == 0)
-                            || (strcmp(argv[2], "svn") == 0)) {
+                    else if ((strcmp(argv[2], "git") == 0)
+                             || (strcmp(argv[2], "hg") == 0)
+                             || (strcmp(argv[2], "svn") == 0)
+                             || (strcmp(argv[2], "vv") == 0)) {
                         if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0)) {
                             if (strcmp(argv[2], "git") == 0) {
-#ifdef WIN32
-                                sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 2", argv[3]);
-#else
-                                sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 2", argv[3]);
-#endif
+                                opt = 2;
                                 }
                             else if (strcmp(argv[2], "hg") == 0) {
-#ifdef WIN32
-                                sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 3", argv[3]);
-#else
-                                sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 3", argv[3]);
-#endif
+                                opt = 3;
                                 }
                             else if (strcmp(argv[2], "svn") == 0) {
-#ifdef WIN32
-                                sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = 4", argv[3]);
-#else
-                                sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 4", argv[3]);
-#endif
+                                opt = 4;
                                 }
-                            retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                            if (retval) {
-                                printf("Option is not changed! (shit happens)\n\r");
-                                close();
-                                return -1;
+                            else if (strcmp(argv[2], "vv") == 0) {
+                                opt = 5;
                                 }
                             }
                         else {
@@ -290,7 +242,7 @@ int main(int argc, char* argv[]) {
                             }
                         }
 #ifndef WIN32
-                    if (strcmp(argv[2], "home") == 0) {
+                    else if (strcmp(argv[2], "home") == 0) {
                         sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 20", argv[3]);
                         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                         if (retval) {
@@ -300,6 +252,22 @@ int main(int argc, char* argv[]) {
                             }
                         }
 #endif
+                    else {
+                        printf("There is no such option\n\r");
+                        close();
+                        return 0;
+                        }
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
+#else
+                    sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
+#endif
+                    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                    if (retval) {
+                        printf("Option is not changed! (shit happens)\n\r");
+                        close();
+                        return -1;
+                        }
                     }
                 }
             if (strcmp(argv[1], "sync") == 0) {
@@ -308,7 +276,7 @@ int main(int argc, char* argv[]) {
                 char* home;
 #endif
                 int timeDB;
-                int git, hg, svn;
+                int git, hg, svn, vv;
                 int i = 0;
                 char line[150];
                 char write = 1;
@@ -354,6 +322,9 @@ int main(int argc, char* argv[]) {
                     else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "4") == 0) {
                         svn = atoi((const char*)sqlite3_column_text(stmt, 1));
                         }
+                    else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "5") == 0) {
+                        vv = atoi((const char*)sqlite3_column_text(stmt, 1));
+                        }
                     if (strcmp((const char*)sqlite3_column_text(stmt, 0), "15") == 0) {
 #ifdef WIN32
                         sprintf_s(filename, 200, "%s/%s", syncdir, sqlite3_column_text(stmt, 1));
@@ -367,7 +338,7 @@ int main(int argc, char* argv[]) {
                         }
 #endif
                     }
-                if (git == 1 || hg == 1 || svn == 1) {
+                if (git == 1 || hg == 1 || svn == 1 || vv == 1) {
                     cmd = (char*)calloc(200, sizeof(char));
 #ifndef WIN32
                     putenv(home);
@@ -391,6 +362,13 @@ int main(int argc, char* argv[]) {
                         sprintf_s(cmd, 200, "cd %s;svn update", syncdir);
 #else
                         sprintf(cmd, "cd %s;svn update", syncdir);
+#endif
+                        }
+                    else if (vv == 1) {
+#ifdef WIN32
+                        sprintf_s(cmd, 200, "cd %s;vv pull", syncdir);
+#else
+                        sprintf(cmd, "cd %s;vv pull", syncdir);
 #endif
                         }
                     if (system(cmd)) return -1;
@@ -473,7 +451,7 @@ int main(int argc, char* argv[]) {
                                 , sqlite3_column_text(stmt, 1));
                         }
                     fclose(f);
-                    if (git == 1 || hg == 1 || svn == 1) {
+                    if (git == 1 || hg == 1 || svn == 1 || vv == 1) {
 #ifndef WIN32
                         putenv(home);
 #endif
@@ -496,6 +474,13 @@ int main(int argc, char* argv[]) {
                             sprintf_s(cmd, 200, "cd %s;svn commit  -m \"TODO LIST UPDATE\"", syncdir);
 #else
                             sprintf(cmd, "cd %s;svn commit  -m \"TODO LIST UPDATE\"", syncdir);
+#endif
+                            }
+                        else if (vv == 1) {
+#ifdef WIN32
+                            sprintf_s(cmd, 200, "cd %s;vv commit -m \"TODO LIST UPDATE\";vv push", syncdir);
+#else
+                            sprintf(cmd, "cd %s;vv commit -m \"TODO LIST UPDATE\"; vv push", syncdir);
 #endif
                             }
                         if (system(cmd) == -1) return -1;
@@ -572,7 +557,7 @@ int main(int argc, char* argv[]) {
                             }
                         else {
                             if ((strcmp(argv[argi], "--motivate") == 0)) {
-				  useending = 1;
+                                useending = 1;
                                 }
                             else {
 #ifdef WIN32
