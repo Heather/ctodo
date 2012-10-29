@@ -1,27 +1,27 @@
 TODO List management util: Usage & Version
 ==========================================
 
- - example usage on windows
+ - works on windows
 
-![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/w1.JPG)
+![source-code](https://bitbucket.org/Ashlyn/ctodo/raw/3642f14ca056/ss/w1.JPG)
 
- - example on linux + synchronization
+ - easy synchronization
 
-![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/nix1.JPG)
+![source-code](https://bitbucket.org/Ashlyn/ctodo/raw/3642f14ca056/ss/nix1.JPG)
 
- - sync changes to windows
+ - crossplatform synchronization
 
-![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/w2.JPG)
+![source-code](https://bitbucket.org/Ashlyn/ctodo/raw/3642f14ca056/ss/w2.JPG)
 
- - see changes
+ - works native
 
-![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/w3.JPG)
+![source-code](https://bitbucket.org/Ashlyn/ctodo/raw/3642f14ca056/ss/w3.JPG)
 
- - work from web also possible via GitHub \o/
+ - you can work from web via GitHub for example
 
-![source-code](https://bitbucket.org/nCdy/ctodo/raw/3642f14ca056/ss/h1.JPG)
+![source-code](https://bitbucket.org/Ashlyn/ctodo/raw/3642f14ca056/ss/h1.JPG)
 
-Have fun...
+ - written in C
 
 Installation
 ============
@@ -29,34 +29,29 @@ Installation
 For Unix-like
 ---------
 ```bash
-git clone git@github.com:nCdy/todo.git; cd todo
+git clone git@bitbucket.org:Ashlyn/todo.git; cd todo
 make
 make install
 ```
 
 For Gentoo
 ----------
+My overlay is hosted on git@github.org:Ashlyn/gentoo-overlay.git
+I have no layman overlay because layman is something I can not control
+(Actually I dont like layman, to be honest layman is weird tool with broken stuff)
 ```bash
-layman -a nengraphy
 emerge todo
 ```
 
 For Windows
 ----------
-Compilable with MSVC 2010, there is project file
+Compilable with MSVC 2012, there is project file. (TODO: need some corrections maybe)
 
 Binaries
 ----------
-Available on codeplex : http://ctodo.codeplex.com/
+Are not available so far (just because I am lazy)
 
 License
 -------
 
 The GNU General Public License v3.0
-
-```c
-        if (strcmp(argv[1], "--version") == 0) {
-            printf("v1.01\n\r");
-            return 0;
-            }
-```
