@@ -26,11 +26,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <stdlib.h>
 #include <ctype.h>
 
-int retval, x, q_cnt = 12, q_size = 255, ind = 0;
+int retval, x, q_size = 255, ind = 0;
+#ifdef WIN32
+int q_cnt = 11;
+#else
+int q_cnt = 13;
+#endif
 char** queries;
 sqlite3* handle;
 void version() {
-    printf("  CTODO: CLI TODO List Management Uti v1.0.3\n\r");
+    printf("  CTODO: CLI TODO List Management Uti v1.0.4\n\r");
     }
 void help(char* argv) {
     version();
@@ -51,12 +56,16 @@ void help(char* argv) {
 #ifndef WIN32
     printf("      - home - file for home path (request for synchronization)\n\r");
 #endif
-    printf("      - end - always end todo notes with additional word (default 0)\n\r");
-    printf("      - ending - word, using for end feature (default 'be a man')\n\r");
     printf("        - git - execute git synchronization 1/0 for enable/disable (default 1)\n\r");
     printf("        - hg - execute mercurial synchronization 1/0 for enable/disable (default 0)\n\r");
     printf("        - svn - execute subversion synchronization 1/0 for enable/disable (default 0)\n\r");
     printf("        - vv - execute veracity synchronization 1/0 for enable/disable (default 0)\n\r");
+    printf("      - end - always end todo notes with additional word (default 0)\n\r");
+    printf("      - ending - word, using for end feature (default 'be a man')\n\r");
+#ifndef WIN32
+    printf("      - color - ctodo color scheme for posix (default 'red')\n\r");
+    printf("        - schemas: red, blink, green, pink, black \n\r");
+#endif
     }
 void timeUpdate(time_t t) {
 #ifdef WIN32
@@ -185,12 +194,16 @@ int main(int argc, char* argv[]) {
                 ///Synchronization directory
                 ///</Option>
                 sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'/home/nen/todo')");
+#ifndef WIN32
                 ///<Option>
                 ///Path for HOME (only for linux)
                 ///</Option>
-#ifndef WIN32
                 sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (20,'%s')", home);
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                ///<Option>
+                ///Color scheme (only for linux)
+                ///</Option>
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (21,'red')");
 #endif
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
@@ -208,10 +221,13 @@ int main(int argc, char* argv[]) {
                     else if (strcmp(argv[2], "syncdir") == 0) {
                         opt = 0;
                         }
-                    if (strcmp(argv[2], "ending") == 0) {
+                    else if (strcmp(argv[2], "ending") == 0) {
                         opt = 13;
                         }
-                    if (strcmp(argv[2], "end") == 0) {
+                    else if (strcmp(argv[2], "color") == 0) {
+                        opt = 21;
+                        }
+                    else if (strcmp(argv[2], "end") == 0) {
                         if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0)) {
                             opt = 12;
                             }
@@ -680,6 +696,41 @@ int main(int argc, char* argv[]) {
                 char* spaces2;
                 int maxl2 = 0, maxl1 = 0;
                 int i, maxi1, maxi2;
+#ifndef WIN32
+                char* colorscheme;
+                ///<Summary>
+                ///Get color scheme (For linux only)
+                ///</Summary>
+                sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 21");
+                retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
+                if (retval) {
+                    printf("Failed to get color scheme\n\r");
+                    }
+                while (sqlite3_step(stmt) == SQLITE_ROW) {
+                    if (strcmp((const char*)sqlite3_column_text(stmt, 0), "21") == 0) {
+                        colorscheme = (char*)calloc(50, sizeof(char));
+                        if (strcmp((const char*)sqlite3_column_text(stmt, 1), "red") == 0) {
+                            sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 37, 41);
+                            }
+                        else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "blink") == 0) {
+                            sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 50, 5);
+                            }
+                        else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "green") == 0) {
+                            sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 68, 32);
+                            }
+                        else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "pink") == 0) {
+                            sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 35, 2);
+                            }
+                        else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "black") == 0) {
+                            sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 6, 66);
+                            }
+                        else {
+                            sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 37, 41);
+                            }
+                        break;
+                        }
+                    }
+#endif
                 if (argc > 2) {
 #ifdef WIN32
                     sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %s", argv[2]);
@@ -749,10 +800,15 @@ int main(int argc, char* argv[]) {
 #endif
                         }
                     }
+#ifndef WIN32
+                ///<Summary>
+                ///Set color scheme (For linux only)
+                ///</Summary>
+#endif
 #ifdef WIN32
                 printf("+%s+\n\r", lineborder1);
 #else
-                printf(" %c[%d;%d;%dm", 0x1B, 1, 37, 41);
+                printf(" %s", colorscheme);
                 printf("╔%s╗", lineborder1);
                 printf("%c[%dm\n\r", 0x1B, 0); // 27
 #endif
@@ -787,24 +843,24 @@ int main(int argc, char* argv[]) {
                            , sqlite3_column_text(stmt, 1)
                            , spaces2);
 #else
-                    printf(" %c[%d;%d;%dm║", 0x1B, 1, 37, 41);
+                    printf(" %s║", colorscheme);
                     printf("%c[%dm", 0x1B, 0);
                     printf(" %s %s",
                            sqlite3_column_text(stmt, 0)
                            , spaces1);
-                    printf("%c[%d;%d;%dm│", 0x1B, 1, 37, 41);
+                    printf("%s│", colorscheme);
                     printf("%c[%dm", 0x1B, 0);
                     printf(" %s %s"
                            , sqlite3_column_text(stmt, 1)
                            , spaces2);
-                    printf("%c[%d;%d;%dm║", 0x1B, 1, 37, 41);
+                    printf("%s║", colorscheme);
                     printf("%c[%dm\n", 0x1B, 0);
 #endif
                     }
 #ifdef WIN32
                 printf("+%s+\n\r", lineborder2);
 #else
-                printf(" %c[%d;%d;%dm", 0x1B, 1, 37, 41);
+                printf(" %s", colorscheme);
                 printf("╚%s╝", lineborder2);
                 printf("%c[%dm\n\r", 0x1B, 0);
 #endif
@@ -812,6 +868,9 @@ int main(int argc, char* argv[]) {
                 free(lineborder2);
                 free(spaces1);
                 free(spaces2);
+#ifndef WIN32
+                free(colorscheme);
+#endif
                 }
             close();
             }
@@ -822,3 +881,4 @@ int main(int argc, char* argv[]) {
         }
     }
 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
