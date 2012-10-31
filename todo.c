@@ -137,6 +137,7 @@ int main(int argc, char* argv[]) {
             char* home = (char*)getenv("HOME");
             char* temp = (char*)calloc(200, sizeof(char));
             strcpy(temp, home);
+            ///You can't select another file where to save dbase because my options is in this dbase
             retval = sqlite3_open(strcat(temp, "/.todo.db3"), &handle);
             free(temp);
 #endif
@@ -800,11 +801,6 @@ int main(int argc, char* argv[]) {
 #endif
                         }
                     }
-#ifndef WIN32
-                ///<Summary>
-                ///Set color scheme (For linux only)
-                ///</Summary>
-#endif
 #ifdef WIN32
                 printf("+%s+\n\r", lineborder1);
 #else
