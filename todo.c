@@ -508,7 +508,9 @@ int main(int argc, char* argv[]) {
                     timeUpdate(timefile);
                     printf("synchronization complete, local database updated\n\r");
                     }
+#ifndef WIN32
                 free(home);
+#endif
                 free(syncdir);
                 free(filename);
                 }
@@ -569,7 +571,7 @@ int main(int argc, char* argv[]) {
                         limit = 200 - strlen(ending);
                         }
                     for (argi = 2; argi < argc; argi++) {
-                        if (strlen(text) + strlen(argv[argi]) + sizeof(char)  >= limit) {
+                        if (strlen(text) + strlen(argv[argi]) + sizeof(char)  >= (unsigned int)limit) {
                             break;
                             }
                         else {
