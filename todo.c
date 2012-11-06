@@ -48,7 +48,7 @@ void help(char* argv) {
     printf("  - edit or e <n> <msg> - edit task\n\r");
     printf("  - rm <number> - delete task\n\r");
     printf("  - clean - clean all tasks\n\r");
-    printf("  - swap <number1> <number2> - swap elements\n\r");
+    printf("  - swap or s <number1> <number2> - swap elements\n\r");
     printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
     printf("  - set <option> <value> - todo options, available options:\n\r");
     printf("      - syncdir - directory for vcs synchronization\n\r");
@@ -126,6 +126,7 @@ int main(int argc, char* argv[]) {
                 || strcmp(argv[1], "w") == 0
                 || strcmp(argv[1], "set") == 0
                 || strcmp(argv[1], "swap") == 0
+                || strcmp(argv[1], "s") == 0
                 || strcmp(argv[1], "sync") == 0) {
             queries = (char**)malloc(sizeof(char*) * q_cnt);
             for (x = 0; x < q_cnt; x++) {
@@ -640,7 +641,7 @@ int main(int argc, char* argv[]) {
                     timeUpdate(time(0));
                     }
                 }
-            else if (strcmp(argv[1], "swap") == 0) {
+            else if ((strcmp(argv[1], "swap") == 0) || (strcmp(argv[1], "s") == 0)) {
                 if (argc < 3) printf("swap what?\n\r");
                 else {
                     int val1 = atoi(argv[2]);
