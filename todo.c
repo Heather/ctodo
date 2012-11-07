@@ -602,11 +602,8 @@ int main(int argc, char* argv[]) {
                         }
                     if (first == 1) {
                         for(counter = 1; counter < last; counter++) {
-                            printf("No supported yet due http://stackoverflow.com/questions/13265244/shift-ids-of-table-alike-id-id-1-where-id-is-primary-key\n\r");
-                            return -1;
-                            //Failing due PRIMARY KEY
-                            //TODO: temporary alter the table somehow.
-                            sql("UPDATE TODO SET id = id + 1");
+                            sql("UPDATE TODO SET id = id + 1000000000");
+                            sql("UPDATE TODO SET id = id - (1000000000 - 1)");
                         }
 #ifdef WIN32
                         sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(0,'%s')", text);
