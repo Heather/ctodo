@@ -43,7 +43,7 @@ void help(char* argv) {
     printf("  %s <command> <arguments>\n\r", argv);
     printf("  - initdb - init empty database structure\n\r");
     printf("  - read or r - to read all\n\r");
-    printf("  - write or w <msg> - add task\n\r");
+    printf("  - write or w or 1 (to put task on top) <msg> - add task\n\r");
     printf("      --motivate - end todo note with additional word (see ending option)\n\r");
     printf("  - edit or e <n> <msg> - edit task\n\r");
     printf("  - rm <number> - delete task\n\r");
@@ -124,6 +124,7 @@ int main(int argc, char* argv[]) {
                 || strcmp(argv[1], "rm") == 0
                 || strcmp(argv[1], "write") == 0
                 || strcmp(argv[1], "w") == 0
+                || strcmp(argv[1], "1") == 0
                 || strcmp(argv[1], "set") == 0
                 || strcmp(argv[1], "swap") == 0
                 || strcmp(argv[1], "s") == 0
@@ -163,9 +164,9 @@ int main(int argc, char* argv[]) {
                 ///Time of last synchronization
                 ///</Option>
 #ifdef WIN32
-                sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)(time(0)));
+                sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", 0);
 #else
-                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)(time(0)));
+                sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", 0);
 #endif
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 ///<Option>
@@ -515,15 +516,18 @@ int main(int argc, char* argv[]) {
                 free(syncdir);
                 free(filename);
                 }
-            else if ((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0)) {
+            else if ((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0) || (strcmp(argv[1], "1") == 0)) {
                 if (argc < 3) printf("write what?\n\r");
                 else {
+                    char first = 0;
+                    int counter;
                     int last = 0;
                     int argi;
                     char* text;
                     char* ending;
                     int useending = 0;
                     int limit = 200;
+                    if (strcmp(argv[1], "1") == 0) first = 1;
                     ///<Summary>
                     ///Getting options from local database
                     ///<Summary>
@@ -566,7 +570,6 @@ int main(int argc, char* argv[]) {
                     while (sqlite3_step(stmt) == SQLITE_ROW) {
                         last = atoi((const char*)sqlite3_column_text(stmt, 0));
                         }
-                    last++;
                     text = (char*)calloc(200, sizeof(char));
                     if (useending == 1) {
                         limit = 200 - strlen(ending);
@@ -597,11 +600,27 @@ int main(int argc, char* argv[]) {
                         strcat(text, ending);
 #endif
                         }
+                    if (first == 1) {
+                        for(counter = 1; counter < last; counter++) {
+                            printf("No supported yet due http://stackoverflow.com/questions/13265244/shift-ids-of-table-alike-id-id-1-where-id-is-primary-key\n\r");
+                            return -1;
+                            //Failing due PRIMARY KEY
+                            //TODO: temporary alter the table somehow.
+                            sql("UPDATE TODO SET id = id + 1");
+                        }
 #ifdef WIN32
-                    sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s')", last, text);
+                        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(0,'%s')", text);
 #else
-                    sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last, text);
+                        sprintf(queries[ind++], "INSERT INTO TODO VALUES(0,'%s')", text);
 #endif
+                        }
+                    else {
+#ifdef WIN32
+                        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s')", last + 1, text);
+#else
+                        sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last + 1, text);
+#endif
+                        }
                     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                     if (retval) {
                         printf("Task were not added! (shit happens)\n\r");
