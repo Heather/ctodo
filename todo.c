@@ -35,13 +35,14 @@ int q_cnt = 13;
 char** queries;
 sqlite3* handle;
 void version() {
-    printf("  CTODO: CLI TODO List Management Uti v1.0.4\n\r");
+    printf("  TODO List Management Uti v1.0.4\n\r");
     }
 void help(char* argv) {
     version();
     printf("  * usage:\n\r");
     printf("  %s <command> <arguments>\n\r", argv);
     printf("  - initdb - init empty database structure\n\r");
+    printf("      (set default database options without data lose, useful if you or some update broke it)\n\r");
     printf("  - read or r - to read all\n\r");
     printf("  - write or w or 1 (to put task on top) <msg> - add task\n\r");
     printf("      --motivate - end todo note with additional word (see ending option)\n\r");
