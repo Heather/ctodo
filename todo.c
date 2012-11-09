@@ -569,9 +569,15 @@ int main(int argc, char* argv[]) {
                     }
                 }
             else if (strcmp(argv[1], "clean") == 0) {
-                queries[ind++] = "DELETE FROM TODO";
-                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                timeUpdate(time(0));
+                char answer;
+                printf("Are you sure that you want to clean all the tasks? (y/n)");
+                if (scanf("%c", &answer) > 0) {
+                    if (answer == 'y') {
+                        queries[ind++] = "DELETE FROM TODO";
+                        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                        timeUpdate(time(0));
+                        }
+                    }
                 }
             else if (strcmp(argv[1], "rm") == 0) {
                 if (argc < 3) printf("rm what?\n\r");
