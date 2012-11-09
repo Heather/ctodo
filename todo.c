@@ -35,7 +35,7 @@ int q_cnt = 13;
 char** queries;
 sqlite3* handle;
 void version() {
-    printf("  TODO List Management Uti v1.0.4\n\r");
+    printf("  TODO List Management Uti v1.0.5\n\r");
     }
 void help(char* argv) {
     version();
@@ -43,9 +43,10 @@ void help(char* argv) {
     printf("  %s <command> <arguments>\n\r", argv);
     printf("  - initdb - init empty database structure\n\r");
     printf("      (set default database options without data lose, useful if you or some update broke it)\n\r");
-    printf("  - read or r - to read all\n\r");
-    printf("  - write or w or 1 (to put task on top) <msg> - add task\n\r");
+    printf("  - <msg> - just write todo <msg> to add new node to your todo list\n\r");
+    printf("      --first to put task on top priority\n\r");
     printf("      --motivate - end todo note with additional word (see ending option)\n\r");
+    printf("  - read or r - to read all\n\r");
     printf("  - edit or e <n> <msg> - edit task\n\r");
     printf("  - rm <number> - delete task\n\r");
     printf("  - clean - clean all tasks\n\r");
@@ -112,24 +113,11 @@ int main(int argc, char* argv[]) {
             version();
             return 0;
             }
-        if (strcmp(argv[1], "--help") == 0) {
+        else if (strcmp(argv[1], "--help") == 0) {
             help(argv[0]);
             return 0;
             }
-        if (strcmp(argv[1], "initdb") == 0
-                || strcmp(argv[1], "read") == 0
-                || strcmp(argv[1], "r") == 0
-                || strcmp(argv[1], "edit") == 0
-                || strcmp(argv[1], "e") == 0
-                || strcmp(argv[1], "clean") == 0
-                || strcmp(argv[1], "rm") == 0
-                || strcmp(argv[1], "write") == 0
-                || strcmp(argv[1], "w") == 0
-                || strcmp(argv[1], "1") == 0
-                || strcmp(argv[1], "set") == 0
-                || strcmp(argv[1], "swap") == 0
-                || strcmp(argv[1], "s") == 0
-                || strcmp(argv[1], "sync") == 0) {
+        else  {
             queries = (char**)malloc(sizeof(char*) * q_cnt);
             for (x = 0; x < q_cnt; x++) {
                 queries[x] = (char*)malloc(sizeof(char) * q_size);
@@ -517,119 +505,6 @@ int main(int argc, char* argv[]) {
                 free(syncdir);
                 free(filename);
                 }
-            else if ((strcmp(argv[1], "write") == 0) || (strcmp(argv[1], "w") == 0) || (strcmp(argv[1], "1") == 0)) {
-                if (argc < 3) printf("write what?\n\r");
-                else {
-                    char first = 0;
-                    int counter;
-                    int last = 0;
-                    int argi;
-                    char* text;
-                    char* ending;
-                    int useending = 0;
-                    int limit = 200;
-                    if (strcmp(argv[1], "1") == 0) first = 1;
-                    ///<Summary>
-                    ///Getting options from local database
-                    ///<Summary>
-#ifdef WIN32
-                    sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
-#else
-                    sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
-#endif
-                    retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
-                    if (retval) {
-                        printf("Sync data Failed, run initdb first\n\r");
-                        return -1;
-                        }
-                    while (sqlite3_step(stmt) == SQLITE_ROW) {
-                        if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0) {
-                            ending = (char*)calloc(200, sizeof(char));
-#ifdef WIN32
-                            sprintf_s(ending, 200, "%s", sqlite3_column_text(stmt, 1));
-#else
-                            sprintf(ending, "%s", sqlite3_column_text(stmt, 1));
-#endif
-                            }
-                        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "12") == 0) {
-                            useending = atoi((const char*)sqlite3_column_text(stmt, 1));
-                            }
-                        }
-                    ///<Summary>
-                    ///Writing to local database
-                    ///<Summary>
-#ifdef WIN32
-                    sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO");
-#else
-                    sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO");
-#endif
-                    retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
-                    if (retval) {
-                        printf("Inserting data to DB Failed, run initdb first\n\r");
-                        return -1;
-                        }
-                    while (sqlite3_step(stmt) == SQLITE_ROW) {
-                        last = atoi((const char*)sqlite3_column_text(stmt, 0));
-                        }
-                    text = (char*)calloc(200, sizeof(char));
-                    if (useending == 1) {
-                        limit = 200 - strlen(ending);
-                        }
-                    for (argi = 2; argi < argc; argi++) {
-                        if (strlen(text) + strlen(argv[argi]) + sizeof(char)  >= (unsigned int)limit) {
-                            break;
-                            }
-                        else {
-                            if ((strcmp(argv[argi], "--motivate") == 0)) {
-                                useending = 1;
-                                }
-                            else {
-#ifdef WIN32
-                                strcat_s(text, 200, argv[argi]);
-                                strcat_s(text, 200, " ");
-#else
-                                strcat(text, argv[argi]);
-                                strcat(text, " ");
-#endif
-                                }
-                            }
-                        }
-                    if (useending == 1) {
-#ifdef WIN32
-                        strcat_s(text, 200, ending);
-#else
-                        strcat(text, ending);
-#endif
-                        }
-                    if (first == 1) {
-                        for(counter = 1; counter < last; counter++) {
-                            sql("UPDATE TODO SET id = id + 1000000000");
-                            sql("UPDATE TODO SET id = id - (1000000000 - 1)");
-                        }
-#ifdef WIN32
-                        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(0,'%s')", text);
-#else
-                        sprintf(queries[ind++], "INSERT INTO TODO VALUES(0,'%s')", text);
-#endif
-                        }
-                    else {
-#ifdef WIN32
-                        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s')", last + 1, text);
-#else
-                        sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last + 1, text);
-#endif
-                        }
-                    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                    if (retval) {
-                        printf("Task were not added! (shit happens)\n\r");
-                        close();
-                        return -1;
-                        }
-                    free(text);
-                    free(ending);
-                    timeUpdate(time(0));
-                    }
-                }
             else if ((strcmp(argv[1], "edit") == 0) || (strcmp(argv[1], "e") == 0)) {
                 if (argc < 3) printf("edit what?\n\r");
                 else {
@@ -888,11 +763,119 @@ int main(int argc, char* argv[]) {
                 free(colorscheme);
 #endif
                 }
+            else {
+                char first = 0;
+                int counter;
+                int last = 0;
+                int argi;
+                char* text;
+                char* ending;
+                int useending = 0;
+                int limit = 200;
+                ///<Summary>
+                ///Getting options from local database
+                ///<Summary>
+#ifdef WIN32
+                sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
+#else
+                sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
+#endif
+                retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
+                if (retval) {
+                    printf("Sync data Failed, run initdb first\n\r");
+                    return -1;
+                    }
+                while (sqlite3_step(stmt) == SQLITE_ROW) {
+                    if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0) {
+                        ending = (char*)calloc(200, sizeof(char));
+#ifdef WIN32
+                        sprintf_s(ending, 200, "%s", sqlite3_column_text(stmt, 1));
+#else
+                        sprintf(ending, "%s", sqlite3_column_text(stmt, 1));
+#endif
+                        }
+                    else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "12") == 0) {
+                        useending = atoi((const char*)sqlite3_column_text(stmt, 1));
+                        }
+                    }
+                ///<Summary>
+                ///Writing to local database
+                ///<Summary>
+#ifdef WIN32
+                sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO");
+#else
+                sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO");
+#endif
+                retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
+                if (retval) {
+                    printf("Inserting data to DB Failed, run initdb first\n\r");
+                    return -1;
+                    }
+                while (sqlite3_step(stmt) == SQLITE_ROW) {
+                    last = atoi((const char*)sqlite3_column_text(stmt, 0));
+                    }
+                text = (char*)calloc(200, sizeof(char));
+                if (useending == 1) {
+                    limit = 200 - strlen(ending);
+                    }
+                for (argi = 1; argi < argc; argi++) {
+                    if (strlen(text) + strlen(argv[argi]) + sizeof(char)  >= (unsigned int)limit) {
+                        break;
+                        }
+                    else {
+                        if ((strcmp(argv[argi], "--motivate") == 0)) {
+                            useending = 1;
+                            }
+                        else if (strcmp(argv[1], "--first") == 0) {
+                            first = 1;
+                            }
+                        else {
+#ifdef WIN32
+                            strcat_s(text, 200, argv[argi]);
+                            strcat_s(text, 200, " ");
+#else
+                            strcat(text, argv[argi]);
+                            strcat(text, " ");
+#endif
+                            }
+                        }
+                    }
+                if (useending == 1) {
+#ifdef WIN32
+                    strcat_s(text, 200, ending);
+#else
+                    strcat(text, ending);
+#endif
+                    }
+                if (first == 1) {
+                    for (counter = 1; counter < last; counter++) {
+                        sql("UPDATE TODO SET id = id + 1000000000");
+                        sql("UPDATE TODO SET id = id - (1000000000 - 1)");
+                        }
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(0,'%s')", text);
+#else
+                    sprintf(queries[ind++], "INSERT INTO TODO VALUES(0,'%s')", text);
+#endif
+                    }
+                else {
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s')", last + 1, text);
+#else
+                    sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last + 1, text);
+#endif
+                    }
+                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                if (retval) {
+                    printf("Task were not added! (shit happens)\n\r");
+                    close();
+                    return -1;
+                    }
+                free(text);
+                free(ending);
+                timeUpdate(time(0));
+                }
             close();
-            }
-        else {
-            printf("What?\n\n");
-            help(argv[0]);
             }
         }
     }
