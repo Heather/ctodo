@@ -35,7 +35,7 @@ int q_cnt = 13;
 char** queries;
 sqlite3* handle;
 void version() {
-    printf("  TODO List Management Uti v1.0.5\n\r");
+    printf("  TODO List Management Uti v1.0.6\n\r");
     }
 void help(char* argv) {
     version();
@@ -47,7 +47,8 @@ void help(char* argv) {
     printf("      --first to put task on top priority\n\r");
     printf("      --motivate - end todo note with additional word (see ending option)\n\r");
     printf("  - read or r - to read all\n\r");
-    printf("  - edit or e <n> <msg> - edit task\n\r");
+    printf("  - edit or e <number> <msg> - edit task\n\r");
+    printf("  - mv <number1> <number2> - move task\n\r");
     printf("  - rm <number> - delete task\n\r");
     printf("  - clean - clean all tasks\n\r");
     printf("  - swap or s <number1> <number2> - swap elements\n\r");
@@ -568,6 +569,18 @@ int main(int argc, char* argv[]) {
                     timeUpdate(time(0));
                     }
                 }
+            else if (strcmp(argv[1], "mv") == 0) {
+                if (argc < 4) printf("move what? you need to provide two indexes\n\r");
+                else {
+#ifdef WIN32
+                    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
+#else
+                    sprintf(queries[ind++], "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
+#endif
+                    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                    timeUpdate(time(0));
+                    }
+                }
             else if (strcmp(argv[1], "clean") == 0) {
                 char answer;
                 printf("Are you sure that you want to clean all the tasks? (y/n)");
@@ -580,7 +593,7 @@ int main(int argc, char* argv[]) {
                     }
                 }
             else if (strcmp(argv[1], "rm") == 0) {
-                if (argc < 3) printf("rm what?\n\r");
+                if (argc < 3) printf("remove what?\n\r");
                 else {
 #ifdef WIN32
                     sprintf_s(queries[ind++], 255, "DELETE FROM TODO WHERE id = %s", argv[2]);
