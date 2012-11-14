@@ -38,6 +38,7 @@ ctodo:	$(LIBS)
 clean:
 	rm -f todo.a
 	rm -f todo
+	find . -name '*~' -delete;
 
 install:
 	$(MKDIR) $(DESTDIR)$(BINDIR)
