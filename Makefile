@@ -1,5 +1,5 @@
 #           todo - Light TODO list
-#          Copyright (C)  2012  nCdy
+#          Copyright (C)  2012  Ash Harley
 #
 #This library is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public
@@ -24,8 +24,6 @@ INSTALL   ?= install
 MKDIR     ?= $(INSTALL) -d
 BINDIR    ?= $(PREFIX)/bin
 DESTDIR   ?=
-
-#all: $(LIBS) $(SRC)
 
 todo:	$(SRC)
 	$(CC) -o todo $^ $(CFLAGS)
