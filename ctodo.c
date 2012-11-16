@@ -581,7 +581,11 @@ void clean() {
     prelude();
     char answer;
     printf("Are you sure that you want to clean all the tasks? (y/n)");
+#ifdef WIN32
+    if (scanf_s("%c", &answer) > 0) {
+#else
     if (scanf("%c", &answer) > 0) {
+#endif
         if (answer == 'y') {
             queries[ind++] = "DELETE FROM TODO";
             retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
