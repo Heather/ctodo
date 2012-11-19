@@ -25,13 +25,15 @@ MKDIR     ?= $(INSTALL) -d
 BINDIR    ?= $(PREFIX)/bin
 DESTDIR   ?=
 
-todo:	$(SRC)
+all: todo
+
+todo:	$(SRC) | ctodo
 	$(CC) -o todo $^ $(CFLAGS)
 
 ctodo:	$(LIBS)
 	$(CC) ${INCLUDES} -c -o todo.a $^ $(CFLAGS)
 
-.PHONY: clean
+.PHONY: clean all
 
 clean:
 	rm -f todo.a
