@@ -853,7 +853,7 @@ int write(char** argv, int argc) {
             if ((strcmp(argv[argi], "--motivate") == 0)) {
                 useending = 1;
                 }
-            else if (strcmp(argv[argi] "--first") == 0) {
+            else if (strcmp(argv[argi], "--first") == 0) {
                 first = 1;
                 }
             else {
