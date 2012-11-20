@@ -1,6 +1,15 @@
 TODO List management util: Usage & Version
-==========================================
+=======================================================
 
+ - todo (deprecated) : all in one CLI application.
+ - ctodo : general c library
+ - cctodo : simple ctodo client in C
+ - wtodo (not released yet) : windows gui application
+ - atodo (not released yet) : android / iphone gui application
+ - additional experiment using ctodo lib on various languages
+
+ =======================================================
+ 
  - good command line interface (use --help for details)
  - easy synchronization via your favorite vcs
  - crossplatform
@@ -10,12 +19,12 @@ TODO List management util: Usage & Version
  - color schemas (after 1.0.4 ver)
 
 Installation
-============
+=======================================================
 
 For Unix-like
 ---------
 ```bash
-git clone git@bitbucket.org:Ashlyn/todo.git
+hg clone https://Cynede@bitbucket.org/Cynede/ctodo
 cd todo
 make
 make install
@@ -23,20 +32,23 @@ make install
 
 For Gentoo
 ----------
+Probably add my overlay and
 ```bash
-layman -a shame
 emerge todo
 ```
 
 For Windows
 ----------
-Compilable with MSVC 2012, there is project file. (TODO: need some corrections maybe)
+Compilable with MSVC 2010 / 2012, there is 
+
+ - project files for everything 
+ - bat files for fast compilation
+ - additional testing in scripts
 
 Binaries
 ----------
-Are not available so far (just because I am lazy)
+some of them are available right in source control
 
 License
 -------
-
 The GNU General Public License v3.0
