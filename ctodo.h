@@ -31,3 +31,5 @@ extern void clean();
 extern void rm(char** argv);
 extern int read(char** argv, int argc);
 extern int write(char** argv, int argc);
+
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
