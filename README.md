@@ -1,7 +1,6 @@
 TODO List management util: Usage & Version
 =======================================================
 
- - todo (deprecated) : all in one CLI application.
  - ctodo : general c library
  - cctodo : simple ctodo client in C
  - wtodo (not released yet) : windows gui application

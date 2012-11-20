@@ -17,7 +17,6 @@
 
 CC=gcc
 CFLAGS=-lsqlite3 -O3
-SRC=todo.c
 CSRC=cctodo.c
 CLIBS=ctodo.c
 LIBS=todo.a
@@ -28,9 +27,6 @@ BINDIR    ?= $(PREFIX)/bin
 DESTDIR   ?=
 
 all: cctodo
-
-todo:	$(SRC)
-	$(CC) -o todo $^ $(CFLAGS)
 
 cctodo:	$(CSRC) | ctodo
 	$(CC) ${INCLUDES} -o todo $^ ${CFLAGS} ${LIBS}

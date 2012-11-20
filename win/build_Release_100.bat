@@ -34,7 +34,7 @@ echo ---------------------------
 echo ---------------------------
 echo        Edit
 echo ---------------------------
-%todo% edit 1 Im new string and now Im replacing Chuck Norris
+%todo% edit 2 Im new string
 %todo% read
 echo ---------------------------
 echo        Sync

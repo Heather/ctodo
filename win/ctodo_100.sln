@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctodo_100", "ctodo_100.vcxproj", "{B57EB721-CBB5-472D-86EE-DB919ACB3090}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctodo_lib_100", "ctodo_lib_100.vcxproj", "{1A5C0E2B-2F32-4816-AB5F-1C6EF677186D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cctodo_100", "cctodo_100.vcxproj", "{D47A29E2-AF4A-46B2-A74B-5466244AA333}"
@@ -13,10 +11,6 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B57EB721-CBB5-472D-86EE-DB919ACB3090}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B57EB721-CBB5-472D-86EE-DB919ACB3090}.Debug|Win32.Build.0 = Debug|Win32
-		{B57EB721-CBB5-472D-86EE-DB919ACB3090}.Release|Win32.ActiveCfg = Release|Win32
-		{B57EB721-CBB5-472D-86EE-DB919ACB3090}.Release|Win32.Build.0 = Release|Win32
 		{1A5C0E2B-2F32-4816-AB5F-1C6EF677186D}.Debug|Win32.ActiveCfg = Debug|Win32
 		{1A5C0E2B-2F32-4816-AB5F-1C6EF677186D}.Debug|Win32.Build.0 = Debug|Win32
 		{1A5C0E2B-2F32-4816-AB5F-1C6EF677186D}.Release|Win32.ActiveCfg = Release|Win32
