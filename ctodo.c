@@ -126,6 +126,7 @@ int prelude() {
         printf("Database connection failed\n\r");
         return -1;
         }
+    return 0;
     }
 int initdb() {
     prelude();
@@ -202,8 +203,8 @@ int initdb() {
     return 0;
     }
 int set(char** argv, int argc) {
-    prelude();
     int opt = 0;
+    if (prelude() == -1) return -1;
     if (argc < 4) printf("set what?\n\r");
     else {
         if (strcmp(argv[2], "syncfile") == 0) {
@@ -280,7 +281,6 @@ int set(char** argv, int argc) {
     return 0;
     }
 int sync(char** argv) {
-    prelude();
     char* filename;
 #ifndef WIN32
     char* home;
@@ -302,6 +302,7 @@ int sync(char** argv) {
 #endif
     filename = (char*)calloc(200, sizeof(char));
     syncdir = (char*)calloc(200, sizeof(char));
+    if (prelude() == -1) return -1;
 #ifdef WIN32
     sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS");
 #else
@@ -510,112 +511,116 @@ int sync(char** argv) {
     return 0;
     }
 void edit(char** argv, int argc) {
-    prelude();
     int argi;
-    char* text;
-    text = (char*)calloc(200, sizeof(char));
-    for (argi = 3; argi < argc; argi++) {
+    char* text = (char*)calloc(200, sizeof(char));
+    if (prelude() != -1) {
+        for (argi = 3; argi < argc; argi++) {
 #ifdef WIN32
-        strcat_s(text, 200, argv[argi]);
-        strcat_s(text, 200, " ");
+            strcat_s(text, 200, argv[argi]);
+            strcat_s(text, 200, " ");
 #else
-        strcat(text, argv[argi]);
-        strcat(text, " ");
+            strcat(text, argv[argi]);
+            strcat(text, " ");
 #endif
-        }
+            }
 #ifdef WIN32
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
+        sprintf_s(queries[ind++], 255, "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
 #else
-    sprintf(queries[ind++], "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
+        sprintf(queries[ind++], "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
 #endif
-    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-    if (retval) {
-        printf("Task were not edited! (shit happens)\n\r");
+        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+        if (retval) {
+            printf("Task were not edited! (shit happens)\n\r");
+            }
+        free(text);
+        timeUpdate(time(0));
         }
-    free(text);
-    timeUpdate(time(0));
     close();
     }
 void swap(char** argv) {
-    prelude();
     int val1 = atoi(argv[2]);
     int val2 = atoi(argv[3]);
+    if (prelude() != -1) {
 #ifdef WIN32
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
+        sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
 #else
-    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
+        sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
 #endif
-    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-    if (retval) {
-        printf("Swap failed! (shit happens)\n\r");
-        }
+        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+        if (retval) {
+            printf("Swap failed! (shit happens)\n\r");
+            }
 #ifdef WIN32
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
+        sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
 #else
-    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
+        sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
 #endif
-    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-    if (retval) {
-        printf("Swap failed! (shit happens)\n\r");
-        }
+        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+        if (retval) {
+            printf("Swap failed! (shit happens)\n\r");
+            }
 #ifdef WIN32
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+        sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
 #else
-    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+        sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
 #endif
-    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-    if (retval) {
-        printf("Swap failed! (shit happens)\n\r");
+        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+        if (retval) {
+            printf("Swap failed! (shit happens)\n\r");
+            }
+        timeUpdate(time(0));
         }
-    timeUpdate(time(0));
     close();
     }
 void mv(char** argv) {
-    prelude();
+    if (prelude() != -1) {
 #ifdef WIN32
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
+        sprintf_s(queries[ind++], 255, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
 #else
-    sprintf(queries[ind++], "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
+        sprintf(queries[ind++], "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
 #endif
-    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-    timeUpdate(time(0));
+        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+        timeUpdate(time(0));
+        }
     close();
     }
 void clean() {
-    prelude();
     char answer;
-    printf("Are you sure that you want to clean all the tasks? (y/n)");
+    if (prelude() != -1) {
+        printf("Are you sure that you want to clean all the tasks? (y/n)");
 #ifdef WIN32
-    if (scanf_s("%c", &answer) > 0) {
+        if (scanf_s("%c", &answer) > 0) {
 #else
-    if (scanf("%c", &answer) > 0) {
+        if (scanf("%c", &answer) > 0) {
 #endif
-        if (answer == 'y') {
-            queries[ind++] = "DELETE FROM TODO";
-            retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-            timeUpdate(time(0));
+            if (answer == 'y') {
+                queries[ind++] = "DELETE FROM TODO";
+                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+                timeUpdate(time(0));
+                }
             }
         }
     }
 void rm(char** argv) {
-    prelude();
+    if (prelude() != -1) {
 #ifdef WIN32
-    sprintf_s(queries[ind++], 255, "DELETE FROM TODO WHERE id = %s", argv[2]);
+        sprintf_s(queries[ind++], 255, "DELETE FROM TODO WHERE id = %s", argv[2]);
 #else
-    sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
+        sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
 #endif
-    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-    timeUpdate(time(0));
+        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+        timeUpdate(time(0));
+        }
     close();
     }
 int read(char** argv, int argc) {
-    prelude();
     char* lineborder1;
     char* lineborder2;
     char* spaces1;
     char* spaces2;
     int maxl2 = 0, maxl1 = 0;
     int i, maxi1, maxi2;
+    if (prelude() == -1) return -1;
 #ifndef WIN32
     char* colorscheme;
     ///<Summary>
@@ -790,7 +795,6 @@ int read(char** argv, int argc) {
     return 0;
     }
 int write(char** argv, int argc) {
-    prelude();
     char first = 0;
     int counter;
     int last = 0;
@@ -799,6 +803,7 @@ int write(char** argv, int argc) {
     char* ending;
     int useending = 0;
     int limit = 200;
+    if (prelude() == -1) return -1;
     ///<Summary>
     ///Getting options from local database
     ///<Summary>

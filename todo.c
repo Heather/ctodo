@@ -516,8 +516,7 @@ int main(int argc, char* argv[]) {
                 if (argc < 3) printf("edit what?\n\r");
                 else {
                     int argi;
-                    char* text;
-                    text = (char*)calloc(200, sizeof(char));
+                    char* text = (char*)calloc(200, sizeof(char));
                     for (argi = 3; argi < argc; argi++) {
 #ifdef WIN32
                         strcat_s(text, 200, argv[argi]);
