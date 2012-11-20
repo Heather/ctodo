@@ -27,8 +27,7 @@ MKDIR     ?= $(INSTALL) -d
 BINDIR    ?= $(PREFIX)/bin
 DESTDIR   ?=
 
-#todo while cctodo is broken
-all: todo
+all: cctodo
 
 todo:	$(SRC)
 	$(CC) -o todo $^ $(CFLAGS)
