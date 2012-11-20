@@ -45,12 +45,11 @@ int main(int argc, char* argv[]) {
             help(argv[0]);
             return 0;
             }
-        else  {
-            if (strcmp(argv[1], "initdb") == 0) {
+        else if (strcmp(argv[1], "initdb") == 0) {
                 initdb();
                 return 0;
                 }
-            if (strcmp(argv[1], "set") == 0) {
+		else if (strcmp(argv[1], "set") == 0) {
                 if (argc < 4) {
                     printf("set what?\n\r");
                     return 0;
@@ -59,7 +58,7 @@ int main(int argc, char* argv[]) {
                     return set(argv, argc);
                     }
                 }
-            if (strcmp(argv[1], "sync") == 0) {
+            else if (strcmp(argv[1], "sync") == 0) {
                 return sync(argv);
                 }
             else if ((strcmp(argv[1], "edit") == 0) || (strcmp(argv[1], "e") == 0)) {
@@ -100,7 +99,6 @@ int main(int argc, char* argv[]) {
             else {
                 return write(argv, argc);
                 }
-            }
         }
     }
 
