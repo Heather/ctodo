@@ -118,7 +118,6 @@ int prelude() {
     home = (char*)getenv("HOME");
     char* temp = (char*)calloc(200, sizeof(char));
     strcpy(temp, home);
-    ///You can't select another file where to save dbase because my options is in this dbase
     retval = sqlite3_open(strcat(temp, "/.todo.db3"), &handle);
     free(temp);
 #endif
@@ -129,7 +128,7 @@ int prelude() {
     return 0;
     }
 int initdb() {
-    prelude();
+    if (prelude() == -1) return -1;
     sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
     if (retval) {
         printf("Init DB Failed, Shit happens?\n\r");
