@@ -39,7 +39,7 @@ int q_cnt = 13;
 char** queries;
 sqlite3* handle;
 void version() {
-    printf("  TODO List Management Uti v1.0.6\n\r");
+    printf("  TODO List Management Uti v1.0.7\n\r");
     }
 void help(char* argv) {
     version();

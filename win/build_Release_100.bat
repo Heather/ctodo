@@ -1,12 +1,12 @@
 set MSBuild="%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\msbuild.exe"
 
-%MSBuild% ctodo_100.sln /p:Configuration=Release
+%MSBuild% cctodo_100.vcxproj /p:Configuration=Release
 
 @echo off
 echo ---------------------------
 echo   Running CToDo Tests
 echo ---------------------------
-set todo=Release\ctodo_100.exe
+set todo=Release\cctodo_100.exe
 %todo% --help
 echo ---------------------------
 echo        Initdb
