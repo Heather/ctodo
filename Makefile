@@ -18,19 +18,24 @@
 CC=gcc
 CFLAGS=-lsqlite3 -O3
 SRC=todo.c
-LIBS=ctodo.c
+CSRC=cctodo.c
+CLIBS=ctodo.c
+LIBS=todo.a
 INCLUDES = -I .
 INSTALL   ?= install
 MKDIR     ?= $(INSTALL) -d
 BINDIR    ?= $(PREFIX)/bin
 DESTDIR   ?=
 
-all: todo
+all: cctodo
 
-todo:	$(SRC) | ctodo
+todo:	$(SRC)
 	$(CC) -o todo $^ $(CFLAGS)
 
-ctodo:	$(LIBS)
+cctodo:	$(CSRC) | ctodo
+	$(CC) ${LIBS} -o todo $^ $(CFLAGS)
+
+ctodo:	$(CLIBS)
 	$(CC) ${INCLUDES} -c -o todo.a $^ $(CFLAGS)
 
 .PHONY: clean all
