@@ -186,7 +186,11 @@ int main(int argc, char* argv[]) {
                 ///<Option>
                 ///Synchronization directory
                 ///</Option>
+#ifndef WIN32
                 sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'/home/nen/todo')");
+#else
+                sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.')");
+#endif
 #ifndef WIN32
                 ///<Option>
                 ///Path for HOME (only for linux)
@@ -197,12 +201,14 @@ int main(int argc, char* argv[]) {
                 ///Color scheme (only for linux)
                 ///</Option>
                 sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (21,'red')");
-#endif
                 if (retval) {
                     printf("Instert deafaults options Failed, Shit happens?\n\r");
                     close();
                     return -1;
                     }
+#endif
+                close();
+                return 0;
                 }
             if (strcmp(argv[1], "set") == 0) {
                 int opt = 0;
