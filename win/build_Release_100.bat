@@ -12,12 +12,14 @@ echo ---------------------------
 echo        Initdb
 echo ---------------------------
 %todo% initdb
+echo Done
 echo ---------------------------
 echo        Write
 echo ---------------------------
 %todo% I am very long string and there is no mistakes parsing me. My maximum is 255 so Im not 255
 %todo% I contain weird symbols alike -+=!@#$%^&*() and there is still no errors
-%todo% I am Chuck Norris
+%todo% --first I am Chuck Norris
+%todo% --motivate motivation test
 %todo% read
 echo ---------------------------
 echo        Swap
@@ -32,7 +34,7 @@ echo ---------------------------
 echo ---------------------------
 echo        Edit
 echo ---------------------------
-%todo% edit 2 Im new string and now Im replacing Chuck Norris
+%todo% edit 1 Im new string and now Im replacing Chuck Norris
 %todo% read
 echo ---------------------------
 echo        Sync
