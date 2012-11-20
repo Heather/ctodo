@@ -20,3 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #endif
 
 extern void initdb();
+extern void version();
+extern void help(char* argv);
+extern int set(char** argv, int argc);
+extern int sync(char** argv);
+extern void swap(char** argv);
+extern void clean();
+extern void rm(char** argv);
+extern int read(char** argv, int argc);
+extern int write(char** argv, int argc);
