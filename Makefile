@@ -34,7 +34,7 @@ todo:	$(SRC)
 	$(CC) -o todo $^ $(CFLAGS)
 
 cctodo:	$(CSRC) | ctodo
-	$(CC) ${LIBS} -o todo $^ $(CFLAGS)
+	$(CC) ${INCLUDES} -o todo $^ ${CFLAGS} ${LIBS}
 
 ctodo:	$(CLIBS)
 	$(CC) ${INCLUDES} -c -o ${LIBS} $^ $(CFLAGS)

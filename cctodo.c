@@ -25,21 +25,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        help(argv[0]);
+        todo_help(argv[0]);
         return 0;
         }
     else {
         if (strcmp(argv[1], "--version") == 0) {
-            version();
+            todo_version();
             return 0;
             }
         else if (strcmp(argv[1], "--help") == 0) {
-            version();
-            help(argv[0]);
+            todo_help(argv[0]);
             return 0;
             }
         else if (strcmp(argv[1], "initdb") == 0) {
-            initdb();
+            todo_initdb();
             return 0;
             }
         else if (strcmp(argv[1], "set") == 0) {
@@ -48,49 +47,49 @@ int main(int argc, char* argv[]) {
                 return 0;
                 }
             else {
-                return set(argv, argc);
+                return todo_set(argv, argc);
                 }
             }
         else if (strcmp(argv[1], "sync") == 0) {
-            return sync(argv);
+            return todo_sync(argv);
             }
         else if ((strcmp(argv[1], "edit") == 0) || (strcmp(argv[1], "e") == 0)) {
             if (argc < 3) printf("edit what?\n\r");
             else {
-                edit(argv, argc);
+                todo_edit(argv, argc);
                 }
             return 0;
             }
         else if ((strcmp(argv[1], "swap") == 0) || (strcmp(argv[1], "s") == 0)) {
             if (argc < 3) printf("swap what?\n\r");
             else {
-                swap(argv);
+                todo_swap(argv);
                 }
             return 0;
             }
         else if (strcmp(argv[1], "mv") == 0) {
             if (argc < 4) printf("move what? you need to provide two indexes\n\r");
             else {
-                mv(argv);
+                todo_mv(argv);
                 }
             return 0;
             }
         else if (strcmp(argv[1], "clean") == 0) {
-            clean();
+            todo_clean();
             return 0;
             }
         else if (strcmp(argv[1], "rm") == 0) {
             if (argc < 3) printf("remove what?\n\r");
             else {
-                rm(argv);
+                todo_rm(argv);
                 }
             return 0;
             }
         else if ((strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "r") == 0)) {
-            return read(argv, argc);
+            return todo_read(argv, argc);
             }
         else {
-            return write(argv, argc);
+            return todo_write(argv, argc);
             }
         }
     }

@@ -19,17 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <Windows.h>
 #endif
 
-extern void initdb();
-extern void version();
-extern void help(char* argv);
-extern int set(char** argv, int argc);
-extern int sync(char** argv);
-extern void edit(char** argv, int argc);
-extern void swap(char** argv);
-extern void mv(char** argv);
-extern void clean();
-extern void rm(char** argv);
-extern int read(char** argv, int argc);
-extern int write(char** argv, int argc);
+extern void todo_initdb();
+extern void todo_version();
+extern void todo_help(char* argv);
+extern int todo_set(char** argv, int argc);
+extern int todo_sync(char** argv);
+extern void todo_edit(char** argv, int argc);
+extern void todo_swap(char** argv);
+extern void todo_mv(char** argv);
+extern void todo_clean();
+extern void todo_rm(char** argv);
+extern int todo_read(char** argv, int argc);
+extern int todo_write(char** argv, int argc);
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

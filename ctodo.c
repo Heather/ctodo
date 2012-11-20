@@ -38,11 +38,11 @@ int q_cnt = 13;
 #endif
 char** queries;
 sqlite3* handle;
-void version() {
+void todo_version() {
     printf("  TODO List Management Uti v1.0.7\n\r");
     }
-void help(char* argv) {
-    version();
+void todo_help(char* argv) {
+    todo_version();
     printf("  * usage:\n\r");
     printf("  %s <command> <arguments>\n\r", argv);
     printf("  - initdb - init empty database structure\n\r");
@@ -129,7 +129,7 @@ int prelude() {
         }
     return 0;
     }
-int initdb() {
+int todo_initdb() {
     if (prelude() == -1) return -1;
     sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
     if (retval) {
@@ -203,7 +203,7 @@ int initdb() {
     close();
     return 0;
     }
-int set(char** argv, int argc) {
+int todo_set(char** argv, int argc) {
     int opt = 0;
     if (prelude() == -1) return -1;
     if (argc < 4) printf("set what?\n\r");
@@ -281,7 +281,7 @@ int set(char** argv, int argc) {
     close();
     return 0;
     }
-int sync(char** argv) {
+int todo_sync(char** argv) {
     char* filename;
 #ifndef WIN32
     char* home;
@@ -511,7 +511,7 @@ int sync(char** argv) {
     close();
     return 0;
     }
-void edit(char** argv, int argc) {
+void todo_edit(char** argv, int argc) {
     int argi;
     char* text = (char*)calloc(200, sizeof(char));
     if (prelude() != -1) {
@@ -538,7 +538,7 @@ void edit(char** argv, int argc) {
         }
     close();
     }
-void swap(char** argv) {
+void todo_swap(char** argv) {
     int val1 = atoi(argv[2]);
     int val2 = atoi(argv[3]);
     if (prelude() != -1) {
@@ -573,7 +573,7 @@ void swap(char** argv) {
         }
     close();
     }
-void mv(char** argv) {
+void todo_mv(char** argv) {
     if (prelude() != -1) {
 #ifdef WIN32
         sprintf_s(queries[ind++], 255, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
@@ -585,7 +585,7 @@ void mv(char** argv) {
         }
     close();
     }
-void clean() {
+void todo_clean() {
     char answer;
     if (prelude() != -1) {
         printf("Are you sure that you want to clean all the tasks? (y/n)");
@@ -602,7 +602,7 @@ void clean() {
             }
         }
     }
-void rm(char** argv) {
+void todo_rm(char** argv) {
     if (prelude() != -1) {
 #ifdef WIN32
         sprintf_s(queries[ind++], 255, "DELETE FROM TODO WHERE id = %s", argv[2]);
@@ -614,7 +614,7 @@ void rm(char** argv) {
         }
     close();
     }
-int read(char** argv, int argc) {
+int todo_read(char** argv, int argc) {
     char* lineborder1;
     char* lineborder2;
     char* spaces1;
@@ -795,7 +795,7 @@ int read(char** argv, int argc) {
     close();
     return 0;
     }
-int write(char** argv, int argc) {
+int todo_write(char** argv, int argc) {
     char first = 0;
     int counter;
     int last = 0;
