@@ -108,6 +108,9 @@ void close() {
 int prelude() {
     timefile = 0;
     f = NULL;
+#ifndef WIN32
+    char* temp = (char*)calloc(200, sizeof(char));
+#endif
     queries = (char**)malloc(sizeof(char*) * q_cnt);
     for (x = 0; x < q_cnt; x++) {
         queries[x] = (char*)malloc(sizeof(char) * q_size);
@@ -116,7 +119,6 @@ int prelude() {
     retval = sqlite3_open("todo.db3", &handle);
 #else
     home = (char*)getenv("HOME");
-    char* temp = (char*)calloc(200, sizeof(char));
     strcpy(temp, home);
     retval = sqlite3_open(strcat(temp, "/.todo.db3"), &handle);
     free(temp);

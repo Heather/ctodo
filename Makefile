@@ -36,7 +36,7 @@ cctodo:	$(CSRC) | ctodo
 	$(CC) ${LIBS} -o todo $^ $(CFLAGS)
 
 ctodo:	$(CLIBS)
-	$(CC) ${INCLUDES} -c -o todo.a $^ $(CFLAGS)
+	$(CC) ${INCLUDES} -c -o ${LIBS} $^ $(CFLAGS)
 
 .PHONY: clean all
 
