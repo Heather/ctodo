@@ -32,9 +32,6 @@ using System.Windows.Shapes;
 using nwrap;
 
 namespace wtodo {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window {
         public todo t;
         public MainWindow() {
@@ -43,9 +40,7 @@ namespace wtodo {
             }
 
         private void button1_Click(object sender, RoutedEventArgs e) {
-            //ConsoleManager.Show();
-            Console.WriteLine("test");
-            t.n_help();
+            this.textBox1.Text += t.n_version();
             }
         }
     }

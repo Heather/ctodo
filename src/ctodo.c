@@ -38,11 +38,11 @@ int q_cnt = 13;
 #endif
 char** queries;
 sqlite3* handle;
-void todo_version() {
-    printf("  TODO List Management Uti v1.0.7\n\r");
+char* todo_version() {
+    return "  TODO List Management Uti v1.0.7\n\r";
     }
 void todo_help(char* argv) {
-    todo_version();
+    printf(todo_version());
     printf("  * usage:\n\r");
     printf("  %s <command> <arguments>\n\r", argv);
     printf("  - initdb - init empty database structure\n\r");

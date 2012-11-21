@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
         }
     else {
         if (strcmp(argv[1], "--version") == 0) {
-            todo_version();
+            printf(todo_version());
             return 0;
             }
         else if (strcmp(argv[1], "--help") == 0) {

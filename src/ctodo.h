@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #endif
 
 extern void todo_initdb();
-extern void todo_version();
+extern char* todo_version();
 extern void todo_help(char* argv);
 extern int todo_set(char** argv, int argc);
 extern int todo_sync(char** argv);

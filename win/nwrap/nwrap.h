@@ -27,7 +27,7 @@ namespace nwrap {
 	public ref class todo {
         public: 
             void n_initdb();
-            void n_version();
+            String^ n_version();
             void n_help();
             int n_set(char** argv, int argc);
             int n_sync(char** argv);
