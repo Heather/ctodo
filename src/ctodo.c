@@ -47,7 +47,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  TODO List Management Uti v1.0.7\n";
+    return "  TODO List Management Uti v1.0.8\n";
     }
 //________________________________________________________________________________
 char* todo_help() {

@@ -3,7 +3,8 @@ TODO List management util: Usage & Version
 
  - ctodo : general c library
  - cctodo : simple ctodo client in C
- - wtodo (not released yet) : windows gui application
+ - nwrap : native wrapper for CLR Languages
+ - wtodo (not finished yet) : windows gui application
  - atodo (not released yet) : android / iphone gui application
  - additional experiment using ctodo lib on various languages
 
@@ -12,10 +13,12 @@ TODO List management util: Usage & Version
  - good command line interface (use --help for details)
  - easy synchronization via your favorite vcs
  - crossplatform
- - native, written in C
- - you can work from web via GitHub for example
- - can motivate you :D your personal psychologist
- - color schemas (after 1.0.4 ver)
+ - native, library is written in C and Sqlite
+ - you can manage your list just from anywhere
+ - it could be your personal psychologist, trust me
+ - it's fancy even has got CLI color schemas (after 1.0.4 ver)
+ - smart structure: library -> wrapper -> application
+ - so you can write you own implementations
 
 Installation
 =======================================================
@@ -44,10 +47,6 @@ Compilable with MSVC 2010 / 2012, there is
  - bat files for fast compilation
  - additional testing in scripts
 
-Binaries
-----------
-some of them are available right in source control
-
 License
 -------
-The GNU General Public License v3.0
+The GNU General Public License v2.0
