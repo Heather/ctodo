@@ -1,5 +1,10 @@
 win/Debug
 win/Release
+win/wtodo/Debug
+win/wtodo/Release
+win/wtodo/bin
+win/nwrap/Debug
+win/nwrap/Release
 win/ipch
 (?i).opensdf
 (?i).sdf

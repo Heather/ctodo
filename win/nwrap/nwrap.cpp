@@ -11,7 +11,8 @@ namespace nwrap {
     void  todo::n_version() {
         todo_version();
         }
-    void  todo::n_help(char* argv) {
+    void  todo::n_help() {
+        char* argv;
         todo_help(argv);
         }
     int  todo::n_set(char** argv, int argc) {
@@ -35,8 +36,9 @@ namespace nwrap {
     void  todo::n_rm(char** argv) {
         todo_rm(argv);
         }
-    int  todo::n_read(char** argv, int argc) {
-        return todo_read(argv, argc);
+    int  todo::n_read(int args) {
+        char** argv;
+        return todo_read(argv, args);
         }
     int  todo::n_write(char** argv, int argc) {
         return todo_write(argv, argc);
