@@ -86,7 +86,7 @@ char* todo_help() {
       - end - always end todo notes with additional word (default 0)\n\
       - ending - word, using for end feature (default 'be a man')\n");
 #ifndef WIN32
-    strcat(dest,"
+    strcat(dest,"\
       - home - file for home path (request for synchronization)\n\
       - color - ctodo color scheme for posix (default 'red')\n\
         - schemas: red, blink, green, pink, black\n");
