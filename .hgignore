@@ -1,8 +1,7 @@
 win/Debug
 win/Release
-win/wtodo/Debug
-win/wtodo/Release
 win/wtodo/bin
+win/wtodo/obj
 win/nwrap/Debug
 win/nwrap/Release
 win/ipch
