@@ -17,10 +17,10 @@
 
 CC=gcc
 CFLAGS=-lsqlite3 -O3
-CSRC=cctodo.c
-CLIBS=ctodo.c
+CSRC=src/clients/cctodo.c
+CLIBS=src/ctodo.c
 LIBS=todo.a
-INCLUDES = -I .
+INCLUDES = -I src/
 INSTALL   ?= install
 MKDIR     ?= $(INSTALL) -d
 BINDIR    ?= $(PREFIX)/bin
