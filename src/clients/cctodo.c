@@ -14,18 +14,18 @@ General Public License for more details.
 You should have received a copy of the GNU General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
-
+//________________________________________________________________________________
 #ifdef WIN32
 #include <Windows.h>
 #endif
-
+//________________________________________________________________________________
 #include "ctodo.h"
 #include <stdio.h>
 #include <string.h>
-
+//________________________________________________________________________________
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        todo_help(argv[0]);
+        todo_help();
         return 0;
         }
     else {
@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
             return 0;
             }
         else if (strcmp(argv[1], "--help") == 0) {
-            todo_help(argv[0]);
+            printf(todo_help());
             return 0;
             }
         else if (strcmp(argv[1], "initdb") == 0) {
@@ -93,5 +93,5 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-
+//________________________________________________________________________________
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

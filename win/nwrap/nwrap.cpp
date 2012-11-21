@@ -14,13 +14,12 @@ General Public License for more details.
 You should have received a copy of the GNU General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
-
+//________________________________________________________________________________
 #include "stdafx.h"
-
 #include "nwrap.h"
-
+//________________________________________________________________________________
 namespace nwrap {
-//-----------------------------------------------------------------
+//________________________________________________________________________________
     System::String^ fromchar(char* ch) {
         return gcnew String(ch);
         }
@@ -29,16 +28,15 @@ namespace nwrap {
         return static_cast<char*>(p.ToPointer());
         //Marshal::FreeHGlobal(p);
         }
-//-----------------------------------------------------------------
+//________________________________________________________________________________
     void  todo::n_initdb() {
         todo_initdb();
         }
     System::String^ todo::n_version() {
         return fromchar(todo_version());
         }
-    void  todo::n_help() {
-        char* argv;
-        todo_help(argv);
+    System::String^  todo::n_help() {
+        return fromchar(todo_help());
         }
     int  todo::n_set(char** argv, int argc) {
         return todo_set(argv, argc);
@@ -69,3 +67,4 @@ namespace nwrap {
         return todo_write(argv, argc);
         }
     }
+//________________________________________________________________________________

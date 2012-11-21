@@ -14,21 +14,21 @@ General Public License for more details.
 You should have received a copy of the GNU General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
-
+//________________________________________________________________________________
 #pragma once
-
+//________________________________________________________________________________
 extern "C" {
     #include "ctodo.h"
     }
-
+//________________________________________________________________________________
 using namespace System;
-
+//________________________________________________________________________________
 namespace nwrap {
 	public ref class todo {
         public: 
             void n_initdb();
             String^ n_version();
-            void n_help();
+            String^ n_help();
             int n_set(char** argv, int argc);
             int n_sync(char** argv);
             void n_edit(char** argv, int argc);
@@ -40,3 +40,4 @@ namespace nwrap {
             int n_write(char** argv, int argc);
 	    };
     }
+//________________________________________________________________________________

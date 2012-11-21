@@ -40,7 +40,7 @@ namespace wtodo {
             }
 
         private void button1_Click(object sender, RoutedEventArgs e) {
-            this.textBox1.Text += t.n_version();
+            this.textBox1.Text += t.n_help();
             }
         }
     }

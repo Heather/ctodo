@@ -14,7 +14,7 @@ General Public License for more details.
 You should have received a copy of the GNU General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
-
+//________________________________________________________________________________
 #ifdef WIN32
 #include "sqlite3.h"
 #else
@@ -25,55 +25,75 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-
+//________________________________________________________________________________
+//General properties _____________________________________________________________
 int retval, x, q_size = 255, ind = 0;
+//________________________________________________________________________________
+//Pointers _______________________________________________________________________
 FILE* f;
 time_t timefile;
 sqlite3_stmt* stmt;
+//________________________________________________________________________________
+//Maximum sqlite query queue _____________________________________________________
 #ifdef WIN32
 int q_cnt = 11;
 #else
 char* home;
 int q_cnt = 13;
 #endif
+//________________________________________________________________________________
+//Sqlite handlers ________________________________________________________________
 char** queries;
 sqlite3* handle;
+//________________________________________________________________________________
 char* todo_version() {
-    return "  TODO List Management Uti v1.0.7\n\r";
+    return "  TODO List Management Uti v1.0.7\n";
     }
-void todo_help(char* argv) {
-    printf(todo_version());
-    printf("  * usage:\n\r");
-    printf("  %s <command> <arguments>\n\r", argv);
-    printf("  - initdb - init empty database structure\n\r");
-    printf("      (set default database options without data lose, useful if you or some update broke it)\n\r");
-    printf("  - <msg> - just write todo <msg> to add new node to your todo list\n\r");
-    printf("      --first to put task on top priority\n\r");
-    printf("      --motivate - end todo note with additional word (see ending option)\n\r");
-    printf("  - read or r - to read all\n\r");
-    printf("  - edit or e <number> <msg> - edit task\n\r");
-    printf("  - mv <number1> <number2> - move task\n\r");
-    printf("  - rm <number> - delete task\n\r");
-    printf("  - clean - clean all tasks\n\r");
-    printf("  - swap or s <number1> <number2> - swap elements\n\r");
-    printf("  - sync - text synchronization to avoid binaries in vcs\n\r");
-    printf("  - set <option> <value> - todo options, available options:\n\r");
-    printf("      - syncdir - directory for vcs synchronization\n\r");
-    printf("      - syncfile - file for text serialization for synchronization (default 'readme.md')\n\r");
-#ifndef WIN32
-    printf("      - home - file for home path (request for synchronization)\n\r");
+//________________________________________________________________________________
+char* todo_help() {
+    char dest[4000];
+#ifdef WIN32
+    strcpy_s(dest, 4000, todo_version());
+#else
+    strcpy(dest,todo_version());
 #endif
-    printf("        - git - execute git synchronization 1/0 for enable/disable (default 1)\n\r");
-    printf("        - hg - execute mercurial synchronization 1/0 for enable/disable (default 0)\n\r");
-    printf("        - svn - execute subversion synchronization 1/0 for enable/disable (default 0)\n\r");
-    printf("        - vv - execute veracity synchronization 1/0 for enable/disable (default 0)\n\r");
-    printf("      - end - always end todo notes with additional word (default 0)\n\r");
-    printf("      - ending - word, using for end feature (default 'be a man')\n\r");
-#ifndef WIN32
-    printf("      - color - ctodo color scheme for posix (default 'red')\n\r");
-    printf("        - schemas: red, blink, green, pink, black \n\r");
+#ifdef WIN32
+    strcat_s(dest, 4000, 
+#else
+    strcat(dest,
 #endif
+"  * usage:\n\
+    todo <command> <arguments>\n\
+  - initdb - init empty database structure\n\
+  - set default database options without data lose, useful if you or some update broke it)\n\
+  - <msg> - just write todo <msg> to add new node to your todo list\n\
+      --first to put task on top priority\n\
+      --motivate - end todo note with additional word (see ending option)\n\
+  - read or r - to read all\n\
+  - edit or e <number> <msg> - edit task\n\
+  - mv <number1> <number2> - move task\n\
+  - rm <number> - delete task\n\
+  - clean - clean all tasks\n\
+  - swap or s <number1> <number2> - swap elements\n\
+  - sync - text synchronization to avoid binaries in vcs\n\
+  - set <option> <value> - todo options, available options:\n\
+      - syncdir - directory for vcs synchronization\n\
+      - syncfile - file for text serialization for synchronization (default 'readme.md')\n\
+        - git - execute git synchronization 1/0 for enable/disable (default 1)\n\
+        - hg - execute mercurial synchronization 1/0 for enable/disable (default 0)\n\
+        - svn - execute subversion synchronization 1/0 for enable/disable (default 0)\n\
+        - vv - execute veracity synchronization 1/0 for enable/disable (default 0)\n\
+      - end - always end todo notes with additional word (default 0)\n\
+      - ending - word, using for end feature (default 'be a man')\n");
+#ifndef WIN32
+    strcat(dest,"
+      - home - file for home path (request for synchronization)\n\
+      - color - ctodo color scheme for posix (default 'red')\n\
+        - schemas: red, blink, green, pink, black\n");
+#endif
+    return &dest[0];
     }
+//________________________________________________________________________________
 void timeUpdate(time_t t) {
 #ifdef WIN32
     sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
@@ -86,6 +106,7 @@ void timeUpdate(time_t t) {
         return;
         }
     }
+//________________________________________________________________________________
 void sql(char* command) {
 #ifdef WIN32
     sprintf_s(queries[ind++], 255, "%s", command);
@@ -94,6 +115,7 @@ void sql(char* command) {
 #endif
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     }
+//________________________________________________________________________________
 char* rtrim(char* str) {
     char* ptr;
     int len;
@@ -102,9 +124,11 @@ char* rtrim(char* str) {
     ptr[1] = '\0';
     return str;
     }
+//________________________________________________________________________________
 void close() {
     sqlite3_close(handle);
     }
+//________________________________________________________________________________
 int prelude() {
     timefile = 0;
     f = NULL;
@@ -129,6 +153,7 @@ int prelude() {
         }
     return 0;
     }
+//________________________________________________________________________________
 int todo_initdb() {
     if (prelude() == -1) return -1;
     sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
@@ -203,6 +228,7 @@ int todo_initdb() {
     close();
     return 0;
     }
+//________________________________________________________________________________
 int todo_set(char** argv, int argc) {
     int opt = 0;
     if (prelude() == -1) return -1;
@@ -281,6 +307,7 @@ int todo_set(char** argv, int argc) {
     close();
     return 0;
     }
+//________________________________________________________________________________
 int todo_sync(char** argv) {
     char* filename;
 #ifndef WIN32
@@ -573,6 +600,7 @@ void todo_swap(char** argv) {
         }
     close();
     }
+//________________________________________________________________________________
 void todo_mv(char** argv) {
     if (prelude() != -1) {
 #ifdef WIN32
@@ -585,6 +613,7 @@ void todo_mv(char** argv) {
         }
     close();
     }
+//________________________________________________________________________________
 void todo_clean() {
     char answer;
     if (prelude() != -1) {
@@ -602,6 +631,7 @@ void todo_clean() {
             }
         }
     }
+//________________________________________________________________________________
 void todo_rm(char** argv) {
     if (prelude() != -1) {
 #ifdef WIN32
@@ -614,6 +644,7 @@ void todo_rm(char** argv) {
         }
     close();
     }
+//________________________________________________________________________________
 int todo_read(char** argv, int argc) {
     char* lineborder1;
     char* lineborder2;
@@ -795,6 +826,7 @@ int todo_read(char** argv, int argc) {
     close();
     return 0;
     }
+//________________________________________________________________________________
 int todo_write(char** argv, int argc) {
     char first = 0;
     int counter;
@@ -910,5 +942,5 @@ int todo_write(char** argv, int argc) {
     close();
     return 0;
     }
-
+//________________________________________________________________________________
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
