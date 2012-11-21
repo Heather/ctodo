@@ -86,11 +86,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\contrib\sqlite\sqlite3.c" />
     <ClCompile Include="..\src\clients\cctodo.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\contrib\sqlite\sqlite3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
