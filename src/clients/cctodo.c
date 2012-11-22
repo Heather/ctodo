@@ -30,11 +30,11 @@ int main(int argc, char* argv[]) {
         }
     else {
         if (strcmp(argv[1], "--version") == 0) {
-            printf(todo_version());
+            printf("%s", todo_version());
             return 0;
             }
         else if (strcmp(argv[1], "--help") == 0) {
-            printf(todo_help());
+            printf("%s", todo_help());
             return 0;
             }
         else if (strcmp(argv[1], "initdb") == 0) {
