@@ -20,15 +20,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 namespace nwrap {
 //________________________________________________________________________________
-    System::String^ fromchar(char* ch) {
+    System::String^ todo::fromchar(char* ch) {
         return gcnew String(ch);
         }
-    char* tochar(System::String^ str) {
-        IntPtr p = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
-        return static_cast<char*>(p.ToPointer()); //Marshal::FreeHGlobal(p);
+    char* todo::tochar(System::String^ str) {
+        p = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
+        return static_cast<char*>(p.ToPointer());
         }
 //________________________________________________________________________________
     todo::~todo() {
+        System::Runtime::InteropServices::Marshal::FreeHGlobal(p);
         todo_close();
         }
     void todo::n_initdb() {

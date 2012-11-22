@@ -25,20 +25,24 @@ using namespace System;
 //________________________________________________________________________________
 namespace nwrap {
 	public ref class todo {
-        public: 
-            ~todo();
-            void n_initdb();
-            String^ n_version();
-            String^ n_help();
-            int n_set(char** argv, int argc);
-            int n_sync(char** argv);
-            void n_edit(char** argv, int argc);
-            void n_swap(char** argv);
-            void n_mv(char** argv);
-            void n_clean();
-            void n_rm(char** argv);
-            int n_read(int args);
-            int n_write(char** argv, int argc);
+    public: 
+        ~todo();
+        void n_initdb();
+        String^ n_version();
+        String^ n_help();
+        int n_set(char** argv, int argc);
+        int n_sync(char** argv);
+        void n_edit(char** argv, int argc);
+        void n_swap(char** argv);
+        void n_mv(char** argv);
+        void n_clean();
+        void n_rm(char** argv);
+        int n_read(int args);
+        int n_write(char** argv, int argc);
+    private:
+        IntPtr p;
+        char* tochar(System::String^ str);
+        System::String^ fromchar(char* ch);
 	    };
     }
 //________________________________________________________________________________
