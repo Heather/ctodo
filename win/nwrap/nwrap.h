@@ -26,6 +26,7 @@ using namespace System;
 namespace nwrap {
 	public ref class todo {
         public: 
+            ~todo();
             void n_initdb();
             String^ n_version();
             String^ n_help();

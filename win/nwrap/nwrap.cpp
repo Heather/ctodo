@@ -25,11 +25,13 @@ namespace nwrap {
         }
     char* tochar(System::String^ str) {
         IntPtr p = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
-        return static_cast<char*>(p.ToPointer());
-        //Marshal::FreeHGlobal(p);
+        return static_cast<char*>(p.ToPointer()); //Marshal::FreeHGlobal(p);
         }
 //________________________________________________________________________________
-    void  todo::n_initdb() {
+    todo::~todo() {
+        todo_close();
+        }
+    void todo::n_initdb() {
         todo_initdb();
         }
     System::String^ todo::n_version() {

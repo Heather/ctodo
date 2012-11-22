@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 //General properties _____________________________________________________________
 int retval, x, q_size = 255, ind = 0;
-//________________________________________________________________________________
+char* dest;
 //Pointers _______________________________________________________________________
 FILE* f;
 time_t timefile;
@@ -51,7 +51,7 @@ char* todo_version() {
     }
 //________________________________________________________________________________
 char* todo_help() {
-    char dest[4000];
+    dest = (char*)calloc(4000, sizeof(char));
 #ifdef WIN32
     strcpy_s(dest, 4000, todo_version());
 #else
@@ -941,6 +941,14 @@ int todo_write(char** argv, int argc) {
     timeUpdate(time(0));
     close();
     return 0;
+    }
+void todo_close() {
+#ifndef WIN32
+    free(home);
+#endif
+    free(dest);
+    free(queries);
+    close();
     }
 //________________________________________________________________________________
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
