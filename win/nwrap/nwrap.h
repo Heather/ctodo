@@ -37,7 +37,7 @@ namespace nwrap {
         void n_mv(char** argv);
         void n_clean();
         void n_rm(char** argv);
-        int n_read(int args);
+        int n_read();
         int n_write(char** argv, int argc);
     private:
         IntPtr p;

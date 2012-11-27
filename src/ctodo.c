@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //General properties _____________________________________________________________
 int retval, x, q_size = 255, ind = 0;
 char* dest;
+char** out;
 //Pointers _______________________________________________________________________
 FILE* f;
 time_t timefile;
@@ -47,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  TODO List Management Uti v1.0.9\n";
+    return "  CTODO List Management Uti v1.1.0\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -62,35 +63,7 @@ char* todo_help() {
 #else
     strcat(dest,
 #endif
-"  * usage:\n\
-    todo <command> <arguments>\n\
-  - initdb - init empty database structure\n\
-  - set default database options without data lose, useful if you or some update broke it)\n\
-  - <msg> - just write todo <msg> to add new node to your todo list\n\
-      --first to put task on top priority\n\
-      --motivate - end todo note with additional word (see ending option)\n\
-  - read or r - to read all\n\
-  - edit or e <number> <msg> - edit task\n\
-  - mv <number1> <number2> - move task\n\
-  - rm <number> - delete task\n\
-  - clean - clean all tasks\n\
-  - swap or s <number1> <number2> - swap elements\n\
-  - sync - text synchronization to avoid binaries in vcs\n\
-  - set <option> <value> - todo options, available options:\n\
-      - syncdir - directory for vcs synchronization\n\
-      - syncfile - file for text serialization for synchronization (default 'readme.md')\n\
-        - git - execute git synchronization 1/0 for enable/disable (default 1)\n\
-        - hg - execute mercurial synchronization 1/0 for enable/disable (default 0)\n\
-        - svn - execute subversion synchronization 1/0 for enable/disable (default 0)\n\
-        - vv - execute veracity synchronization 1/0 for enable/disable (default 0)\n\
-      - end - always end todo notes with additional word (default 0)\n\
-      - ending - word, using for end feature (default 'be a man')\n");
-#ifndef WIN32
-    strcat(dest,"\
-      - home - file for home path (request for synchronization)\n\
-      - color - ctodo color scheme for posix (default 'red')\n\
-        - schemas: red, blink, green, pink, black\n");
-#endif
+"  cross-platform ctodo library");
     return &dest[0];
     }
 //________________________________________________________________________________
@@ -148,6 +121,18 @@ int prelude() {
         return -1;
         }
     return 0;
+    }
+//________________________________________________________________________________
+void close() {
+#ifndef WIN32
+    free(home);
+#endif
+    free(dest);
+    free(queries);
+    sqlite3_close(handle);
+    }
+void todo_close() {
+    free(out);
     }
 //________________________________________________________________________________
 int todo_initdb() {
@@ -627,16 +612,20 @@ void todo_rm(char** argv) {
         }
     }
 //________________________________________________________________________________
-int todo_read(char** argv, int argc) {
+char** todo_read(int index, int parcount) {
     char* lineborder1;
-    char* lineborder2;
     char* spaces1;
     char* spaces2;
     int maxl2 = 0, maxl1 = 0;
     int i, maxi1, maxi2;
-    if (prelude() == -1) return -1;
+    if (prelude() == -1) return NULL;
+    out = (char**)malloc(sizeof(char*) * 100);
+    for (x = 0; x < 100; x++) {
+        out[x] = (char*)malloc(sizeof(char) * 255);
+        }
 #ifndef WIN32
     char* colorscheme;
+    char* lineborder2;
     ///<Summary>
     ///Get color scheme (For linux only)
     ///</Summary>
@@ -670,60 +659,61 @@ int todo_read(char** argv, int argc) {
             }
         }
 #endif
-    if (argc > 2) {
+    if (parcount > 0) {
 #ifdef WIN32
-        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %s", argv[2]);
+        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %d", index);
 #else
-        sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %s", argv[2]);
+        sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %d", index);
 #endif
         }
     else queries[ind++] = "SELECT COALESCE(MAX(id),0) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
         printf("Reading data from DB Failed, run initdb first\n\r");
-        return -1;
+        return NULL;
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         maxl1 = strlen((const char*)sqlite3_column_text(stmt, 0));
         }
-    if (argc > 2) {
+    if (parcount > 0) {
 #ifdef WIN32
-        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %s", argv[2]);
+        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %d", index);
 #else
-        sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %s", argv[2]);
+        sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %d", index);
 #endif
         }
     else queries[ind++] = "SELECT COALESCE(MAX(LENGTH(text)),0) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
         printf("Reading data from DB Failed, run initdb first\n\r");
-        return -1;
+        return NULL;
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         maxl2 = atoi((const char*)sqlite3_column_text(stmt, 0));
         }
-    if (argc > 2) {
+    if (parcount > 0) {
 #ifdef WIN32
-        sprintf_s(queries[ind++], 255, "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %s", argv[2]);
+        sprintf_s(queries[ind++], 255, "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %d", index);
 #else
-        sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %s", argv[2]);
+        sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %d", index);
 #endif
         }
     else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
         printf("Selecting data from DB Failed, run initdb first\n\r");
-        return -1;
+        return NULL;
         }
     lineborder1 = (char*)calloc(255, sizeof(char));
+#ifndef WIN32
     lineborder2 = (char*)calloc(255, sizeof(char));
+#endif
     spaces1    = (char*)calloc(200, sizeof(char));
     spaces2    = (char*)calloc(200, sizeof(char));
     for (i = 0; i < ((maxl2 + maxl1) + 5); i++) {
         if (i == 2 + maxl1) {
 #ifdef WIN32
             strcat_s(lineborder1, 200, "+");
-            strcat_s(lineborder2, 200, "+");
 #else
             strcat(lineborder1, "╤");
             strcat(lineborder2, "╧");
@@ -732,7 +722,6 @@ int todo_read(char** argv, int argc) {
         else {
 #ifdef WIN32
             strcat_s(lineborder1, 200, "-");
-            strcat_s(lineborder2, 200, "-");
 #else
             strcat(lineborder1, "═");
             strcat(lineborder2, "═");
@@ -740,12 +729,12 @@ int todo_read(char** argv, int argc) {
             }
         }
 #ifdef WIN32
-    printf("+%s+\n\r", lineborder1);
+    sprintf_s(out[0], 255, "%s", lineborder1);
 #else
-    printf(" %s", colorscheme);
-    printf("╔%s╗", lineborder1);
-    printf("%c[%dm\n\r", 0x1B, 0); // 27
+    sprintf(out[1], "%s", colorscheme);
+    sprintf(out[0], "%s", lineborder1);
 #endif
+    x = 2;
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         maxi1 = maxl1 - strlen((const char*)sqlite3_column_text(stmt, 0));
         maxi2 = maxl2 - atoi((const char*)sqlite3_column_text(stmt, 2));
@@ -771,41 +760,37 @@ int todo_read(char** argv, int argc) {
 #endif
             }
 #ifdef WIN32
-        printf("| %s %s| %s %s|\n\r",
+        sprintf_s(out[x], 255, "| %s %s| %s %s|\n\r",
                sqlite3_column_text(stmt, 0)
                , spaces1
                , sqlite3_column_text(stmt, 1)
                , spaces2);
+        x+=1;
 #else
-        printf(" %s║", colorscheme);
-        printf("%c[%dm", 0x1B, 0);
-        printf(" %s %s",
+        sprintf(out[x], " %s %s",
                sqlite3_column_text(stmt, 0)
                , spaces1);
-        printf("%s│", colorscheme);
-        printf("%c[%dm", 0x1B, 0);
-        printf(" %s %s"
+        sprintf(out[x+1], " %s %s"
                , sqlite3_column_text(stmt, 1)
                , spaces2);
-        printf("%s║", colorscheme);
-        printf("%c[%dm\n", 0x1B, 0);
+        x+=2;
 #endif
         }
 #ifdef WIN32
-    printf("+%s+\n\r", lineborder2);
+    memcpy(out[1], &x, sizeof(int));
 #else
-    printf(" %s", colorscheme);
-    printf("╚%s╝", lineborder2);
-    printf("%c[%dm\n\r", 0x1B, 0);
+    sprintf(out[2], "%s", colorscheme);
+    sprintf(out[1], "%s", lineborder2);
 #endif
     free(lineborder1);
-    free(lineborder2);
     free(spaces1);
     free(spaces2);
 #ifndef WIN32
+    free(lineborder2);
     free(colorscheme);
 #endif
-    return 0;
+    close();
+    return out;
     }
 //________________________________________________________________________________
 int todo_write(char** argv, int argc) {
@@ -920,14 +905,6 @@ int todo_write(char** argv, int argc) {
     free(ending);
     timeUpdate(time(0));
     return 0;
-    }
-void todo_close() {
-#ifndef WIN32
-    free(home);
-#endif
-    free(dest);
-    free(queries);
-    sqlite3_close(handle);
     }
 //________________________________________________________________________________
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

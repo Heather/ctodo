@@ -63,8 +63,8 @@ namespace nwrap {
         todo_rm(argv);
         }
     int  todo::n_read(int args) {
-        char** argv;
-        return todo_read(argv, args);
+        //return todo_read();
+        return 0;
         }
     int  todo::n_write(char** argv, int argc) {
         return todo_write(argv, argc);

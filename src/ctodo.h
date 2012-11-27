@@ -29,7 +29,7 @@ extern void todo_swap(char** argv);
 extern void todo_mv(char** argv);
 extern void todo_clean();
 extern void todo_rm(char** argv);
-extern int todo_read(char** argv, int argc);
+extern char** todo_read(int index, int parcount);
 extern int todo_write(char** argv, int argc);
 extern void todo_close();
 //________________________________________________________________________________
