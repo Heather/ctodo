@@ -124,14 +124,14 @@ int prelude() {
     }
 //________________________________________________________________________________
 void close() {
-#ifndef WIN32
-    free(home);
-#endif
     free(dest);
     free(queries);
     sqlite3_close(handle);
     }
 void todo_close() {
+#ifndef WIN32
+    free(home);
+#endif
     free(out);
     }
 //________________________________________________________________________________
@@ -780,6 +780,7 @@ char** todo_read(int index, int parcount) {
 #ifdef WIN32
     memcpy(out[1], &x, sizeof(int));
 #else
+    memcpy(out[3], &x, sizeof(int));
     sprintf(out[2], "%s", colorscheme);
     sprintf(out[1], "%s", lineborder2);
 #endif
