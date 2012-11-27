@@ -2,7 +2,7 @@ set MSBuild="%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\msbuild.exe"
 
 %MSBuild% ctodo_lib_100.vcxproj /p:Configuration=Release
 %MSBuild% cctodo_100.vcxproj /p:Configuration=Release
-%MSBuild% wtodo/wtodo.csproj /p:Configuration=Release
+%MSBuild% wtodo/wtodo_100.csproj /p:Configuration=Release
 
 @echo off
 echo ---------------------------
