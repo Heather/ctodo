@@ -47,7 +47,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  TODO List Management Uti v1.0.8\n";
+    return "  TODO List Management Uti v1.0.9\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -125,10 +125,6 @@ char* rtrim(char* str) {
     return str;
     }
 //________________________________________________________________________________
-void close() {
-    sqlite3_close(handle);
-    }
-//________________________________________________________________________________
 int prelude() {
     timefile = 0;
     f = NULL;
@@ -159,7 +155,6 @@ int todo_initdb() {
     sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
     if (retval) {
         printf("Init DB Failed, Shit happens?\n\r");
-        close();
         return -1;
         }
     sql("CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
@@ -221,11 +216,9 @@ int todo_initdb() {
     sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (21,'red')");
     if (retval) {
         printf("Instert deafaults options Failed, Shit happens?\n\r");
-        close();
         return -1;
         }
 #endif
-    close();
     return 0;
     }
 //________________________________________________________________________________
@@ -282,14 +275,12 @@ int todo_set(char** argv, int argc) {
             retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
             if (retval) {
                 printf("Option home is not changed! (shit happens)\n\r");
-                close();
                 return -1;
                 }
             }
 #endif
         else {
             printf("There is no such option\n\r");
-            close();
             return 0;
             }
 #ifdef WIN32
@@ -300,11 +291,9 @@ int todo_set(char** argv, int argc) {
         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
         if (retval) {
             printf("Option is not changed! (shit happens)\n\r");
-            close();
             return -1;
             }
         }
-    close();
     return 0;
     }
 //________________________________________________________________________________
@@ -420,7 +409,6 @@ int todo_sync(char** argv) {
 #endif
     if (f == NULL) {
         printf("There is no such file and it's failed to create it\n\r");
-        close();
         return -1;
         }
     while (fgets(line, 150, f)) {
@@ -434,7 +422,6 @@ int todo_sync(char** argv) {
                 }
             else if (timeDB == (int)timefile) {
                 printf("Everything is up to date\n\r");
-                close();
                 return 0;
                 }
             else write = 0;
@@ -535,7 +522,6 @@ int todo_sync(char** argv) {
 #endif
     free(syncdir);
     free(filename);
-    close();
     return 0;
     }
 void todo_edit(char** argv, int argc) {
@@ -563,7 +549,6 @@ void todo_edit(char** argv, int argc) {
         free(text);
         timeUpdate(time(0));
         }
-    close();
     }
 void todo_swap(char** argv) {
     int val1 = atoi(argv[2]);
@@ -598,7 +583,6 @@ void todo_swap(char** argv) {
             }
         timeUpdate(time(0));
         }
-    close();
     }
 //________________________________________________________________________________
 void todo_mv(char** argv) {
@@ -611,7 +595,6 @@ void todo_mv(char** argv) {
         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
         timeUpdate(time(0));
         }
-    close();
     }
 //________________________________________________________________________________
 void todo_clean() {
@@ -642,7 +625,6 @@ void todo_rm(char** argv) {
         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
         timeUpdate(time(0));
         }
-    close();
     }
 //________________________________________________________________________________
 int todo_read(char** argv, int argc) {
@@ -823,7 +805,6 @@ int todo_read(char** argv, int argc) {
 #ifndef WIN32
     free(colorscheme);
 #endif
-    close();
     return 0;
     }
 //________________________________________________________________________________
@@ -933,13 +914,11 @@ int todo_write(char** argv, int argc) {
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     if (retval) {
         printf("Task were not added! (shit happens)\n\r");
-        close();
         return -1;
         }
     free(text);
     free(ending);
     timeUpdate(time(0));
-    close();
     return 0;
     }
 void todo_close() {
@@ -948,7 +927,7 @@ void todo_close() {
 #endif
     free(dest);
     free(queries);
-    close();
+    sqlite3_close(handle);
     }
 //________________________________________________________________________________
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
