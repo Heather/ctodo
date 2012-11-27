@@ -4,4 +4,7 @@
 
 #pragma once
 
-
+#include <stdio.h>
+#include <time.h>
+#include <locale.h>
+#include <vcclr.h>

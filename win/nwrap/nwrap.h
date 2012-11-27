@@ -38,10 +38,14 @@ namespace nwrap {
         void n_clean();
         void n_rm(char** argv);
         System::Collections::Generic::List<System::String ^> ^ n_read(int index, int params);
-        int n_write(char** argv, int argc);
+        int n_write(cli::array<System::String ^> ^ input, int argc);
     private:
+        char** argv;
         IntPtr p;
         char* tochar(System::String^ str);
+        char* WcsToMbs(LPOLESTR ptName);
+        byte* GetNative(array<System::Byte, 1> ^ byteArray);
+        wchar_t* wconv(System::String ^ str);
         System::String^ fromchar(char* ch);
 	    };
     }

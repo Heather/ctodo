@@ -36,8 +36,13 @@ namespace wtodo {
         public todo t;
         public MainWindow() {
             InitializeComponent();
-            t = new todo();
-            t.n_initdb();
+            using (t = new todo()) {
+                t.n_initdb();
+                }
+            using (t = new todo()) {
+                string[] pony = ("There is pony").Split(' ');
+                //t.n_write(pony, pony.Length);
+                }
             }
 
         private void button1_Click(object sender, RoutedEventArgs e) {

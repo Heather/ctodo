@@ -24,13 +24,35 @@ namespace nwrap {
         return gcnew String(ch);
         }
     char* todo::tochar(System::String^ str) {
-        p = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
-        return static_cast<char*>(p.ToPointer());
+        System::IntPtr a = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
+        char* s = ((char*)(void*)a);
+        return s;
+        }
+    #pragma warning(disable : 4996)
+    char* todo::WcsToMbs(LPOLESTR ptName) {
+        long sizew = wcstombs(NULL, ptName, 0);
+        char* szName = new char[sizew + 1];
+        setlocale(LC_CTYPE, "Russian_Russia.1251");
+        wcstombs(szName, ptName, sizew + 1);
+        return szName;
+        }
+    byte* todo::GetNative(array<System::Byte, 1> ^ byteArray) {
+        try {
+            pin_ptr<unsigned char> array_pin = &byteArray[0];
+            return (byte*) array_pin;
+            }
+        catch(...) {
+            return 0;
+            }
+        }
+    wchar_t* todo::wconv(System::String ^ str) {
+        pin_ptr<const wchar_t> wchstr = PtrToStringChars(str);
+        return const_cast<wchar_t*>(wchstr);
         }
 //________________________________________________________________________________
     todo::~todo() {
+        free(argv);
         System::Runtime::InteropServices::Marshal::FreeHGlobal(p);
-        todo_close();
         }
     void todo::n_initdb() {
         todo_initdb();
@@ -73,8 +95,26 @@ namespace nwrap {
             }
         return todolist;
         }
-    int  todo::n_write(char** argv, int argc) {
-        return todo_write(argv, argc);
+    int  todo::n_write(cli::array<System::String ^> ^ input, int argc) {
+        int result;
+        argv = (char**)malloc(sizeof(char*) * (2));
+        for(int x = 0; x < 2; x++) {
+            argv[x] = (char*)malloc(sizeof(char) * 255);
+            }
+        argv[0] = "todo.exe";
+        argv[1] = "test";
+        /*for(int x = 0; x < argc; x++) {
+            char* go = tochar(input[x]);
+            argv[x + 1] = go;
+            }*/
+        try {
+            result = todo_write(argv, 2); //argc + 1);
+            return result;
+            }
+        catch(char* error) {
+            //
+            return -1;
+            }
         }
     }
 //________________________________________________________________________________
