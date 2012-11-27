@@ -730,11 +730,12 @@ char** todo_read(int index, int parcount) {
         }
 #ifdef WIN32
     sprintf_s(out[0], 255, "%s", lineborder1);
+    x = 2;
 #else
     sprintf(out[1], "%s", colorscheme);
     sprintf(out[0], "%s", lineborder1);
+    x = 4;
 #endif
-    x = 2;
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         maxi1 = maxl1 - strlen((const char*)sqlite3_column_text(stmt, 0));
         maxi2 = maxl2 - atoi((const char*)sqlite3_column_text(stmt, 2));
