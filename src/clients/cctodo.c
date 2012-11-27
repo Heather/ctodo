@@ -175,7 +175,6 @@ int main(int argc, char* argv[]) {
                 printf("╚%s╝", out[1]);
                 printf("%c[%dm\n\r", 0x1B, 0);
 #endif
-                free(out);
                 return 0;
                 }
             else {
