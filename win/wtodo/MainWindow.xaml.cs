@@ -37,10 +37,14 @@ namespace wtodo {
         public MainWindow() {
             InitializeComponent();
             t = new todo();
+            t.n_initdb();
             }
 
         private void button1_Click(object sender, RoutedEventArgs e) {
-            this.textBox1.Text += t.n_help();
+            List<String> todolist = t.n_read(0, 0);
+            foreach (string s in todolist) {
+                this.textBox1.Text += s;
+                }
             }
         }
     }

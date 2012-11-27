@@ -62,9 +62,16 @@ namespace nwrap {
     void  todo::n_rm(char** argv) {
         todo_rm(argv);
         }
-    int  todo::n_read(int args) {
-        //return todo_read();
-        return 0;
+    System::Collections::Generic::List<System::String ^> ^ todo::n_read(int index, int params) {
+        char** out = todo_read(index, params);
+        int maxl;
+        memcpy(&maxl, out[1], sizeof(int));
+        System::Collections::Generic::List<System::String ^> ^ todolist = 
+            gcnew System::Collections::Generic::List<System::String ^>();
+        for(int x = 2; x < maxl; x++) {
+            todolist->Add( fromchar(out[x]) );
+            }
+        return todolist;
         }
     int  todo::n_write(char** argv, int argc) {
         return todo_write(argv, argc);
