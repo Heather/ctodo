@@ -63,7 +63,7 @@ char* todo_help() {
 #else
     strcat(dest,
 #endif
-"  cross-platform ctodo library");
+"  cross-platform ctodo library\n");
     return &dest[0];
     }
 //________________________________________________________________________________
