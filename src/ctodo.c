@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.1.0\n";
+    return "  CTODO List Management Uti v1.1.1\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -56,14 +56,14 @@ char* todo_help() {
 #ifdef WIN32
     strcpy_s(dest, 4000, todo_version());
 #else
-    strcpy(dest,todo_version());
+    strcpy(dest, todo_version());
 #endif
 #ifdef WIN32
-    strcat_s(dest, 4000, 
+    strcat_s(dest, 4000,
 #else
     strcat(dest,
 #endif
-"  cross-platform ctodo library\n");
+             "  cross-platform ctodo library\n");
     return &dest[0];
     }
 //________________________________________________________________________________
@@ -123,16 +123,14 @@ int prelude() {
     return 0;
     }
 //________________________________________________________________________________
-void close() {
-    free(dest);
-    free(queries);
-    sqlite3_close(handle);
-    }
 void todo_close() {
+    free(queries);
+    free(dest);
 #ifndef WIN32
     free(home);
 #endif
     free(out);
+    sqlite3_close(handle);
     }
 //________________________________________________________________________________
 int todo_initdb() {
@@ -384,7 +382,9 @@ int todo_sync(char** argv) {
             sprintf(cmd, "cd %s;vv pull", syncdir);
 #endif
             }
-        if (system(cmd)) return -1;
+        if (system(cmd)) {
+            return -1;
+            }
         }
     printf("Sync file: %s\n\r", filename);
 #ifdef WIN32
@@ -494,7 +494,9 @@ int todo_sync(char** argv) {
                 sprintf(cmd, "cd %s;vv commit -m \"TODO LIST UPDATE\"; vv push", syncdir);
 #endif
                 }
-            if (system(cmd) == -1) return -1;
+            if (system(cmd) == -1) {
+                return -1;
+                }
             }
         printf("synchronization complete, syncfile updated\n\r");
         }
@@ -759,19 +761,19 @@ char** todo_read(int index, int parcount) {
             }
 #ifdef WIN32
         sprintf_s(out[x], 255, "| %s %s| %s %s|\n\r",
-               sqlite3_column_text(stmt, 0)
-               , spaces1
-               , sqlite3_column_text(stmt, 1)
-               , spaces2);
-        x+=1;
+                  sqlite3_column_text(stmt, 0)
+                  , spaces1
+                  , sqlite3_column_text(stmt, 1)
+                  , spaces2);
+        x += 1;
 #else
         sprintf(out[x], " %s %s",
-               sqlite3_column_text(stmt, 0)
-               , spaces1);
-        sprintf(out[x+1], " %s %s"
-               , sqlite3_column_text(stmt, 1)
-               , spaces2);
-        x+=2;
+                sqlite3_column_text(stmt, 0)
+                , spaces1);
+        sprintf(out[x + 1], " %s %s"
+                , sqlite3_column_text(stmt, 1)
+                , spaces2);
+        x += 2;
 #endif
         }
 #ifdef WIN32
@@ -788,7 +790,6 @@ char** todo_read(int index, int parcount) {
     free(lineborder2);
     free(colorscheme);
 #endif
-    close();
     return out;
     }
 //________________________________________________________________________________

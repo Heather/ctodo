@@ -28,13 +28,15 @@ DESTDIR   ?=
 
 all: cctodo
 
+rebuild: clean | all
+
 cctodo:	$(CSRC) | ctodo
 	$(CC) ${INCLUDES} -o todo $^ ${CFLAGS} ${LIBS}
 
 ctodo:	$(CLIBS)
 	$(CC) ${INCLUDES} -c -o ${LIBS} $^ $(CFLAGS)
 
-.PHONY: clean all
+.PHONY: clean all rebuild
 
 clean:
 	rm -f todo.a
