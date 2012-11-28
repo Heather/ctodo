@@ -39,17 +39,20 @@ namespace wtodo {
             using (t = new todo()) {
                 t.n_initdb();
                 }
-            using (t = new todo()) {
-                string[] pony = ("There is pony").Split(' ');
-                //t.n_write(pony, pony.Length);
-                }
             }
 
         private void button1_Click(object sender, RoutedEventArgs e) {
+            using (t = new todo()) {
+                string[] pony = ("There is pony").Split(' ');
+                if (t.n_write(pony, pony.Length) == -1) {
+                    MessageBox.Show(t.errorMessage);
+                    }
+                }
+            /*
             List<String> todolist = t.n_read(0, 0);
             foreach (string s in todolist) {
                 this.textBox1.Text += s;
-                }
+                }*/
             }
         }
     }

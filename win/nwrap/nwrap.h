@@ -39,6 +39,8 @@ namespace nwrap {
         void n_rm(char** argv);
         System::Collections::Generic::List<System::String ^> ^ n_read(int index, int params);
         int n_write(cli::array<System::String ^> ^ input, int argc);
+
+        String^ errorMessage;
     private:
         char** argv;
         IntPtr p;

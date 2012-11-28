@@ -53,6 +53,7 @@ namespace nwrap {
     todo::~todo() {
         free(argv);
         System::Runtime::InteropServices::Marshal::FreeHGlobal(p);
+        todo_close();
         }
     void todo::n_initdb() {
         todo_initdb();
@@ -112,7 +113,7 @@ namespace nwrap {
             return result;
             }
         catch(char* error) {
-            //
+            errorMessage = fromchar(error);
             return -1;
             }
         }
