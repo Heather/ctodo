@@ -502,9 +502,6 @@ int todo_sync(char** argv) {
         timeUpdate(timefile);
         printf("synchronization complete, local database updated\n\r");
         }
-#ifndef WIN32
-    free(home);
-#endif
     free(syncdir);
     free(filename);
     return 0;
