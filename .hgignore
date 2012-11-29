@@ -3,6 +3,8 @@ win/Debug
 win/Release
 win/wtodo/bin
 win/wtodo/obj
+win/ftodo/bin
+win/ftodo/obj
 win/nwrap/Debug
 win/nwrap/Release
 win/ipch

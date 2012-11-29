@@ -98,11 +98,11 @@ namespace nwrap {
         }
     int  todo::n_write(cli::array<System::String ^> ^ input, int argc) {
         int result;
-        argv = (char**)malloc(sizeof(char*) * (2));
-        for(int x = 0; x < 2; x++) {
+        argv = (char**)malloc(sizeof(char*) * (3));
+        /*for(int x = 0; x < 2; x++) {
             argv[x] = (char*)malloc(sizeof(char) * 255);
-            }
-        argv[0] = "todo.exe";
+            }*/
+        argv[0] = "";
         argv[1] = "test";
         /*for(int x = 0; x < argc; x++) {
             char* go = tochar(input[x]);
