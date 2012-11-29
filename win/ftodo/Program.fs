@@ -20,8 +20,9 @@ open System.Linq
 open cprintf
 
 let help() =
-    cprintfn ConsoleColor.Yellow @" * usage:
+    cprintfn ConsoleColor.DarkGray @" * usage:
     todo <command> <arguments>
+  - connect - connect to ctodo library via nwapper (testing thing)
   - initdb - init empty database structure
   - set default database options without data lose, useful if you or some update broke it)
   - <msg> - just write todo <msg> to add new node to your todo list
@@ -56,11 +57,16 @@ let connect address _username =
         t <- new todo()
         connected <- true
     with | _ as errorM -> printfn "%s" errorM.Message
+let initdb() = t.n_initdb();
 let read() = 
     let todolist = t.n_read(0, 0);
     for s in todolist do
         cprintf ConsoleColor.Blue "%s" s
-        printfn ""
+let write p =
+    if t.n_write([|"hello"; "world"|],2) = 0 then
+        printfn "done"
+    else
+        printfn "error"
 
 let console() = 
     let rec eat (command : string) =
@@ -82,10 +88,12 @@ let console() =
                     0
                 else
                     match head with 
-                    | "CONNECT" -> ifparams 2 <| fun () -> connect (Seq.nth(1) C) (Seq.nth(2) C)
-                                              <| fun () -> connect "" ""
-                    | "READ"        -> conn   <| fun() -> read()
-                    | "HELP"        -> conn   <| fun() -> help()
+                    | "CONNECT" | "C" -> ifparams 2 <| fun () -> connect (Seq.nth(1) C) (Seq.nth(2) C)
+                                                    <| fun () -> connect "" ""
+                    | "INITDB"      -> conn <| fun() -> initdb()
+                    | "READ"        -> conn <| fun() -> read()
+                    | "WRITE"       -> conn <| fun() -> checkparams 1   <| fun () -> write (Seq.nth(1) C)
+                    | "HELP"        -> help()
                     | _ -> ()
                     user(); eat( Console.ReadLine() )
     user()

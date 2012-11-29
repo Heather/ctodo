@@ -87,12 +87,17 @@ namespace nwrap {
         }
     System::Collections::Generic::List<System::String ^> ^ todo::n_read(int index, int params) {
         char** out = todo_read(index, params);
-        int maxl;
-        memcpy(&maxl, out[1], sizeof(int));
         System::Collections::Generic::List<System::String ^> ^ todolist = 
             gcnew System::Collections::Generic::List<System::String ^>();
-        for(int x = 2; x < maxl; x++) {
-            todolist->Add( fromchar(out[x]) );
+        if (out == NULL) {
+            errorMessage = "NULL output";
+            }
+        else {
+            int maxl;
+            memcpy(&maxl, out[1], sizeof(int));
+            for(int x = 2; x < maxl; x++) {
+                todolist->Add( fromchar(out[x]) );
+                }
             }
         return todolist;
         }
