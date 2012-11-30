@@ -26,7 +26,7 @@ extern int todo_set(char** argv, int argc);
 extern int todo_sync(char** argv);
 extern void todo_edit(char** argv, int argc);
 extern void todo_swap(char** argv);
-extern void todo_sort();
+extern void todo_reindex();
 extern void todo_mv(char** argv);
 extern void todo_clean();
 extern void todo_rm(char** argv);

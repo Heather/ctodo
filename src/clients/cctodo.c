@@ -52,7 +52,7 @@ char* cctodo_help() {
   - rm <number> - delete task\n\
   - clean - clean all tasks\n\
   - swap or s <number1> <number2> - swap elements\n\
-  - sort - re-index nodes (currently works just wrong :D)\n\
+  - reindex - re-index nodes (currently works just wrong :D)\n\
   - sync - text synchronization to avoid binaries in vcs\n\
   - set <option> <value> - todo options, available options:\n\
       - syncdir - directory for vcs synchronization\n\
@@ -118,8 +118,8 @@ int main(int argc, char* argv[]) {
                 }
             return 0;
             }
-        else if (strcmp(argv[1], "sort") == 0) {
-            todo_sort();
+        else if (strcmp(argv[1], "reindex") == 0) {
+            todo_reindex();
             return 0;
             }
         else if (strcmp(argv[1], "mv") == 0) {

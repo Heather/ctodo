@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.1.2\n";
+    return "  CTODO List Management Uti v1.1.3\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -568,10 +568,10 @@ void todo_swap(char** argv) {
         timeUpdate(time(0));
         }
     }
-void todo_sort() {
+void todo_reindex() {
     if (prelude() != -1) {
         sql("UPDATE TODO SET id = id + 1000000000");
-        sql("UPDATE TODO SET id = id - (1000000000 + 1)");
+        sql("UPDATE TODO SET id = rowid");
         timeUpdate(time(0));
         }
     }
