@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.1.1\n";
+    return "  CTODO List Management Uti v1.1.2\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -568,6 +568,13 @@ void todo_swap(char** argv) {
         timeUpdate(time(0));
         }
     }
+void todo_sort() {
+    if (prelude() != -1) {
+        sql("UPDATE TODO SET id = id + 1000000000");
+        sql("UPDATE TODO SET id = id - (1000000000 + 1)");
+        timeUpdate(time(0));
+        }
+    }
 //________________________________________________________________________________
 void todo_mv(char** argv) {
     if (prelude() != -1) {
@@ -879,10 +886,8 @@ int todo_write(char** argv, int argc) {
 #endif
         }
     if (first == 1) {
-        for (counter = 1; counter < last; counter++) {
-            sql("UPDATE TODO SET id = id + 1000000000");
-            sql("UPDATE TODO SET id = id - (1000000000 - 1)");
-            }
+        sql("UPDATE TODO SET id = id + 1000000000");
+        sql("UPDATE TODO SET id = id - (1000000000 - 1)");
 #ifdef WIN32
         sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(0,'%s')", text);
 #else

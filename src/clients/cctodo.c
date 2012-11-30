@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 char* dest;
 char* cctodo_version() {
-    return "  CCTODO Client v1.0.1\n";
+    return "  CCTODO Client v1.0.2\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -52,6 +52,7 @@ char* cctodo_help() {
   - rm <number> - delete task\n\
   - clean - clean all tasks\n\
   - swap or s <number1> <number2> - swap elements\n\
+  - sort - re-index nodes (currently works just wrong :D)\n\
   - sync - text synchronization to avoid binaries in vcs\n\
   - set <option> <value> - todo options, available options:\n\
       - syncdir - directory for vcs synchronization\n\
@@ -115,6 +116,10 @@ int main(int argc, char* argv[]) {
             else {
                 todo_swap(argv);
                 }
+            return 0;
+            }
+        else if (strcmp(argv[1], "sort") == 0) {
+            todo_sort();
             return 0;
             }
         else if (strcmp(argv[1], "mv") == 0) {
