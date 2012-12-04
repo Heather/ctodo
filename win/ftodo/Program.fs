@@ -14,9 +14,6 @@
         printfn ""
 
 open System
-open System.Configuration
-
-open System.Linq
 open cprintf
 
 let help() =
@@ -50,25 +47,34 @@ let user() = cprintf ConsoleColor.DarkGreen "%s@ctodo# " username
 open nwrap
 
 let mutable t : todo = null
-
 let mutable connected = false
-let connect address _username = 
-    try 
-        t <- new todo()
-        connected <- true
-    with | _ as errorM -> printfn "%s" errorM.Message
-let initdb() = t.n_initdb();
+
+t <- new todo()
+connected <- true
+
+let initdb() = 
+                (* TESTING InitDB *)
+    t.n_initdb();
 let read() = 
+                (* TESTING READ *)
     let todolist = t.n_read(0, 0);
-    for s in todolist do
-        cprintf ConsoleColor.Blue "%s" s
+    cprintf ConsoleColor.Red "+-------------------------------------------\n"
+    todolist |> Seq.iteri(fun i s ->
+        if i%2 = 0 then
+            cprintf ConsoleColor.Blue "|%s|" s
+        else
+            cprintf ConsoleColor.Red " %s|" s 
+            printfn "")
+    cprintf ConsoleColor.Red "+-------------------------------------------\n"
 let write p =
+                (* TESTING WRITE *)
     if t.n_write([|"hello"; "world"|],2) = 0 then
         printfn "done"
     else
         printfn "error"
 
 let console() = 
+                (* FREAKING CONSOLE *)
     let rec eat (command : string) =
         command.Split(' ','(',')') 
         |> Seq.filter(fun s -> s.Length <> 0)
@@ -76,20 +82,16 @@ let console() =
             (Seq.head C).ToUpper() |> fun head ->
                 let conn triller =
                     if connected then triller()
-                    else cprintfn ConsoleColor.Red "Not connected to server"
+                    else cprintfn ConsoleColor.Red "Not connected to database"
                 let checkparams needparams triller = 
                     if ( Seq.length C ) > needparams then triller() else 
                     cprintfn ConsoleColor.Red "Not enouth parameters for this command"
                 let ifparams needparams triller1 triller2 = 
                     if ( Seq.length C ) > needparams then triller1() 
                     else triller2()
-                if head = "QUIT" || head = "EXIT" then 
-                    if connected then (); 
-                    0
+                if head = "QUIT" || head = "EXIT" then 0
                 else
                     match head with 
-                    | "CONNECT" | "C" -> ifparams 2 <| fun () -> connect (Seq.nth(1) C) (Seq.nth(2) C)
-                                                    <| fun () -> connect "" ""
                     | "INITDB"      -> conn <| fun() -> initdb()
                     | "READ"        -> conn <| fun() -> read()
                     | "WRITE"       -> conn <| fun() -> checkparams 1   <| fun () -> write (Seq.nth(1) C)
