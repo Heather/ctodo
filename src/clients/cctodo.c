@@ -170,8 +170,8 @@ int main(int argc, char* argv[]) {
                 printf("%c[%dm\n\r", 0x1B, 0);
 #endif
 #ifdef WIN32
-                for(x = 2; x < maxl; x++) {
-                    printf("%s", out[x]);
+                for(x = 2; x < maxl; x+=2) {
+                    printf("| %s| %s|\n\r", out[x], out[x+1]);
 #else
                 for(x = 4; x < maxl; x+=2) {
                     printf(" %s║", out[2]);

@@ -757,12 +757,12 @@ char** todo_read(int index, int parcount) {
 #endif
             }
 #ifdef WIN32
-        sprintf_s(out[x], 255, "| %s %s| %s %s|\n\r",
+        sprintf_s(out[x], 255, "%s %s",
                   sqlite3_column_text(stmt, 0)
-                  , spaces1
-                  , sqlite3_column_text(stmt, 1)
+                  , spaces1);
+        sprintf_s(out[x + 1], 255, "%s %s",
+                  sqlite3_column_text(stmt, 1)
                   , spaces2);
-        x += 1;
 #else
         sprintf(out[x], " %s %s",
                 sqlite3_column_text(stmt, 0)
@@ -770,8 +770,8 @@ char** todo_read(int index, int parcount) {
         sprintf(out[x + 1], " %s %s"
                 , sqlite3_column_text(stmt, 1)
                 , spaces2);
-        x += 2;
 #endif
+        x += 2;
         }
 #ifdef WIN32
     memcpy(out[1], &x, sizeof(int));
