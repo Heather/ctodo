@@ -42,12 +42,12 @@ namespace wtodo {
             }
 
         private void button1_Click(object sender, RoutedEventArgs e) {
-            using (t = new todo()) {
-                string[] pony = ("There is pony").Split(' ');
+            //using (t = new todo()) {
+                string[] pony = new string[] {"hello", "world"};
                 if (t.n_write(pony, pony.Length) == -1) {
                     MessageBox.Show(t.errorMessage);
                     }
-                }
+            //    }
             /*
             List<String> todolist = t.n_read(0, 0);
             foreach (string s in todolist) {

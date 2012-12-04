@@ -78,16 +78,16 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\nwrap\nwrap_100.vcxproj">
-      <Project>{5D3E4BD4-566E-445B-BF4D-ED4F8533C75F}</Project>
-      <Name>nwrap</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\nwrap\nwrap_100.vcxproj">
+      <Project>{5D3E4BD4-566E-445B-BF4D-ED4F8533C75F}</Project>
+      <Name>nwrap_100</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
