@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 char* dest;
 char* cctodo_version() {
-    return "  CCTODO Client v1.0.2\n";
+    return "  CCTODO Client v1.0.3\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
