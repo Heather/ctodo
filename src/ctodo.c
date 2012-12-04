@@ -802,7 +802,6 @@ char** todo_read(int index, int parcount) {
 //________________________________________________________________________________
 int todo_write(char** argv, int argc) {
     char first = 0;
-    int counter;
     int last = 0;
     int argi;
     char* text;
