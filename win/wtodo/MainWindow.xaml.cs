@@ -36,18 +36,15 @@ namespace wtodo {
         public todo t;
         public MainWindow() {
             InitializeComponent();
-            using (t = new todo()) {
-                t.n_initdb();
-                }
+            t = new todo();
+            t.n_initdb();
             }
 
         private void button1_Click(object sender, RoutedEventArgs e) {
-            //using (t = new todo()) {
-                string[] pony = new string[] {"hello", "world"};
-                if (t.n_write(pony, pony.Length) == -1) {
-                    MessageBox.Show(t.errorMessage);
-                    }
-            //    }
+            string[] pony = new string[] {"hello", "world"};
+            if (t.n_write(pony, 2) == -1) {
+                MessageBox.Show(t.errorMessage);
+                }
             /*
             List<String> todolist = t.n_read(0, 0);
             foreach (string s in todolist) {
