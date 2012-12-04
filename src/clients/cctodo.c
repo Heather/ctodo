@@ -130,7 +130,17 @@ int main(int argc, char* argv[]) {
             return 0;
             }
         else if (strcmp(argv[1], "clean") == 0) {
-            todo_clean();
+            char answer;
+            printf("Are you sure that you want to clean all the tasks? (y/n)");
+#ifdef WIN32
+            if (scanf_s("%c", &answer) > 0) {
+#else
+            if (scanf("%c", &answer) > 0) {
+#endif
+                if (answer == 'y') {
+                    todo_clean();
+                    }
+                }
             return 0;
             }
         else if (strcmp(argv[1], "rm") == 0) {

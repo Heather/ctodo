@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.1.3\n";
+    return "  CTODO List Management Uti v1.1.4\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -589,20 +589,10 @@ void todo_mv(char** argv) {
     }
 //________________________________________________________________________________
 void todo_clean() {
-    char answer;
     if (prelude() != -1) {
-        printf("Are you sure that you want to clean all the tasks? (y/n)");
-#ifdef WIN32
-        if (scanf_s("%c", &answer) > 0) {
-#else
-        if (scanf("%c", &answer) > 0) {
-#endif
-            if (answer == 'y') {
-                queries[ind++] = "DELETE FROM TODO";
-                retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-                timeUpdate(time(0));
-                }
-            }
+        queries[ind++] = "DELETE FROM TODO";
+        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+        timeUpdate(time(0));
         }
     }
 //________________________________________________________________________________
