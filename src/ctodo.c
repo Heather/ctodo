@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.1.4\n";
+    return "  CTODO List Management Uti v1.1.6\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -63,7 +63,8 @@ char* todo_help() {
 #else
     strcat(dest,
 #endif
-             "  cross-platform ctodo library\n");
+             "  Cross-platform todo list management library\n\
+  Copyright (C)  2012  Ash Harley\n");
     return &dest[0];
     }
 //________________________________________________________________________________
@@ -135,7 +136,7 @@ void todo_close() {
 //________________________________________________________________________________
 int todo_initdb() {
     if (prelude() == -1) return -1;
-    sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL)");
+    sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL, INTEGER list NOT NULL)");
     if (retval) {
         printf("Init DB Failed, Shit happens?\n\r");
         return -1;
@@ -429,10 +430,13 @@ int todo_sync(char** argv) {
 #endif
                 if (token1[1] == '-') token1 += 3;
                 rtrim(token2);
+                ///<TODO>
+                ///Save list to syncfile
+                ///</TODO>
 #ifdef WIN32
-                sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
+                sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%s,'%s', 0)", token1, token2);
 #else
-                sprintf(queries[ind++], "INSERT INTO TODO VALUES(%s,'%s')", token1, token2);
+                sprintf(queries[ind++], "INSERT INTO TODO VALUES(%s,'%s', 0)", token1, token2);
 #endif
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
@@ -790,7 +794,7 @@ char** todo_read(int index, int parcount) {
     return out;
     }
 //________________________________________________________________________________
-int todo_write(char** argv, int argc) {
+int todo_write(char** argv, int argc, int list) {
     char first = 0;
     int last = 0;
     int argi;
@@ -878,16 +882,16 @@ int todo_write(char** argv, int argc) {
         sql("UPDATE TODO SET id = id + 1000000000");
         sql("UPDATE TODO SET id = id - (1000000000 - 1)");
 #ifdef WIN32
-        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(0,'%s')", text);
+        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(0,'%s',%d)", text, list);
 #else
-        sprintf(queries[ind++], "INSERT INTO TODO VALUES(0,'%s')", text);
+        sprintf(queries[ind++], "INSERT INTO TODO VALUES(0,'%s',%d)", text, list);
 #endif
         }
     else {
 #ifdef WIN32
-        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s')", last + 1, text);
+        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s', %d)", last + 1, text, list);
 #else
-        sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s')", last + 1, text);
+        sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s', %d)", last + 1, text, list);
 #endif
         }
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);

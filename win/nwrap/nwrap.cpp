@@ -114,7 +114,7 @@ namespace nwrap {
             argv[x + 1] = go;
             }*/
         try {
-            result = todo_write(argv, 2); //argc + 1);
+            result = todo_write(argv, 2, 0); //argc + 1);
             return result;
             }
         catch(char* error) {
