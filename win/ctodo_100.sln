@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nwrap_100", "nwrap\nwrap_10
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wtodo_100", "wtodo\wtodo_100.csproj", "{09F382E9-0BFE-4247-B8BE-554218D83F4E}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ftodo", "ftodo\ftodo.fsproj", "{7A45889B-DC48-4DEF-B23B-7F8BA4186A22}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ftodo", "ftodo\ftodo_100.fsproj", "{7A45889B-DC48-4DEF-B23B-7F8BA4186A22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
