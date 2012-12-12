@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.1.6\n";
+    return "  CTODO List Management Uti v1.1.7\n";
     }
 //________________________________________________________________________________
 char* todo_help() {

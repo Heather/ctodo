@@ -1,3 +1,5 @@
+#ifndef CTODO_H
+#define CTODO_H
 /*          ctodo - Light TODO library
           Copyright (C)  2012  Ash Harley
 
@@ -34,4 +36,5 @@ extern char** todo_read(int index, int parcount);
 extern int todo_write(char** argv, int argc, int list);
 extern void todo_close();
 //________________________________________________________________________________
+#endif // CTODO_H
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
