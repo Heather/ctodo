@@ -3,12 +3,7 @@ TODO List management util: Usage & Version
 
  - ctodo : general c library
  - cctodo : simple ctodo client in C
- - nwrap : native wrapper for CLR Languages
- - frodo : windows console client on F# for nwrap testing
- - wtodo (not finished yet) : windows gui C# WPF application
- - atodo (not released yet) : android / iphone gui application
- - additional experiment using ctodo lib on various languages
-
+ 
 =======================================================
  
  - good command line interface (use --help for details)
