@@ -42,7 +42,7 @@ char* cctodo_help() {
 "  * usage:\n\
     todo <command> <arguments>\n\
   - initdb - init empty database structure\n\
-  - set default database options without data lose, useful if you or some update broke it)\n\
+    (set default database options without data lose, useful if you or some update broke it)\n\
   - <msg> - just write todo <msg> to add new node to your todo list\n\
       --first to put task on top priority\n\
       --motivate - end todo note with additional word (see ending option)\n\
