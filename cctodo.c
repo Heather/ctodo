@@ -25,34 +25,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 char* dest;
 char* cctodo_version() {
-    return "  CCTODO Client v1.0.4\n";
+    return "  CCTODO Client v1.0.5\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
 #ifdef WIN32
     strcpy_s(dest, 4000, cctodo_version());
 #else
-    strcpy(dest,cctodo_version());
+    strcpy(dest, cctodo_version());
 #endif
 #ifdef WIN32
-    strcat_s(dest, 4000, 
+    strcat_s(dest, 4000,
 #else
     strcat(dest,
 #endif
-"  * usage:\n\
+             "  * usage:\n\
     todo <command> <arguments>\n\
   - initdb - init empty database structure\n\
     (set default database options without data lose, useful if you or some update broke it)\n\
+  - <without options>, read or r - to read all\n\
   - <msg> - just write todo <msg> to add new node to your todo list\n\
       --first to put task on top priority\n\
       --motivate - end todo note with additional word (see ending option)\n\
-  - read or r - to read all\n\
   - edit or e <number> <msg> - edit task\n\
   - mv <number1> <number2> - move task\n\
   - rm <number> - delete task\n\
   - clean - clean all tasks\n\
   - swap or s <number1> <number2> - swap elements\n\
-  - reindex - re-index nodes (currently works just wrong :D)\n\
   - sync - text synchronization to avoid binaries in vcs\n\
   - set <option> <value> - todo options, available options:\n\
       - syncdir - directory for vcs synchronization\n\
@@ -64,21 +63,66 @@ char* cctodo_help() {
       - end - always end todo notes with additional word (default 0)\n\
       - ending - word, using for end feature (default 'be a man')\n");
 #ifndef WIN32
-    strcat(dest,"\
+    strcat(dest, "\
       - home - file for home path (request for synchronization)\n\
       - color - ctodo color scheme for posix (default 'red')\n\
         - schemas: red, blink, green, pink, black\n");
 #endif
     return &dest[0];
     }
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        printf("%s", todo_version());
-        printf("%s", cctodo_help());
+int ctodo_read() {
+    char** out;
+    int x, maxl;
+    out = todo_read(0, 0);
+#ifdef WIN32
+    memcpy(&maxl, out[1], sizeof(int));
+#else
+    memcpy(&maxl, out[3], sizeof(int));
+#endif
+    if (out != NULL) {
+
+#ifdef WIN32
+        printf("+%s+\n\r", out[0]);
+
+#else
+        printf(" %s", out[2]);
+        printf("╔%s╗", out[0]);
+        printf("%c[%dm\n\r", 0x1B, 0);
+#endif
+#ifdef WIN32
+        for (x = 2; x < maxl; x += 2) {
+            printf("| %s| %s|\n\r", out[x], out[x + 1]);
+#else
+        for (x = 4; x < maxl; x += 2) {
+            printf(" %s║", out[2]);
+            printf("%c[%dm", 0x1B, 0);
+            printf("%s", out[x]);
+            printf("%s│", out[2]);
+            printf("%c[%dm", 0x1B, 0);
+            printf("%s", out[x + 1]);
+            printf("%s║", out[2]);
+            printf("%c[%dm\n", 0x1B, 0);
+#endif
+            }
+#ifdef WIN32
+        printf("+%s+\n\r", out[0]);
+#else
+        printf(" %s", out[2]);
+        printf("╚%s╝", out[1]);
+        printf("%c[%dm\n\r", 0x1B, 0);
+#endif
         return 0;
         }
     else {
-        if (strcmp(argv[1], "--version") == 0) {
+        return -1;
+        }
+    }
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        return ctodo_read();
+        }
+    else {
+        if ((strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "-v") == 0)) {
             printf("%s", cctodo_version());
             printf("%s", todo_version());
             return 0;
@@ -119,7 +163,17 @@ int main(int argc, char* argv[]) {
             return 0;
             }
         else if (strcmp(argv[1], "reindex") == 0) {
-            todo_reindex();
+            char answer;
+            printf("This feature is currently broken, do you want to test it? (y/n)");
+#ifdef WIN32
+            if (scanf_s("%c", &answer) > 0) {
+#else
+            if (scanf("%c", &answer) > 0) {
+#endif
+                if (answer == 'y') {
+                    todo_reindex();
+                    }
+                }
             return 0;
             }
         else if (strcmp(argv[1], "mv") == 0) {
@@ -151,51 +205,7 @@ int main(int argc, char* argv[]) {
             return 0;
             }
         else if ((strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "r") == 0)) {
-            char** out;
-            int x, maxl;
-            out = todo_read(0, 0);
-#ifdef WIN32
-            memcpy(&maxl, out[1], sizeof(int));
-#else
-            memcpy(&maxl, out[3], sizeof(int));
-#endif
-            if (out != NULL) {
-                
-#ifdef WIN32
-                printf("+%s+\n\r", out[0]);
-                
-#else
-                printf(" %s", out[2]);
-                printf("╔%s╗", out[0]);
-                printf("%c[%dm\n\r", 0x1B, 0);
-#endif
-#ifdef WIN32
-                for(x = 2; x < maxl; x+=2) {
-                    printf("| %s| %s|\n\r", out[x], out[x+1]);
-#else
-                for(x = 4; x < maxl; x+=2) {
-                    printf(" %s║", out[2]);
-                    printf("%c[%dm", 0x1B, 0);
-                    printf("%s", out[x]);
-                    printf("%s│", out[2]);
-                    printf("%c[%dm", 0x1B, 0);
-                    printf("%s", out[x+1]);
-                    printf("%s║", out[2]);
-                    printf("%c[%dm\n", 0x1B, 0);
-#endif
-                }
-#ifdef WIN32
-                printf("+%s+\n\r", out[0]);
-#else
-                printf(" %s", out[2]);
-                printf("╚%s╝", out[1]);
-                printf("%c[%dm\n\r", 0x1B, 0);
-#endif
-                return 0;
-                }
-            else {
-                return -1;
-                }
+            return ctodo_read();
             }
         else {
             ///<Summary>
@@ -204,7 +214,7 @@ int main(int argc, char* argv[]) {
             return todo_write(argv, argc, 0);
             }
         }
-        todo_close();
+    todo_close();
     }
 //________________________________________________________________________________
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
