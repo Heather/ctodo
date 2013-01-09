@@ -1,5 +1,5 @@
 /*          ctodo - Light TODO library
-      Copyright (C)  2012-2013 Heather Mason
+      Copyright (C)  2012-2013 Heather Cynede
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public
