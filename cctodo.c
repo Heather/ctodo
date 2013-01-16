@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 char* dest;
 char* cctodo_version() {
-    return "  CCTODO Client v1.0.5\n";
+    return "  CCTODO Client v1.0.6\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -43,7 +43,7 @@ char* cctodo_help() {
     todo <command> <arguments>\n\
   - initdb - init empty database structure\n\
     (set default database options without data lose, useful if you or some update broke it)\n\
-  - <without options>, read or r - to read all\n\
+  - <without options> - to read all\n\
   - <msg> - just write todo <msg> to add new node to your todo list\n\
       --first to put task on top priority\n\
       --motivate - end todo note with additional word (see ending option)\n\
@@ -203,9 +203,6 @@ int main(int argc, char* argv[]) {
                 todo_rm(argv);
                 }
             return 0;
-            }
-        else if ((strcmp(argv[1], "read") == 0) || (strcmp(argv[1], "r") == 0)) {
-            return ctodo_read();
             }
         else {
             ///<Summary>
