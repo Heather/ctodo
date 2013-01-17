@@ -39,9 +39,12 @@ ctodo:	$(CLIBS)
 .PHONY: clean all rebuild
 
 clean:
+	echo " --- Clean binaries --- "
 	rm -f todo.a
 	rm -f todo
+	echo " --- Clean temp files --- "
 	find . -name '*~' -delete;
+	find . -name '#*#' -delete;
 
 install:
 	$(MKDIR) $(DESTDIR)$(BINDIR)
