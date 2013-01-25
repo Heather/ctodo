@@ -612,7 +612,7 @@ void todo_rm(char** argv) {
         }
     }
 //________________________________________________________________________________
-char** todo_read(int index, int parcount) {
+char** todo_read(int list, int parcount) {
     char* lineborder1;
     char* spaces1;
     char* spaces2;
@@ -661,9 +661,9 @@ char** todo_read(int index, int parcount) {
 #endif
     if (parcount > 0) {
 #ifdef WIN32
-        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %d", index);
+        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE list = %d", list);
 #else
-        sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE id = %d", index);
+        sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE list = %d", list);
 #endif
         }
     else queries[ind++] = "SELECT COALESCE(MAX(id),0) from TODO";
@@ -677,9 +677,9 @@ char** todo_read(int index, int parcount) {
         }
     if (parcount > 0) {
 #ifdef WIN32
-        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %d", index);
+        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE list = %d", list);
 #else
-        sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE id = %d", index);
+        sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE list = %d", list);
 #endif
         }
     else queries[ind++] = "SELECT COALESCE(MAX(LENGTH(text)),0) from TODO";
@@ -693,9 +693,9 @@ char** todo_read(int index, int parcount) {
         }
     if (parcount > 0) {
 #ifdef WIN32
-        sprintf_s(queries[ind++], 255, "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %d", index);
+        sprintf_s(queries[ind++], 255, "SELECT id, text, LENGTH(text) FROM TODO WHERE list = %d", list);
 #else
-        sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE id = %d", index);
+        sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE list = %d", list);
 #endif
         }
     else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";

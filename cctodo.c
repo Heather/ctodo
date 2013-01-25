@@ -21,11 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 #include "ctodo.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 //________________________________________________________________________________
 char* dest;
 char* cctodo_version() {
-    return "  CCTODO Client v1.0.6\n";
+    return "  CCTODO Client v1.0.8\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -43,10 +44,11 @@ char* cctodo_help() {
     todo <command> <arguments>\n\
   - initdb - init empty database structure\n\
     (set default database options without data lose, useful if you or some update broke it)\n\
-  - <without options> - to read all\n\
+  - <without options> - to read all, --list to read all from specified list\n\
   - <msg> - just write todo <msg> to add new node to your todo list\n\
       --first to put task on top priority\n\
       --motivate - end todo note with additional word (see ending option)\n\
+      --list - write to specified list (currently a bit bugged)\n\
   - edit or e <number> <msg> - edit task\n\
   - mv <number1> <number2> - move task\n\
   - rm <number> - delete task\n\
@@ -70,10 +72,15 @@ char* cctodo_help() {
 #endif
     return &dest[0];
     }
-int ctodo_read() {
+int ctodo_read(int list) {
     char** out;
     int x, maxl;
-    out = todo_read(0, 0);
+    if (list == -1) {
+        out = todo_read(0, 0);
+        }
+    else {
+        out = todo_read(list, 1);
+        }
 #ifdef WIN32
     memcpy(&maxl, out[1], sizeof(int));
 #else
@@ -119,7 +126,7 @@ int ctodo_read() {
     }
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        return ctodo_read();
+        return ctodo_read(-1);
         }
     else {
         if ((strcmp(argv[1], "--version") == 0) || (strcmp(argv[1], "-v") == 0)) {
@@ -131,6 +138,15 @@ int main(int argc, char* argv[]) {
             printf("%s", cctodo_help());
             printf("%s", todo_help());
             return 0;
+            }
+        else if (strcmp(argv[1], "--list") == 0) {
+            if (argc < 2) {
+                printf("you need to specify list alike --list 1\n\r");
+                return -1;
+                }
+            else {
+                return ctodo_read(atoi(argv[2]));
+                }
             }
         else if (strcmp(argv[1], "initdb") == 0) {
             todo_initdb();
@@ -205,10 +221,15 @@ int main(int argc, char* argv[]) {
             return 0;
             }
         else {
-            ///<Summary>
-            ///Default way to write to first list
-            ///</Summary>
-            return todo_write(argv, argc, 0);
+            int argi, list = 0;
+            char* text  = (char*)calloc(200, sizeof(char));
+            for (argi = 1; argi < (argc - 1); argi++) {
+                if ((strcmp(argv[argi], "--list") == 0)) {
+                    list = atoi(argv[argi + 1]);
+                    }
+                }
+            free(text);
+            return todo_write(argv, argc, list);
             }
         }
     todo_close();
