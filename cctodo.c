@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
-#ifdef WIN32
+#ifdef _MSC_VER
 #include <Windows.h>
 #endif
 //________________________________________________________________________________
@@ -30,12 +30,12 @@ char* cctodo_version() {
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
-#ifdef WIN32
+#ifdef _MSC_VER
     strcpy_s(dest, 4000, cctodo_version());
 #else
     strcpy(dest, cctodo_version());
 #endif
-#ifdef WIN32
+#ifdef _MSC_VER
     strcat_s(dest, 4000,
 #else
     strcat(dest,
@@ -181,7 +181,7 @@ int main(int argc, char* argv[]) {
         else if (strcmp(argv[1], "reindex") == 0) {
             char answer;
             printf("This feature is currently broken, do you want to test it? (y/n)");
-#ifdef WIN32
+#ifdef _MSC_VER
             if (scanf_s("%c", &answer) > 0) {
 #else
             if (scanf("%c", &answer) > 0) {
@@ -202,7 +202,7 @@ int main(int argc, char* argv[]) {
         else if (strcmp(argv[1], "clean") == 0) {
             char answer;
             printf("Are you sure that you want to clean all the tasks? (y/n)");
-#ifdef WIN32
+#ifdef _MSC_VER
             if (scanf_s("%c", &answer) > 0) {
 #else
             if (scanf("%c", &answer) > 0) {

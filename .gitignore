@@ -4,3 +4,5 @@
 *.filters
 *.user
 *.db3
+*.a
+*.o

@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
-#ifdef WIN32
+#ifdef _MSC_VER
 #include "sqlite3.h"
 #else
 #include <sqlite3.h>
@@ -36,7 +36,7 @@ time_t timefile;
 sqlite3_stmt* stmt;
 //________________________________________________________________________________
 //Maximum sqlite query queue _____________________________________________________
-#ifdef WIN32
+#ifdef _MSC_VER
 int q_cnt = 11;
 #else
 char* home;
@@ -53,12 +53,12 @@ char* todo_version() {
 //________________________________________________________________________________
 char* todo_help() {
     dest = (char*)calloc(4000, sizeof(char));
-#ifdef WIN32
+#ifdef _MSC_VER
     strcpy_s(dest, 4000, todo_version());
 #else
     strcpy(dest, todo_version());
 #endif
-#ifdef WIN32
+#ifdef _MSC_VER
     strcat_s(dest, 4000,
 #else
     strcat(dest,
@@ -69,7 +69,7 @@ char* todo_help() {
     }
 //________________________________________________________________________________
 void timeUpdate(time_t t) {
-#ifdef WIN32
+#ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
 #else
     sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
@@ -82,7 +82,7 @@ void timeUpdate(time_t t) {
     }
 //________________________________________________________________________________
 void sql(char* command) {
-#ifdef WIN32
+#ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "%s", command);
 #else
     sprintf(queries[ind++], "%s", command);
@@ -102,14 +102,14 @@ char* rtrim(char* str) {
 int prelude() {
     timefile = 0;
     f = NULL;
-#ifndef WIN32
+#ifndef _MSC_VER
     char* temp = (char*)calloc(200, sizeof(char));
 #endif
     queries = (char**)malloc(sizeof(char*) * q_cnt);
     for (x = 0; x < q_cnt; x++) {
         queries[x] = (char*)malloc(sizeof(char) * q_size);
         }
-#ifdef WIN32
+#ifdef _MSC_VER
     retval = sqlite3_open("todo.db3", &handle);
 #else
     home = (char*)getenv("HOME");
@@ -127,7 +127,7 @@ int prelude() {
 void todo_close() {
     free(queries);
     free(dest);
-#ifndef WIN32
+#ifndef _MSC_VER
     free(home);
 #endif
     free(out);
@@ -150,7 +150,7 @@ int todo_initdb() {
     ///<Option>
     ///Time of last synchronization
     ///</Option>
-#ifdef WIN32
+#ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", 0);
 #else
     sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", 0);
@@ -188,7 +188,7 @@ int todo_initdb() {
 #else
     sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.')");
 #endif
-#ifndef WIN32
+#ifndef _MSC_VER
     ///<Option>
     ///Path for HOME (only for linux)
     ///</Option>
@@ -253,7 +253,7 @@ int todo_set(char** argv, int argc) {
                 printf("Use 1 or 0 for this option\n\r");
                 }
             }
-#ifndef WIN32
+#ifndef _MSC_VER
         else if (strcmp(argv[2], "home") == 0) {
             sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 20", argv[3]);
             retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
@@ -267,7 +267,7 @@ int todo_set(char** argv, int argc) {
             printf("There is no such option\n\r");
             return 0;
             }
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
 #else
         sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
@@ -283,7 +283,7 @@ int todo_set(char** argv, int argc) {
 //________________________________________________________________________________
 int todo_sync(char** argv) {
     char* filename;
-#ifndef WIN32
+#ifndef _MSC_VER
     char* home;
 #endif
     int timeDB;
@@ -296,7 +296,7 @@ int todo_sync(char** argv) {
     char* search = "|";
     char* syncdir;
     char* cmd;
-#ifdef WIN32
+#ifdef _MSC_VER
     char* context = NULL;
 #else
     home = (char*)calloc(200, sizeof(char));
@@ -304,7 +304,7 @@ int todo_sync(char** argv) {
     filename = (char*)calloc(200, sizeof(char));
     syncdir = (char*)calloc(200, sizeof(char));
     if (prelude() == -1) return -1;
-#ifdef WIN32
+#ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS");
 #else
     sprintf(queries[ind++], "SELECT option, text FROM OPTIONS");
@@ -316,7 +316,7 @@ int todo_sync(char** argv) {
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         if (strcmp((const char*)sqlite3_column_text(stmt, 0), "0") == 0) {
-#ifdef WIN32
+#ifdef _MSC_VER
             sprintf_s(syncdir, 200, "%s", sqlite3_column_text(stmt, 1));
 #else
             sprintf(syncdir, "%s", sqlite3_column_text(stmt, 1));
@@ -338,13 +338,13 @@ int todo_sync(char** argv) {
             vv = atoi((const char*)sqlite3_column_text(stmt, 1));
             }
         if (strcmp((const char*)sqlite3_column_text(stmt, 0), "15") == 0) {
-#ifdef WIN32
+#ifdef _MSC_VER
             sprintf_s(filename, 200, "%s/%s", syncdir, sqlite3_column_text(stmt, 1));
 #else
             sprintf(filename, "%s/%s", syncdir, sqlite3_column_text(stmt, 1));
 #endif
             }
-#ifndef WIN32
+#ifndef _MSC_VER
         else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "20") == 0) {
             sprintf(home, "HOME=%s", sqlite3_column_text(stmt, 1));
             }
@@ -352,32 +352,32 @@ int todo_sync(char** argv) {
         }
     if (git == 1 || hg == 1 || svn == 1 || vv == 1) {
         cmd = (char*)calloc(200, sizeof(char));
-#ifndef WIN32
+#ifndef _MSC_VER
         putenv(home);
 #endif
         if (git == 1) {
-#ifdef WIN32
+#ifdef _MSC_VER
             sprintf_s(cmd, 200, "cd %s;git pull", syncdir);
 #else
             sprintf(cmd, "cd %s;git pull", syncdir);
 #endif
             }
         else if (hg == 1) {
-#ifdef WIN32
+#ifdef _MSC_VER
             sprintf_s(cmd, 200, "cd %s;hg pull --update", syncdir);
 #else
             sprintf(cmd, "cd %s;hg pull --update", syncdir);
 #endif
             }
         else if (svn == 1) {
-#ifdef WIN32
+#ifdef _MSC_VER
             sprintf_s(cmd, 200, "cd %s;svn update", syncdir);
 #else
             sprintf(cmd, "cd %s;svn update", syncdir);
 #endif
             }
         else if (vv == 1) {
-#ifdef WIN32
+#ifdef _MSC_VER
             sprintf_s(cmd, 200, "cd %s;vv pull", syncdir);
 #else
             sprintf(cmd, "cd %s;vv pull", syncdir);
@@ -388,7 +388,7 @@ int todo_sync(char** argv) {
             }
         }
     printf("Sync file: %s\n\r", filename);
-#ifdef WIN32
+#ifdef _MSC_VER
     fopen_s(&f, filename, "a+");
 #else
     f = fopen(filename, "a+");
@@ -400,7 +400,7 @@ int todo_sync(char** argv) {
     while (fgets(line, 150, f)) {
         if (i == 0) {
             timefile = atoi(line);
-#ifndef WIN32
+#ifndef _MSC_VER
             printf("Timefile: %s\n\r", ctime(&timefile));
 #endif
             if (timeDB > (int)timefile) {
@@ -421,7 +421,7 @@ int todo_sync(char** argv) {
                     }
                 }
             else {
-#ifdef WIN32
+#ifdef _MSC_VER
                 token1 = strtok_s(line, search, &context);
                 token2 = strtok_s(NULL, search, &context);
 #else
@@ -433,7 +433,7 @@ int todo_sync(char** argv) {
                 ///<TODO>
                 ///Save list to syncfile
                 ///</TODO>
-#ifdef WIN32
+#ifdef _MSC_VER
                 sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%s,'%s', 0)", token1, token2);
 #else
                 sprintf(queries[ind++], "INSERT INTO TODO VALUES(%s,'%s', 0)", token1, token2);
@@ -449,7 +449,7 @@ int todo_sync(char** argv) {
     fclose(f);
     if (write) {
         time_t now = time(0);
-#ifdef WIN32
+#ifdef _MSC_VER
         fopen_s(&f, filename, "w+");
 #else
         f = fopen(filename, "w+");
@@ -467,32 +467,32 @@ int todo_sync(char** argv) {
             }
         fclose(f);
         if (git == 1 || hg == 1 || svn == 1 || vv == 1) {
-#ifndef WIN32
+#ifndef _MSC_VER
             putenv(home);
 #endif
             if (git == 1) {
-#ifdef WIN32
+#ifdef _MSC_VER
                 sprintf_s(cmd, 200, "cd %s;git commit -am \"TODO LIST UPDATE\";git push", syncdir);
 #else
                 sprintf(cmd, "cd %s;git commit -am \"TODO LIST UPDATE\";git push", syncdir);
 #endif
                 }
             else if (hg == 1) {
-#ifdef WIN32
+#ifdef _MSC_VER
                 sprintf_s(cmd, 200, "cd %s;hg commit -m \"TODO LIST UPDATE\";hg push", syncdir);
 #else
                 sprintf(cmd, "cd %s;hg commit -m \"TODO LIST UPDATE\";hg push", syncdir);
 #endif
                 }
             else if (svn == 1) {
-#ifdef WIN32
+#ifdef _MSC_VER
                 sprintf_s(cmd, 200, "cd %s;svn commit  -m \"TODO LIST UPDATE\"", syncdir);
 #else
                 sprintf(cmd, "cd %s;svn commit  -m \"TODO LIST UPDATE\"", syncdir);
 #endif
                 }
             else if (vv == 1) {
-#ifdef WIN32
+#ifdef _MSC_VER
                 sprintf_s(cmd, 200, "cd %s;vv commit -m \"TODO LIST UPDATE\";vv push", syncdir);
 #else
                 sprintf(cmd, "cd %s;vv commit -m \"TODO LIST UPDATE\"; vv push", syncdir);
@@ -517,7 +517,7 @@ void todo_edit(char** argv, int argc) {
     char* text = (char*)calloc(200, sizeof(char));
     if (prelude() != -1) {
         for (argi = 3; argi < argc; argi++) {
-#ifdef WIN32
+#ifdef _MSC_VER
             strcat_s(text, 200, argv[argi]);
             strcat_s(text, 200, " ");
 #else
@@ -525,7 +525,7 @@ void todo_edit(char** argv, int argc) {
             strcat(text, " ");
 #endif
             }
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
 #else
         sprintf(queries[ind++], "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
@@ -542,7 +542,7 @@ void todo_swap(char** argv) {
     int val1 = atoi(argv[2]);
     int val2 = atoi(argv[3]);
     if (prelude() != -1) {
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
 #else
         sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
@@ -551,7 +551,7 @@ void todo_swap(char** argv) {
         if (retval) {
             printf("Swap failed! (shit happens)\n\r");
             }
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
 #else
         sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
@@ -560,7 +560,7 @@ void todo_swap(char** argv) {
         if (retval) {
             printf("Swap failed! (shit happens)\n\r");
             }
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
 #else
         sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
@@ -582,7 +582,7 @@ void todo_reindex() {
 //________________________________________________________________________________
 void todo_mv(char** argv) {
     if (prelude() != -1) {
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
 #else
         sprintf(queries[ind++], "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
@@ -602,7 +602,7 @@ void todo_clean() {
 //________________________________________________________________________________
 void todo_rm(char** argv) {
     if (prelude() != -1) {
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "DELETE FROM TODO WHERE id = %s", argv[2]);
 #else
         sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
@@ -660,7 +660,7 @@ char** todo_read(int list, int parcount) {
         }
 #endif
     if (parcount > 0) {
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE list = %d", list);
 #else
         sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE list = %d", list);
@@ -676,7 +676,7 @@ char** todo_read(int list, int parcount) {
         maxl1 = strlen((const char*)sqlite3_column_text(stmt, 0));
         }
     if (parcount > 0) {
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE list = %d", list);
 #else
         sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE list = %d", list);
@@ -692,7 +692,7 @@ char** todo_read(int list, int parcount) {
         maxl2 = atoi((const char*)sqlite3_column_text(stmt, 0));
         }
     if (parcount > 0) {
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "SELECT id, text, LENGTH(text) FROM TODO WHERE list = %d", list);
 #else
         sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE list = %d", list);
@@ -713,7 +713,11 @@ char** todo_read(int list, int parcount) {
     for (i = 0; i < ((maxl2 + maxl1) + 5); i++) {
         if (i == 2 + maxl1) {
 #ifdef WIN32
+#ifdef _MSC_VER
             strcat_s(lineborder1, 200, "+");
+#else
+			strcat(lineborder1, "+");
+#endif
 #else
             strcat(lineborder1, "╤");
             strcat(lineborder2, "╧");
@@ -721,7 +725,11 @@ char** todo_read(int list, int parcount) {
             }
         else {
 #ifdef WIN32
+#ifdef _MSC_VER
             strcat_s(lineborder1, 200, "-");
+#else
+			strcat(lineborder1, "-");
+#endif
 #else
             strcat(lineborder1, "═");
             strcat(lineborder2, "═");
@@ -729,7 +737,11 @@ char** todo_read(int list, int parcount) {
             }
         }
 #ifdef WIN32
+#ifdef _MSC_VER
     sprintf_s(out[0], 255, "%s", lineborder1);
+#else
+	sprintf(out[0], "%s", lineborder1);
+#endif
     x = 2;
 #else
     sprintf(out[1], "%s", colorscheme);
@@ -739,7 +751,7 @@ char** todo_read(int list, int parcount) {
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         maxi1 = maxl1 - strlen((const char*)sqlite3_column_text(stmt, 0));
         maxi2 = maxl2 - atoi((const char*)sqlite3_column_text(stmt, 2));
-#ifdef WIN32
+#ifdef _MSC_VER
         strcpy_s(spaces1, 200, "");
         strcpy_s(spaces2, 200, "");
 #else
@@ -747,20 +759,20 @@ char** todo_read(int list, int parcount) {
         strcpy(spaces2, "");
 #endif
         for (i = 0; i < maxi1; i++) {
-#ifdef WIN32
+#ifdef _MSC_VER
             strcat_s(spaces1, 200, " ");
 #else
             strcat(spaces1, " ");
 #endif
             }
         for (i = 0; i < maxi2; i++) {
-#ifdef WIN32
+#ifdef _MSC_VER
             strcat_s(spaces2, 200, " ");
 #else
             strcat(spaces2, " ");
 #endif
             }
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(out[x], 255, "%s %s",
                   sqlite3_column_text(stmt, 0)
                   , spaces1);
@@ -806,7 +818,7 @@ int todo_write(char** argv, int argc, int list) {
     ///<Summary>
     ///Getting options from local database
     ///<Summary>
-#ifdef WIN32
+#ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
 #else
     sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
@@ -819,7 +831,7 @@ int todo_write(char** argv, int argc, int list) {
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0) {
             ending = (char*)calloc(200, sizeof(char));
-#ifdef WIN32
+#ifdef _MSC_VER
             sprintf_s(ending, 200, "%s", sqlite3_column_text(stmt, 1));
 #else
             sprintf(ending, "%s", sqlite3_column_text(stmt, 1));
@@ -832,7 +844,7 @@ int todo_write(char** argv, int argc, int list) {
     ///<Summary>
     ///Writing to local database
     ///<Summary>
-#ifdef WIN32
+#ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO");
 #else
     sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO");
@@ -861,7 +873,7 @@ int todo_write(char** argv, int argc, int list) {
                 first = 1;
                 }
             else {
-#ifdef WIN32
+#ifdef _MSC_VER
                 strcat_s(text, 200, argv[argi]);
                 strcat_s(text, 200, " ");
 #else
@@ -872,7 +884,7 @@ int todo_write(char** argv, int argc, int list) {
             }
         }
     if (useending == 1) {
-#ifdef WIN32
+#ifdef _MSC_VER
         strcat_s(text, 200, ending);
 #else
         strcat(text, ending);
@@ -881,14 +893,14 @@ int todo_write(char** argv, int argc, int list) {
     if (first == 1) {
         sql("UPDATE TODO SET id = id + 1000000000");
         sql("UPDATE TODO SET id = id - (1000000000 - 1)");
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(0,'%s',%d)", text, list);
 #else
         sprintf(queries[ind++], "INSERT INTO TODO VALUES(0,'%s',%d)", text, list);
 #endif
         }
     else {
-#ifdef WIN32
+#ifdef _MSC_VER
         sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s', %d)", last + 1, text, list);
 #else
         sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s', %d)", last + 1, text, list);
