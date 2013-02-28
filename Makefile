@@ -19,7 +19,7 @@ CC=gcc
 CFLAGS=-lsqlite3 -O3
 CSRC=cctodo.c
 CLIBS=ctodo.c
-LIBS=todo.a
+LIBS=todo.o
 INCLUDES = -I .
 INSTALL   ?= install
 MKDIR     ?= $(INSTALL) -d
@@ -40,7 +40,7 @@ ctodo:	$(CLIBS)
 
 clean:
 	echo " --- Clean binaries --- "
-	rm -f todo.a
+	rm -f ${LIBS}
 	rm -f todo
 	echo " --- Clean temp files --- "
 	find . -name '*~' -delete;
