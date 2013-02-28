@@ -40,7 +40,7 @@ For Windows
 Compilable with MinGW to compile run `build.bat`
 
 Also there is Visual Studio stuff here:
-	git@github.com:Cynede/wtodo.git
+	https://github.com/Cynede/wtodo
 
 Compilable with MSVC 2010 / 2012, there is 
 
