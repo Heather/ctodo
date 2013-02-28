@@ -13,8 +13,8 @@ TODO List management util: Usage & Version
  - you can manage your list just from anywhere
  - it could be your personal psychologist, trust me
  - it's fancy even has got CLI color schemas (after 1.0.4 ver)
- - smart structure: library -> wrapper -> application
- - so you can write you own implementations
+ - smart application structure: library -> wrapper -> application
+ - so you can write you own client implementations
 
 Installation
 =======================================================
@@ -22,7 +22,7 @@ Installation
 For Unix-like
 ---------
 ```bash
-hg clone https://Cynede@bitbucket.org/Cynede/ctodo
+git clone git://github.com/Cynede/ctodo.git
 cd todo
 make
 make install
@@ -37,11 +37,17 @@ emerge todo
 
 For Windows
 ----------
+Compilable with MinGW to compile run `build.bat`
+
+Also there is Visual Studio stuff here:
+	git@github.com:Cynede/wtodo.git
+
 Compilable with MSVC 2010 / 2012, there is 
 
  - project files for everything 
  - bat files for fast compilation
  - additional testing in scripts
+ - GUI: work in progress (but I'm lazy)
 
 License
 -------
