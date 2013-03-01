@@ -42,7 +42,7 @@ ctodo:	$(CLIBS)
 clean:
 	echo " --- Clean binaries --- "
 	rm -f ${LIBS}
-	rm -f todo
+	rm -f todo.exe
 	echo " --- Clean temp files --- "
 	find . -name '*~' -delete;
 	find . -name '#*#' -delete;
