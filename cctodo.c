@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 char* dest;
 char* cctodo_version() {
-    return "  CCTODO Client v1.0.8\n";
+    return "  CCTODO Client v1.0.9\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -140,7 +140,7 @@ int main(int argc, char* argv[]) {
             return 0;
             }
         else if (strcmp(argv[1], "--list") == 0) {
-            if (argc < 2) {
+            if (argc < 3) {
                 printf("you need to specify list alike --list 1\n\r");
                 return -1;
                 }

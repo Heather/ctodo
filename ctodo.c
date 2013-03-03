@@ -136,7 +136,7 @@ void todo_close() {
 //________________________________________________________________________________
 int todo_initdb() {
     if (prelude() == -1) return -1;
-    sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL, INTEGER list NOT NULL)");
+    sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL, list INTEGER NOT NULL)");
     if (retval) {
         printf("Init DB Failed, Shit happens?\n\r");
         return -1;
@@ -177,9 +177,9 @@ int todo_initdb() {
     ///</Option>
     sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (12,'0')");
     ///<Option>
-    ///Ending word
+    ///Ending word (--motivate)
     ///</Option>
-    sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (13,'be a man')");
+    sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (13,'do it')");
     ///<Option>
     ///Synchronization directory
     ///</Option>
