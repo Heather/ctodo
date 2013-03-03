@@ -45,10 +45,11 @@ char* cctodo_help() {
   - initdb - init empty database structure\n\
     (set default database options without data lose, useful if you or some update broke it)\n\
   - <without options> - to read all, --list to read all from specified list\n\
+      --list - read specified list, by default reads all lists\n\
   - <msg> - just write todo <msg> to add new node to your todo list\n\
       --first to put task on top priority\n\
       --motivate - end todo note with additional word (see ending option)\n\
-      --list - write to specified list (currently a bit bugged)\n\
+      --list - write to specified list\n\
   - edit or e <number> <msg> - edit task\n\
   - mv <number1> <number2> - move task\n\
   - rm <number> - delete task\n\
