@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 char* dest;
 char* cctodo_version() {
-    return "  CCTODO Client v1.1.0\n";
+    return "  CCTODO Client v1.1.1\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -56,6 +56,7 @@ char* cctodo_help() {
   - clean - clean all tasks\n\
   - swap or s <number1> <number2> - swap elements\n\
   - sync - text synchronization to avoid binaries in vcs\n\
+  - history - read sync repository todo history \n\
   - set <option> <value> - todo options, available options:\n\
       - syncdir - directory for vcs synchronization\n\
       - syncfile - file for text serialization for synchronization (default 'readme.md')\n\
@@ -161,6 +162,9 @@ int main(int argc, char* argv[]) {
             else {
                 return todo_set(argv, argc);
                 }
+            }
+        else if (strcmp(argv[1], "history") == 0) {
+            return todo_history();
             }
         else if (strcmp(argv[1], "sync") == 0) {
             return todo_sync(argv);

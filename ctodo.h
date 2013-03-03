@@ -25,6 +25,7 @@ extern void todo_initdb();
 extern char* todo_version();
 extern char* todo_help();
 extern int todo_set(char** argv, int argc);
+extern int todo_history();
 extern int todo_sync(char** argv);
 extern void todo_edit(char** argv, int argc);
 extern void todo_swap(char** argv);
