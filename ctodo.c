@@ -840,6 +840,7 @@ char** todo_read(int list, int parcount) {
             strcat(spaces2, " ");
 #endif
             }
+#ifdef WIN32
 #ifdef _MSC_VER
         sprintf_s(out[x], 255, "%s %s",
                   sqlite3_column_text(stmt, 0)
@@ -847,6 +848,14 @@ char** todo_read(int list, int parcount) {
         sprintf_s(out[x + 1], 255, "%s %s",
                   sqlite3_column_text(stmt, 1)
                   , spaces2);
+#else
+        sprintf(out[x], "%s %s",
+                  sqlite3_column_text(stmt, 0)
+                  , spaces1);
+        sprintf(out[x + 1], "%s %s",
+                  sqlite3_column_text(stmt, 1)
+                  , spaces2);
+#endif
 #else
         sprintf(out[x], " %s %s",
                 sqlite3_column_text(stmt, 0)
