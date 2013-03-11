@@ -51,4 +51,4 @@ Compilable with MSVC 2010 / 2012, there is
 
 License
 -------
-The GNU General Public License v2.0
+Public domain
