@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 //________________________________________________________________________________
 char* dest;
 char* cctodo_version() {
-    return "  CCTODO Client v1.1.1\n";
+    return "  CCTODO Client v1.1.2\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -83,6 +83,7 @@ int ctodo_read(int list) {
     else {
         out = todo_read(list, 1);
         }
+    if (out == NULL) return -1;
 #ifdef WIN32
     memcpy(&maxl, out[1], sizeof(int));
 #else
@@ -152,6 +153,7 @@ int main(int argc, char* argv[]) {
             }
         else if (strcmp(argv[1], "initdb") == 0) {
             todo_initdb();
+            printf("done.\n\r");
             return 0;
             }
         else if (strcmp(argv[1], "set") == 0) {
