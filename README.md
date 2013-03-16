@@ -22,7 +22,7 @@ Installation
 For Unix-like
 ---------
 ```bash
-git clone git://github.com/Cynede/ctodo.git
+git clone git://github.com/Heather/ctodo.git
 cd todo
 make
 make install
@@ -40,7 +40,7 @@ For Windows
 Compilable with MinGW to compile run `build.bat`
 
 Also there is Visual Studio stuff here:
-	https://github.com/Cynede/wtodo
+	https://github.com/Heather/wtodo
 
 Compilable with MSVC 2010 / 2012, there is 
 
