@@ -1,5 +1,5 @@
 /*          ctodo - Light TODO library
-      Copyright (C)  2012-2013 Heather Cynede
+        Copyright (C)  2012-2013 Heather
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public
@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.2.0\n";
+    return "  CTODO List Management Uti v1.2.1\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -123,6 +123,20 @@ int prelude() {
         }
     return 0;
     }
+int prelude_custom(char* db) {
+    timefile = 0;
+    f = NULL;
+    queries = (char**)malloc(sizeof(char*) * q_cnt);
+    for (x = 0; x < q_cnt; x++) {
+        queries[x] = (char*)malloc(sizeof(char) * q_size);
+        }
+    retval = sqlite3_open(db, &handle);
+    if (retval) {
+        printf("Database connection failed\n\r");
+        return -1;
+        }
+    return 0;
+    }
 //________________________________________________________________________________
 void todo_close() {
     free(queries);
@@ -134,8 +148,7 @@ void todo_close() {
     sqlite3_close(handle);
     }
 //________________________________________________________________________________
-int todo_initdb() {
-    if (prelude() == -1) return -1;
+int todo_initdb_meta() {
     sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL, list INTEGER NOT NULL)");
     if (retval) {
         printf("Init DB Failed, Shit happens?\n\r");
@@ -206,10 +219,17 @@ int todo_initdb() {
 #endif
     return 0;
     }
-//________________________________________________________________________________
-int todo_set(char** argv, int argc) {
-    int opt = 0;
+int todo_initdb() {
     if (prelude() == -1) return -1;
+    return todo_initdb_meta();
+    }
+int todo_initdb_custom(char* db) {
+    if (prelude_custom(db) == -1) return -1;
+    return todo_initdb_meta();
+    }
+//________________________________________________________________________________
+int todo_set_meta(char** argv, int argc) {
+    int opt = 0;
     if (argc < 4) printf("set what?\n\r");
     else {
         if (strcmp(argv[2], "syncfile") == 0) {
@@ -280,6 +300,18 @@ int todo_set(char** argv, int argc) {
             }
         }
     return 0;
+    }
+int todo_set(char** argv, int argc) {
+    if (prelude() == -1) return -1;
+    else {
+        return todo_set_meta(argv, argc);
+        }
+    }
+int todo_set_custom(char** argv, int argc, char* db) {
+    if (prelude_custom(db) == -1) return -1;
+    else {
+        return todo_set_meta(argv, argc);
+        }
     }
 //________________________________________________________________________________
 int todo_history() {
@@ -680,13 +712,12 @@ void todo_rm(char** argv) {
         }
     }
 //________________________________________________________________________________
-char** todo_read(int list, int parcount) {
+char** todo_read_meta(int list, int parcount) {
     char* lineborder1;
     char* spaces1;
     char* spaces2;
     int maxl2 = 0, maxl1 = 0;
     int i, maxi1, maxi2;
-    if (prelude() == -1) return NULL;
     out = (char**)malloc(sizeof(char*) * 100);
     for (x = 0; x < 100; x++) {
         out[x] = (char*)malloc(sizeof(char) * 255);
@@ -882,8 +913,16 @@ char** todo_read(int list, int parcount) {
 #endif
     return out;
     }
+char** todo_read(int list, int parcount) {
+    if (prelude() == -1) return NULL;
+    return todo_read_meta(list, parcount);
+    }
+char** todo_read_custom(int list, int parcount, char* db) {
+    if (prelude_custom(db) == -1) return NULL;
+    return todo_read_meta(list, parcount);
+    }
 //________________________________________________________________________________
-int todo_write(char** argv, int argc, int list) {
+int todo_write_meta(char** argv, int argc, int list) {
     char first = 0;
     int last = 0;
     int argi;
@@ -891,7 +930,6 @@ int todo_write(char** argv, int argc, int list) {
     char* ending;
     int useending = 0;
     int limit = 200;
-    if (prelude() == -1) return -1;
     ///<Summary>
     ///Getting options from local database
     ///<Summary>
@@ -992,6 +1030,14 @@ int todo_write(char** argv, int argc, int list) {
     free(ending);
     timeUpdate(time(0));
     return 0;
+    }
+int todo_write(char** argv, int argc, int list) {
+    if (prelude() == -1) return -1;
+    return todo_write_meta(argv, argc, list);
+    }
+int todo_write_custom(char** argv, int argc, int list, char* db) {
+    if (prelude_custom(db) == -1) return -1;
+    return todo_write_meta(argv, argc, list);
     }
 //________________________________________________________________________________
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

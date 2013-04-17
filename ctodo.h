@@ -1,7 +1,7 @@
 #ifndef CTODO_H
 #define CTODO_H
 /*          ctodo - Light TODO library
-      Copyright (C)  2012-2013 Heather Cynede
+        Copyright (C)  2012-2013 Heather
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public
@@ -22,9 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #endif
 //________________________________________________________________________________
 extern void todo_initdb();
+extern void todo_initdb_custom(char* db);
 extern char* todo_version();
 extern char* todo_help();
 extern int todo_set(char** argv, int argc);
+extern int todo_set_custom(char** argv, int argc, char* db);
 extern int todo_history();
 extern int todo_sync(char** argv);
 extern void todo_edit(char** argv, int argc);
@@ -34,7 +36,9 @@ extern void todo_mv(char** argv);
 extern void todo_clean();
 extern void todo_rm(char** argv);
 extern char** todo_read(int list, int parcount);
+extern char** todo_read_custom(int list, int parcount, char* db);
 extern int todo_write(char** argv, int argc, int list);
+extern int todo_write_custom(char** argv, int argc, int list, char* db);
 extern void todo_close();
 //________________________________________________________________________________
 #endif // CTODO_H

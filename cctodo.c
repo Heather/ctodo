@@ -1,5 +1,5 @@
 ﻿/*          todo - Light TODO list
-     Copyright (C)  2012-2013 Heather Cynede
+        Copyright (C)  2012-2013 Heather
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public
@@ -25,8 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 #include <string.h>
 //________________________________________________________________________________
 char* dest;
+char* db;
 char* cctodo_version() {
-    return "  CCTODO Client v1.1.2\n";
+    return "  CCTODO Client v1.1.3\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -55,6 +56,7 @@ char* cctodo_help() {
   - rm <number> - delete task\n\
   - clean - clean all tasks\n\
   - swap or s <number1> <number2> - swap elements\n\
+  - db <db3path> - use another database file \n\
   - sync - text synchronization to avoid binaries in vcs\n\
   - history - read sync repository todo history \n\
   - set <option> <value> - todo options, available options:\n\
@@ -127,6 +129,74 @@ int ctodo_read(int list) {
         return -1;
         }
     }
+int ctodo_read_custom(int list,char* db) { //TODO: meta
+    char** out;
+    int x, maxl;
+    if (list == -1) {
+        out = todo_read_custom(0, 0, db);
+        }
+    else {
+        out = todo_read_custom(list, 1, db);
+        }
+    if (out == NULL) return -1;
+#ifdef WIN32
+    memcpy(&maxl, out[1], sizeof(int));
+#else
+    memcpy(&maxl, out[3], sizeof(int));
+#endif
+    if (out != NULL) {
+
+#ifdef WIN32
+        printf("+%s+\n\r", out[0]);
+
+#else
+        printf(" %s", out[2]);
+        printf("╔%s╗", out[0]);
+        printf("%c[%dm\n\r", 0x1B, 0);
+#endif
+#ifdef WIN32
+        for (x = 2; x < maxl; x += 2) {
+            printf("| %s| %s|\n\r", out[x], out[x + 1]);
+#else
+        for (x = 4; x < maxl; x += 2) {
+            printf(" %s║", out[2]);
+            printf("%c[%dm", 0x1B, 0);
+            printf("%s", out[x]);
+            printf("%s│", out[2]);
+            printf("%c[%dm", 0x1B, 0);
+            printf("%s", out[x + 1]);
+            printf("%s║", out[2]);
+            printf("%c[%dm\n", 0x1B, 0);
+#endif
+            }
+#ifdef WIN32
+        printf("+%s+\n\r", out[0]);
+#else
+        printf(" %s", out[2]);
+        printf("╚%s╝", out[1]);
+        printf("%c[%dm\n\r", 0x1B, 0);
+#endif
+        return 0;
+        }
+    else {
+        return -1;
+        }
+    }
+char dbcheck(int argc, char* argv[]) {
+    int argi = 0;
+    for (argi = 1; argi < (argc - 1); argi++) {
+        if ((strcmp(argv[argi], "--db") == 0)) {
+            db = (char*)calloc(200, sizeof(char));
+#ifdef _MSC_VER
+            sprintf_s(db, 200, argv[argi + 1]);
+#else
+            sprintf(db, argv[argi + 1]);
+#endif
+            return 1;
+            }
+        }
+    return 0;
+    }
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         return ctodo_read(-1);
@@ -151,8 +221,44 @@ int main(int argc, char* argv[]) {
                 return ctodo_read(atoi(argv[2]));
                 }
             }
+        else if (strcmp(argv[1], "--db") == 0) {
+            if (argc < 3) {
+                printf("you need to specify db file alike --db mydb.db3\n\r");
+                return -1;
+                }
+            else {
+                db = (char*)calloc(200, sizeof(char));
+#ifdef _MSC_VER
+                sprintf_s(db, 200, argv[2]);
+#else
+                sprintf(db, argv[2]);
+#endif
+                if (argc < 4) {
+                    return ctodo_read_custom(-1, db);
+                    }
+                else {
+                    if (strcmp(argv[3], "--list") == 0) {
+                        if (argc < 5) {
+                            printf("you need to specify list alike --list 1\n\r");
+                            return -1;
+                            }
+                        else {
+                            return ctodo_read_custom(atoi(argv[4]), db);
+                            }
+                        }
+                    else {
+                        return ctodo_read_custom(-1, db);
+                        }
+                    }
+                }
+            }
         else if (strcmp(argv[1], "initdb") == 0) {
-            todo_initdb();
+            if (dbcheck(argc, argv) == 0) {
+                todo_initdb();
+                }
+            else {
+                todo_initdb_custom(db);
+                }
             printf("done.\n\r");
             return 0;
             }
@@ -162,7 +268,12 @@ int main(int argc, char* argv[]) {
                 return 0;
                 }
             else {
-                return todo_set(argv, argc);
+                if (dbcheck(argc, argv) == 0) {
+                    return todo_set(argv, argc);
+                    }
+                else {
+                    return todo_set_custom(argv, argc, db);
+                    }
                 }
             }
         else if (strcmp(argv[1], "history") == 0) {
@@ -229,14 +340,31 @@ int main(int argc, char* argv[]) {
             }
         else {
             int argi, list = 0;
+            char custom = 0;
             for (argi = 1; argi < (argc - 1); argi++) {
                 if ((strcmp(argv[argi], "--list") == 0)) {
                     list = atoi(argv[argi + 1]);
 					argv[argi] = "";
 					argv[argi + 1] = "";
                     }
+                if ((strcmp(argv[argi], "--db") == 0)) {
+                    db = (char*)calloc(200, sizeof(char));
+#ifdef _MSC_VER
+                    sprintf_s(db, 200, argv[argi + 1]);
+#else
+                    sprintf(db, argv[argi + 1]);
+#endif
+					argv[argi] = "";
+					argv[argi + 1] = "";
+                    custom = 1;
+                    }
                 }
-            return todo_write(argv, argc, list);
+            if (custom == 0) {
+                return todo_write(argv, argc, list);
+                }
+            else {
+                return todo_write_custom(argv, argc, list, db);
+                }
             }
         }
     todo_close();
