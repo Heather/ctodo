@@ -36,6 +36,7 @@ extern void todo_reindex();
 extern void todo_mv(char** argv);
 extern void todo_clean();
 extern void todo_rm(char** argv);
+extern void todo_rm_custom(char** argv, char* db);
 extern char** todo_read(int list, int parcount);
 extern char** todo_read_custom(int list, int parcount, char* db);
 extern int todo_write(char** argv, int argc, int list);

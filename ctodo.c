@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.2.2\n";
+    return "  CTODO List Management Uti v1.2.3\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -708,16 +708,20 @@ void todo_clean() {
         }
     }
 //________________________________________________________________________________
-void todo_rm(char** argv) {
-    if (prelude() != -1) {
+void todo_rm_meta(char** argv) {
 #ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "DELETE FROM TODO WHERE id = %s", argv[2]);
+    sprintf_s(queries[ind++], 255, "DELETE FROM TODO WHERE id = %s", argv[2]);
 #else
-        sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
+    sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
 #endif
-        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-        timeUpdate(time(0));
-        }
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    timeUpdate(time(0));
+    }
+void todo_rm(char** argv) {
+    if (prelude() != -1) { todo_rm_meta(argv); }
+    }
+void todo_rm_custom(char** argv, char* db) {
+    if (prelude_custom(db) != -1) { todo_rm_meta(argv); }
     }
 //________________________________________________________________________________
 char** todo_read_meta(int list, int parcount) {
