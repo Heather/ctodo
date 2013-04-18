@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.2.3\n";
+    return "  CTODO List Management Uti v1.3.0\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -382,7 +382,7 @@ int todo_history() {
 		free(cmd);
         }
 //________________________________________________________________________________
-int todo_sync(char** argv) {
+int todo_sync_meta(char** argv) {
     char* filename;
 #ifndef _MSC_VER
     char* home;
@@ -404,7 +404,6 @@ int todo_sync(char** argv) {
 #endif
     filename = (char*)calloc(200, sizeof(char));
     syncdir = (char*)calloc(200, sizeof(char));
-    if (prelude() == -1) return -1;
 #ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS");
 #else
@@ -613,32 +612,44 @@ int todo_sync(char** argv) {
     free(filename);
     return 0;
     }
+int todo_sync(char** argv) {
+    if (prelude() == -1) return -1;
+    todo_sync_meta(argv);
+    }
+int todo_sync_custom(char** argv, char* db) {
+    if (prelude_custom(db) == -1) return -1;
+    todo_sync_meta(argv);
+    }
 //________________________________________________________________________________
-void todo_edit(char** argv, int argc) {
+void todo_edit_meta(char** argv, int argc) {
     int argi;
     char* text = (char*)calloc(200, sizeof(char));
-    if (prelude() != -1) {
-        for (argi = 3; argi < argc; argi++) {
+    for (argi = 3; argi < argc; argi++) {
 #ifdef _MSC_VER
-            strcat_s(text, 200, argv[argi]);
-            strcat_s(text, 200, " ");
+        strcat_s(text, 200, argv[argi]);
+        strcat_s(text, 200, " ");
 #else
-            strcat(text, argv[argi]);
-            strcat(text, " ");
+        strcat(text, argv[argi]);
+        strcat(text, " ");
 #endif
-            }
-#ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
-#else
-        sprintf(queries[ind++], "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
-#endif
-        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-        if (retval) {
-            printf("Task were not edited! (shit happens)\n\r");
-            }
-        free(text);
-        timeUpdate(time(0));
         }
+#ifdef _MSC_VER
+    sprintf_s(queries[ind++], 255, "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
+#else
+    sprintf(queries[ind++], "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
+#endif
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    if (retval) {
+        printf("Task were not edited! (shit happens)\n\r");
+        }
+    free(text);
+    timeUpdate(time(0));
+    }
+void todo_edit(char** argv, int argc) {
+    if (prelude() != -1) { todo_edit_meta(argv, argc); }
+    }
+void todo_edit_custom(char** argv, int argc, char* db) {
+    if (prelude_custom(db) != -1) { todo_edit_meta(argv, argc); }
     }
 //________________________________________________________________________________
 void todo_swap_meta(char** argv) {
@@ -688,24 +699,32 @@ void todo_reindex() {
         }
     }
 //________________________________________________________________________________
-void todo_mv(char** argv) {
-    if (prelude() != -1) {
+void todo_mv_meta(char** argv) {
 #ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
+    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
 #else
-        sprintf(queries[ind++], "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
+    sprintf(queries[ind++], "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
 #endif
-        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-        timeUpdate(time(0));
-        }
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    timeUpdate(time(0));
+    }
+void todo_mv(char** argv) {
+    if (prelude() != -1) { todo_mv_meta(argv); }
+    }
+void todo_mv_custom(char** argv, char* db) {
+    if (prelude_custom(db) != -1) { todo_mv_meta(argv); }
     }
 //________________________________________________________________________________
+void todo_clean_meta() {
+    queries[ind++] = "DELETE FROM TODO";
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    timeUpdate(time(0));
+    }
 void todo_clean() {
-    if (prelude() != -1) {
-        queries[ind++] = "DELETE FROM TODO";
-        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-        timeUpdate(time(0));
-        }
+    if (prelude() != -1) { todo_clean_meta(); }
+    }
+void todo_clean_custom(char* db) {
+    if (prelude_custom(db) != -1) { todo_clean_meta(); }
     }
 //________________________________________________________________________________
 void todo_rm_meta(char** argv) {

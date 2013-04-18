@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 char* dest;
 char* db;
 char* cctodo_version() {
-    return "  CCTODO Client v1.1.5\n";
+    return "  CCTODO Client v1.3.0\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -280,12 +280,22 @@ int main(int argc, char* argv[]) {
             return todo_history();
             }
         else if (strcmp(argv[1], "sync") == 0) {
-            return todo_sync(argv);
+            if (dbcheck(argc, argv) == 0) {
+                return todo_sync(argv);
+                }
+            else {
+                return todo_sync_custom(argv, db);
+                }
             }
         else if ((strcmp(argv[1], "edit") == 0) || (strcmp(argv[1], "e") == 0)) {
             if (argc < 3) printf("edit what?\n\r");
             else {
-                todo_edit(argv, argc);
+                if (dbcheck(argc, argv) == 0) {
+                    todo_edit(argv, argc);
+                    }
+                else {
+                    todo_edit_custom(argv, argc, db);
+                    }
                 }
             return 0;
             }
@@ -318,7 +328,12 @@ int main(int argc, char* argv[]) {
         else if (strcmp(argv[1], "mv") == 0) {
             if (argc < 4) printf("move what? you need to provide two indexes\n\r");
             else {
-                todo_mv(argv);
+                if (dbcheck(argc, argv) == 0) {
+                    todo_mv(argv);
+                    }
+                else {
+                    todo_mv_custom(argv, db);
+                    }
                 }
             return 0;
             }
@@ -331,7 +346,12 @@ int main(int argc, char* argv[]) {
             if (scanf("%c", &answer) > 0) {
 #endif
                 if (answer == 'y') {
-                    todo_clean();
+                    if (dbcheck(argc, argv) == 0) {
+                        todo_clean();
+                        }
+                    else {
+                        todo_clean_custom(db);
+                        }
                     }
                 }
             return 0;
