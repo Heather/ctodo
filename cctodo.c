@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 char* dest;
 char* db;
 char* cctodo_version() {
-    return "  CCTODO Client v1.3.0\n";
+    return "  CCTODO Client v1.3.1\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -76,16 +76,8 @@ char* cctodo_help() {
 #endif
     return &dest[0];
     }
-int ctodo_read(int list) {
-    char** out;
+int ctodo_read_meta(int list, char** out) {
     int x, maxl;
-    if (list == -1) {
-        out = todo_read(0, 0);
-        }
-    else {
-        out = todo_read(list, 1);
-        }
-    if (out == NULL) return -1;
 #ifdef WIN32
     memcpy(&maxl, out[1], sizeof(int));
 #else
@@ -129,7 +121,18 @@ int ctodo_read(int list) {
         return -1;
         }
     }
-int ctodo_read_custom(int list,char* db) { //TODO: meta
+int ctodo_read(int list) {
+    char** out;
+    if (list == -1) {
+        out = todo_read(0, 0);
+        }
+    else {
+        out = todo_read(list, 1);
+        }
+    if (out == NULL) return -1;
+    return ctodo_read_meta(list, out);
+    }
+int ctodo_read_custom(int list,char* db) {
     char** out;
     int x, maxl;
     if (list == -1) {
@@ -139,48 +142,7 @@ int ctodo_read_custom(int list,char* db) { //TODO: meta
         out = todo_read_custom(list, 1, db);
         }
     if (out == NULL) return -1;
-#ifdef WIN32
-    memcpy(&maxl, out[1], sizeof(int));
-#else
-    memcpy(&maxl, out[3], sizeof(int));
-#endif
-    if (out != NULL) {
-
-#ifdef WIN32
-        printf("+%s+\n\r", out[0]);
-
-#else
-        printf(" %s", out[2]);
-        printf("╔%s╗", out[0]);
-        printf("%c[%dm\n\r", 0x1B, 0);
-#endif
-#ifdef WIN32
-        for (x = 2; x < maxl; x += 2) {
-            printf("| %s| %s|\n\r", out[x], out[x + 1]);
-#else
-        for (x = 4; x < maxl; x += 2) {
-            printf(" %s║", out[2]);
-            printf("%c[%dm", 0x1B, 0);
-            printf("%s", out[x]);
-            printf("%s│", out[2]);
-            printf("%c[%dm", 0x1B, 0);
-            printf("%s", out[x + 1]);
-            printf("%s║", out[2]);
-            printf("%c[%dm\n", 0x1B, 0);
-#endif
-            }
-#ifdef WIN32
-        printf("+%s+\n\r", out[0]);
-#else
-        printf(" %s", out[2]);
-        printf("╚%s╝", out[1]);
-        printf("%c[%dm\n\r", 0x1B, 0);
-#endif
-        return 0;
-        }
-    else {
-        return -1;
-        }
+    return ctodo_read_meta(list, out);
     }
 char dbcheck(int argc, char* argv[]) {
     int argi = 0;
