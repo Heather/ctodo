@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.2.1\n";
+    return "  CTODO List Management Uti v1.2.2\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -381,6 +381,7 @@ int todo_history() {
 		free(syncdir);
 		free(cmd);
         }
+//________________________________________________________________________________
 int todo_sync(char** argv) {
     char* filename;
 #ifndef _MSC_VER
@@ -612,6 +613,7 @@ int todo_sync(char** argv) {
     free(filename);
     return 0;
     }
+//________________________________________________________________________________
 void todo_edit(char** argv, int argc) {
     int argi;
     char* text = (char*)calloc(200, sizeof(char));
@@ -638,40 +640,46 @@ void todo_edit(char** argv, int argc) {
         timeUpdate(time(0));
         }
     }
-void todo_swap(char** argv) {
+//________________________________________________________________________________
+void todo_swap_meta(char** argv) {
     int val1 = atoi(argv[2]);
     int val2 = atoi(argv[3]);
-    if (prelude() != -1) {
 #ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
+    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
 #else
-        sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
+    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
 #endif
-        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-        if (retval) {
-            printf("Swap failed! (shit happens)\n\r");
-            }
-#ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
-#else
-        sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
-#endif
-        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-        if (retval) {
-            printf("Swap failed! (shit happens)\n\r");
-            }
-#ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
-#else
-        sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
-#endif
-        retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-        if (retval) {
-            printf("Swap failed! (shit happens)\n\r");
-            }
-        timeUpdate(time(0));
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    if (retval) {
+        printf("Swap failed! (shit happens)\n\r");
         }
+#ifdef _MSC_VER
+    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
+#else
+    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
+#endif
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    if (retval) {
+        printf("Swap failed! (shit happens)\n\r");
+        }
+#ifdef _MSC_VER
+    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+#else
+    sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+#endif
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    if (retval) {
+        printf("Swap failed! (shit happens)\n\r");
+        }
+    timeUpdate(time(0));
     }
+void todo_swap(char** argv) { 
+    if (prelude() != -1) todo_swap_meta(argv);
+    }
+void todo_swap_custom(char** argv, char* db) { 
+    if (prelude_custom(db) != -1) todo_swap_meta(argv);
+    }
+//________________________________________________________________________________
 void todo_reindex() {
     if (prelude() != -1) {
         sql("UPDATE TODO SET id = id + 1000000000");

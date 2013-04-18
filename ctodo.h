@@ -31,6 +31,7 @@ extern int todo_history();
 extern int todo_sync(char** argv);
 extern void todo_edit(char** argv, int argc);
 extern void todo_swap(char** argv);
+extern void todo_swap_custom(char** argv, char* db);
 extern void todo_reindex();
 extern void todo_mv(char** argv);
 extern void todo_clean();

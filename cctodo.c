@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 char* dest;
 char* db;
 char* cctodo_version() {
-    return "  CCTODO Client v1.1.3\n";
+    return "  CCTODO Client v1.1.4\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -51,12 +51,12 @@ char* cctodo_help() {
       --first to put task on top priority\n\
       --motivate - end todo note with additional word (see ending option)\n\
       --list - write to specified list\n\
+      - db <db3path> - use another database file (works for other commands too) \n\
   - edit or e <number> <msg> - edit task\n\
   - mv <number1> <number2> - move task\n\
   - rm <number> - delete task\n\
   - clean - clean all tasks\n\
   - swap or s <number1> <number2> - swap elements\n\
-  - db <db3path> - use another database file \n\
   - sync - text synchronization to avoid binaries in vcs\n\
   - history - read sync repository todo history \n\
   - set <option> <value> - todo options, available options:\n\
@@ -292,7 +292,12 @@ int main(int argc, char* argv[]) {
         else if ((strcmp(argv[1], "swap") == 0) || (strcmp(argv[1], "s") == 0)) {
             if (argc < 3) printf("swap what?\n\r");
             else {
-                todo_swap(argv);
+                if (dbcheck(argc, argv) == 0) {
+                    todo_swap(argv);
+                    }
+                else {
+                    todo_swap_custom(argv, db);
+                    }
                 }
             return 0;
             }
