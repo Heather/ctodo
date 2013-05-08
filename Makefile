@@ -39,10 +39,10 @@ ctodo:	$(CLIBS)
 .PHONY: clean all rebuild
 
 clean:
-	echo " --- Clean binaries --- "
+	@echo " --- Clean binaries --- "
 	rm -f ${LIBS}
 	rm -f todo
-	echo " --- Clean temp files --- "
+	@echo " --- Clean temp files --- "
 	find . -name '*~' -delete;
 	find . -name '#*#' -delete;
 
