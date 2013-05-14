@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 char* dest;
 char* db;
 char* cctodo_version() {
-    return "  CCTODO Client v1.3.1\n";
+    return "  CCTODO Client v1.3.2\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -134,7 +134,6 @@ int ctodo_read(int list) {
     }
 int ctodo_read_custom(int list,char* db) {
     char** out;
-    int x, maxl;
     if (list == -1) {
         out = todo_read_custom(0, 0, db);
         }

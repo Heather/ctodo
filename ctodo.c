@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.3.0\n";
+    return "  CTODO List Management Uti v1.3.2\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -315,9 +315,9 @@ int todo_set_custom(char** argv, int argc, char* db) {
     }
 //________________________________________________________________________________
 int todo_history() {
-    char* cmd;
 	char* syncdir;
-    int git, hg, svn;
+    char* cmd = (char*)calloc(200, sizeof(char));
+    int git = 0, hg = 0, svn = 0;
     if (prelude() == -1) return -1;
 #ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS");
@@ -349,7 +349,6 @@ int todo_history() {
             }
 	    }
         if (git == 1 || hg == 1 || svn == 1) {
-			cmd = (char*)calloc(200, sizeof(char));
 #ifndef _MSC_VER
             putenv(home);
 #endif
@@ -380,6 +379,7 @@ int todo_history() {
             }
 		free(syncdir);
 		free(cmd);
+        return 0;
         }
 //________________________________________________________________________________
 int todo_sync_meta(char** argv) {
@@ -387,8 +387,8 @@ int todo_sync_meta(char** argv) {
 #ifndef _MSC_VER
     char* home;
 #endif
-    int timeDB;
-    int git, hg, svn, vv;
+    int git = 0, hg = 0, svn = 0, vv = 0;
+    int timeDB = 0;
     int i = 0;
     char line[150];
     char write = 1;
@@ -396,7 +396,7 @@ int todo_sync_meta(char** argv) {
     char* token2;
     char* search = "|";
     char* syncdir;
-    char* cmd;
+    char* cmd = (char*)calloc(200, sizeof(char));
 #ifdef _MSC_VER
     char* context = NULL;
 #else
@@ -451,7 +451,6 @@ int todo_sync_meta(char** argv) {
 #endif
         }
     if (git == 1 || hg == 1 || svn == 1 || vv == 1) {
-        cmd = (char*)calloc(200, sizeof(char));
 #ifndef _MSC_VER
         putenv(home);
 #endif
@@ -614,11 +613,11 @@ int todo_sync_meta(char** argv) {
     }
 int todo_sync(char** argv) {
     if (prelude() == -1) return -1;
-    todo_sync_meta(argv);
+    return todo_sync_meta(argv);
     }
 int todo_sync_custom(char** argv, char* db) {
     if (prelude_custom(db) == -1) return -1;
-    todo_sync_meta(argv);
+    return todo_sync_meta(argv);
     }
 //________________________________________________________________________________
 void todo_edit_meta(char** argv, int argc) {
@@ -954,11 +953,11 @@ char** todo_read_custom(int list, int parcount, char* db) {
     }
 //________________________________________________________________________________
 int todo_write_meta(char** argv, int argc, int list) {
+    char* ending = (char*)calloc(200, sizeof(char));
     char first = 0;
     int last = 0;
     int argi;
     char* text;
-    char* ending;
     int useending = 0;
     int limit = 200;
     ///<Summary>
@@ -976,7 +975,6 @@ int todo_write_meta(char** argv, int argc, int list) {
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0) {
-            ending = (char*)calloc(200, sizeof(char));
 #ifdef _MSC_VER
             sprintf_s(ending, 200, "%s", sqlite3_column_text(stmt, 1));
 #else
