@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 char* dest;
 char* db;
 char* cctodo_version() {
-    return "  CCTODO Client v1.3.2\n";
+    return "  CCTODO Client v1.3.3\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -151,7 +151,7 @@ char dbcheck(int argc, char* argv[]) {
 #ifdef _MSC_VER
             sprintf_s(db, 200, argv[argi + 1]);
 #else
-            sprintf(db, argv[argi + 1]);
+            sprintf(db, "%s", argv[argi + 1]);
 #endif
             return 1;
             }
@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
 #ifdef _MSC_VER
                 sprintf_s(db, 200, argv[2]);
 #else
-                sprintf(db, argv[2]);
+                sprintf(db, "%s", argv[2]);
 #endif
                 if (argc < 4) {
                     return ctodo_read_custom(-1, db);
@@ -343,7 +343,7 @@ int main(int argc, char* argv[]) {
 #ifdef _MSC_VER
                     sprintf_s(db, 200, argv[argi + 1]);
 #else
-                    sprintf(db, argv[argi + 1]);
+                    sprintf(db, "%s", argv[argi + 1]);
 #endif
 					argv[argi] = "";
 					argv[argi + 1] = "";
