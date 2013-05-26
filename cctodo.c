@@ -335,8 +335,8 @@ int main(int argc, char* argv[]) {
             for (argi = 1; argi < (argc - 1); argi++) {
                 if ((strcmp(argv[argi], "--list") == 0)) {
                     list = atoi(argv[argi + 1]);
-					argv[argi] = "";
-					argv[argi + 1] = "";
+                    argv[argi] = "";
+                    argv[argi + 1] = "";
                     }
                 if ((strcmp(argv[argi], "--db") == 0)) {
                     db = (char*)calloc(200, sizeof(char));
@@ -345,8 +345,8 @@ int main(int argc, char* argv[]) {
 #else
                     sprintf(db, "%s", argv[argi + 1]);
 #endif
-					argv[argi] = "";
-					argv[argi + 1] = "";
+                    argv[argi] = "";
+                    argv[argi + 1] = "";
                     custom = 1;
                     }
                 }
