@@ -845,7 +845,7 @@ char** todo_read_meta(int list, int parcount) {
 #ifdef _MSC_VER
             strcat_s(lineborder1, 200, "+");
 #else
-			strcat(lineborder1, "+");
+            strcat(lineborder1, "+");
 #endif
 #else
             strcat(lineborder1, "╤");
@@ -857,7 +857,7 @@ char** todo_read_meta(int list, int parcount) {
 #ifdef _MSC_VER
             strcat_s(lineborder1, 200, "-");
 #else
-			strcat(lineborder1, "-");
+            strcat(lineborder1, "-");
 #endif
 #else
             strcat(lineborder1, "═");
@@ -869,7 +869,7 @@ char** todo_read_meta(int list, int parcount) {
 #ifdef _MSC_VER
     sprintf_s(out[0], 255, "%s", lineborder1);
 #else
-	sprintf(out[0], "%s", lineborder1);
+    sprintf(out[0], "%s", lineborder1);
 #endif
     x = 2;
 #else
