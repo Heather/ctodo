@@ -16,8 +16,15 @@ TODO List management util: Usage & Version
  - smart application structure: library -> wrapper -> application
  - so you can write you own client implementations
 
-Installation
+How to Build / Install
 =======================================================
+
+For Gentoo
+----------
+Probably add my overlay and
+```bash
+emerge todo
+```
 
 For Unix-like
 ---------
@@ -28,26 +35,15 @@ make
 make install
 ```
 
-For Gentoo
-----------
-Probably add my overlay and
-```bash
-emerge todo
-```
+For Windows / MinGW
+-------------------
+run `build.bat` in `./mingw`
 
-For Windows
-----------
-Compilable with MinGW to compile run `build.bat`
+For Windows / MSVC
+------------------
 
-Also there is Visual Studio stuff here:
-	https://github.com/Heather/wtodo
-
-Compilable with MSVC 2010 / 2012, there is 
-
- - project files for everything 
- - bat files for fast compilation
- - additional testing in scripts
- - GUI: work in progress (but I'm lazy)
+ - for VS 2012 run `build_Release.bat` in `./msvc`
+ - for VS 2010 run `build_Release_100.bat` in `./msvc`
 
 License
 -------

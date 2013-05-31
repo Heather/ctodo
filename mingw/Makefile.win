@@ -18,8 +18,8 @@
 CC=gcc
 
 CFLAGS=-O3 -Wall
-CSRC=./contrib/sqlite/sqlite3.c ctodo.c cctodo.c
-INCLUDES = -I ./contrib/sqlite
+CSRC=../contrib/sqlite/sqlite3.c ../ctodo.c ../cctodo.c
+INCLUDES = -I ../contrib/sqlite
 INSTALL   ?= install
 MKDIR     ?= $(INSTALL) -d
 BINDIR    ?= $(PREFIX)/bin
