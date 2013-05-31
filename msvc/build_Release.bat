@@ -1,9 +1,13 @@
-set MSBuild="%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\msbuild.exe"
+@echo off
+if %PROCESSOR_ARCHITECTURE%==x86 (
+	set MSBuild="%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\msbuild.exe"
+) else (
+	set MSBUILD=%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe
+)
 
 %MSBuild% ctodo_lib.vcxproj /p:Configuration=Release
 %MSBuild% cctodo.vcxproj /p:Configuration=Release
 
-@echo off
 echo ---------------------------
 echo   Clean up
 echo ---------------------------
