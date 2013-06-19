@@ -48,7 +48,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.3.2\n";
+    return "  CTODO List Management Uti v1.3.4\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -64,7 +64,7 @@ char* todo_help() {
     strcat(dest,
 #endif
              "  Cross-platform todo list management library\n\
-  Copyright (C)  2012-2013  Heather Cynede\n");
+  Copyright (C)  2012-2013  Heather\n");
     return &dest[0];
     }
 //________________________________________________________________________________
@@ -1013,7 +1013,7 @@ int todo_write_meta(char** argv, int argc, int list) {
             if ((strcmp(argv[argi], "--motivate") == 0)) {
                 useending = 1;
                 }
-            else if (strcmp(argv[argi], "--first") == 0) {
+            else if ((strcmp(argv[argi], "--first") == 0) || (strcmp(argv[argi], "-1") == 0)) {
                 first = 1;
                 }
             else {

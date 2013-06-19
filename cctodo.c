@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 char* dest;
 char* db;
 char* cctodo_version() {
-    return "  CCTODO Client v1.3.3\n";
+    return "  CCTODO Client v1.3.4\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -48,7 +48,7 @@ char* cctodo_help() {
   - <without options> - to read all, --list to read all from specified list\n\
       --list - read specified list, by default reads all lists\n\
   - <msg> - just write todo <msg> to add new node to your todo list\n\
-      --first to put task on top priority\n\
+      --first or -1 to put task on top priority\n\
       --motivate - end todo note with additional word (see ending option)\n\
       --list - write to specified list\n\
       - db <db3path> - use another database file (works for other commands too) \n\
