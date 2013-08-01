@@ -1,5 +1,6 @@
 #ifndef CTODO_H
 #define CTODO_H
+
 /*          ctodo - Light TODO library
         Copyright (C)  2012-2013 Heather
 
@@ -48,4 +49,5 @@ extern int todo_write_custom(char** argv, int argc, int list, char* db);
 extern void todo_close();
 //________________________________________________________________________________
 #endif // CTODO_H
+
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
