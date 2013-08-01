@@ -315,7 +315,7 @@ int todo_set_custom(char** argv, int argc, char* db) {
     }
 //________________________________________________________________________________
 int todo_history() {
-	char* syncdir;
+    char* syncdir;
     char* cmd = (char*)calloc(200, sizeof(char));
     int git = 0, hg = 0, svn = 0;
     if (prelude() == -1) return -1;
