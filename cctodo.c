@@ -300,7 +300,7 @@ int main(int argc, char* argv[]) {
             }
         else if (strcmp(argv[1], "clean") == 0) {
             char answer;
-            printf("Are you sure that you want to clean all the tasks? (y/n)");
+            printf("Are you sure that you want to clean all the tasks? (y/n) ");
 #ifdef _MSC_VER
             if (scanf_s("%c", &answer) > 0) {
 #else
