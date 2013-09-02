@@ -27,20 +27,12 @@ DESTDIR   ?=
 
 all: cctodo
 
-rebuild: clean | all
+rebuild: all
 
 cctodo:	$(CSRC)
 	$(CC) ${INCLUDES} -o todo $^ ${CFLAGS}
 
 .PHONY: clean all rebuild
-
-clean:
-	@echo " --- Clean binaries --- "
-	rm -f ${LIBS}
-	rm -f todo.exe
-	@echo " --- Clean temp files --- "
-	find . -name '*~' -delete;
-	find . -name '#*#' -delete;
 
 install:
 	$(MKDIR) $(DESTDIR)$(BINDIR)
