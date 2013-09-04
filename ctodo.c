@@ -1,6 +1,8 @@
 //________________________________________________________________________________
-//Compilation options_____________________________________________________________
-
+//Compilation options:____________________________________________________________
+// - Console : debug console outputs, it's safe to disable _______________________
+//________________________________________________________________________________
+#define Console
 //________________________________________________________________________________
 #ifdef _MSC_VER
 #include "sqlite3.h"
@@ -35,7 +37,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v2.0.0\n";
+    return "  CTODO List Management Uti v2.0.1\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -63,7 +65,9 @@ void timeUpdate(time_t t) {
 #endif
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     if (retval) {
+#ifdef Console
         printf("Failed to update db time\n\r");
+#endif
         return;
         }
     }
@@ -105,7 +109,9 @@ int prelude() {
     free(temp);
 #endif
     if (retval) {
+#ifdef Console
         printf("Database connection failed\n\r");
+#endif
         return -1;
         }
     return 0;
@@ -119,7 +125,9 @@ int prelude_custom(char* db) {
         }
     retval = sqlite3_open(db, &handle);
     if (retval) {
+#ifdef Console
         printf("Database connection failed\n\r");
+#endif
         return -1;
         }
     return 0;
@@ -138,7 +146,9 @@ void todo_close() {
 int todo_initdb_meta() {
     sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL, list INTEGER NOT NULL)");
     if (retval) {
+#ifdef Console
         printf("Init DB Failed, Shit happens?\n\r");
+#endif
         return -1;
         }
     sql("CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
@@ -200,7 +210,9 @@ int todo_initdb_meta() {
     ///</Option>
     sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (21,'red')");
     if (retval) {
+#ifdef Console
         printf("Instert deafaults options Failed, Shit happens?\n\r");
+#endif
         return -1;
         }
 #endif
@@ -217,7 +229,11 @@ int todo_initdb_custom(char* db) {
 //________________________________________________________________________________
 int todo_set_meta(char** argv, int argc) {
     int opt = 0;
-    if (argc < 4) printf("set what?\n\r");
+    if (argc < 4) {
+#ifdef Console
+        printf("set what?\n\r");
+#endif
+        }
     else {
         if (strcmp(argv[2], "syncfile") == 0) {
             opt = 15;
@@ -236,7 +252,9 @@ int todo_set_meta(char** argv, int argc) {
                 opt = 12;
                 }
             else {
+#ifdef Console
                 printf("Use 1 or 0 for this option\n\r");
+#endif
                 }
             }
         else if ((strcmp(argv[2], "git") == 0)
@@ -258,7 +276,9 @@ int todo_set_meta(char** argv, int argc) {
                     }
                 }
             else {
+#ifdef Console
                 printf("Use 1 or 0 for this option\n\r");
+#endif
                 }
             }
 #ifndef _MSC_VER
@@ -266,13 +286,17 @@ int todo_set_meta(char** argv, int argc) {
             sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 20", argv[3]);
             retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
             if (retval) {
+#ifdef Console
                 printf("Option home is not changed! (shit happens)\n\r");
+#endif
                 return -1;
                 }
             }
 #endif
         else {
+#ifdef Console
             printf("There is no such option\n\r");
+#endif
             return 0;
             }
 #ifdef _MSC_VER
@@ -282,7 +306,9 @@ int todo_set_meta(char** argv, int argc) {
 #endif
         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
         if (retval) {
+#ifdef Console
             printf("Option is not changed! (shit happens)\n\r");
+#endif
             return -1;
             }
         }
@@ -313,12 +339,18 @@ int todo_history() {
 #endif
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
+#ifdef Console
         printf("Reading DB data Failed, running re-init\n\r");
+#endif
         if (todo_initdb()==0) {
+#ifdef Console
             printf("Done\n\r");
+#endif
             }
         else {
+#ifdef Console
             printf("Shit happened, try to resolve it by yourself :(\n\r");
+#endif
             return -1;
             }
         return todo_history();
@@ -405,12 +437,18 @@ int todo_sync_meta(char** argv) {
 #endif
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
+#ifdef Console
         printf("Reading DB data Failed, running re-init\n\r");
+#endif
         if (todo_initdb()==0) {
+#ifdef Console
             printf("Done\n\r");
+#endif
             }
         else {
+#ifdef Console
             printf("Shit happened, try to resolve it by yourself :(\n\r");
+#endif
             return -1;
             }
         return todo_sync_meta(argv);
@@ -487,27 +525,35 @@ int todo_sync_meta(char** argv) {
             return -1;
             }
         }
+#ifdef Console
     printf("Sync file: %s\n\r", filename);
+#endif
 #ifdef _MSC_VER
     fopen_s(&f, filename, "a+");
 #else
     f = fopen(filename, "a+");
 #endif
     if (f == NULL) {
+#ifdef Console
         printf("There is no such file and it's failed to create it\n\r");
+#endif
         return -1;
         }
     while (fgets(line, 150, f)) {
         if (i == 0) {
             timefile = atoi(line);
 #ifndef _MSC_VER
+#ifdef Console
             printf("Timefile: %s\n\r", ctime(&timefile));
+#endif
 #endif
             if (timeDB > (int)timefile) {
                 break;
                 }
             else if (timeDB == (int)timefile) {
+#ifdef Console
                 printf("Everything is up to date\n\r");
+#endif
                 return 0;
                 }
             else write = 0;
@@ -517,12 +563,18 @@ int todo_sync_meta(char** argv) {
                 queries[ind++] = "DELETE FROM TODO";
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
+#ifdef Console
                     printf("Reading DB data Failed, running re-init\n\r");
+#endif
                     if (todo_initdb()==0) {
+#ifdef Console
                         printf("Done\n\r");
+#endif
                         }
                     else {
+#ifdef Console
                         printf("Shit happened, try to resolve it by yourself :(\n\r");
+#endif
                         return -1;
                         }
                     return todo_sync_meta(argv);
@@ -548,7 +600,9 @@ int todo_sync_meta(char** argv) {
 #endif
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
+#ifdef Console
                     printf("Task were not added! (shit happens)\n\r");
+#endif
                     }
                 }
             }
@@ -610,11 +664,15 @@ int todo_sync_meta(char** argv) {
                 return -1;
                 }
             }
+#ifdef Console
         printf("synchronization complete, syncfile updated\n\r");
+#endif
         }
     else {
         timeUpdate(timefile);
+#ifdef Console
         printf("synchronization complete, local database updated\n\r");
+#endif
         }
     free(syncdir);
     free(filename);
@@ -648,7 +706,9 @@ void todo_edit_meta(char** argv, int argc) {
 #endif
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     if (retval) {
+#ifdef Console
         printf("Task were not edited! (shit happens)\n\r");
+#endif
         }
     free(text);
     timeUpdate(time(0));
@@ -670,7 +730,9 @@ void todo_swap_meta(char** argv) {
 #endif
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     if (retval) {
+#ifdef Console
         printf("Swap failed! (shit happens)\n\r");
+#endif
         }
 #ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
@@ -679,7 +741,9 @@ void todo_swap_meta(char** argv) {
 #endif
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     if (retval) {
+#ifdef Console
         printf("Swap failed! (shit happens)\n\r");
+#endif
         }
 #ifdef _MSC_VER
     sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
@@ -688,7 +752,9 @@ void todo_swap_meta(char** argv) {
 #endif
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     if (retval) {
+#ifdef Console
         printf("Swap failed! (shit happens)\n\r");
+#endif
         }
     timeUpdate(time(0));
     }
@@ -770,7 +836,9 @@ char** todo_read_meta(int list, int parcount) {
     sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 21");
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
+#ifdef Console
         printf("Failed to get color scheme\n\r");
+#endif
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         if (strcmp((const char*)sqlite3_column_text(stmt, 0), "21") == 0) {
@@ -807,12 +875,18 @@ char** todo_read_meta(int list, int parcount) {
     else queries[ind++] = "SELECT COALESCE(MAX(id),0) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
+#ifdef Console
         printf("Reading DB data Failed, running re-init\n\r");
+#endif
         if (todo_initdb()==0) {
+#ifdef Console
             printf("Done\n\r");
+#endif
             }
         else {
+#ifdef Console
             printf("Shit happened, try to resolve it by yourself :(\n\r");
+#endif
             return NULL;
             }
         return todo_read_meta(list, parcount);
@@ -830,12 +904,18 @@ char** todo_read_meta(int list, int parcount) {
     else queries[ind++] = "SELECT COALESCE(MAX(LENGTH(text)),0) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
+#ifdef Console
         printf("Reading DB data Failed, running re-init\n\r");
+#endif
         if (todo_initdb()==0) {
+#ifdef Console
             printf("Done\n\r");
+#endif
             }
         else {
+#ifdef Console
             printf("Shit happened, try to resolve it by yourself :(\n\r");
+#endif
             return NULL;
             }
         return todo_read_meta(list, parcount);
@@ -853,12 +933,18 @@ char** todo_read_meta(int list, int parcount) {
     else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
+#ifdef Console
         printf("Reading DB data Failed, running re-init\n\r");
+#endif
         if (todo_initdb()==0) {
+#ifdef Console
             printf("Done\n\r");
+#endif
             }
         else {
+#ifdef Console
             printf("Shit happened, try to resolve it by yourself :(\n\r");
+#endif
             return NULL;
             }
         return todo_read_meta(list, parcount);
@@ -1002,10 +1088,14 @@ int todo_write_meta(char** argv, int argc, int list) {
     if (retval) {
         printf("Reading DB data Failed, running re-init\n\r");
         if (todo_initdb()==0) {
+#ifdef Console
             printf("Done\n\r");
+#endif
             }
         else {
+#ifdef Console
             printf("Shit happened, try to resolve it by yourself :(\n\r");
+#endif
             return -1;
             }
         return todo_write_meta(argv, argc, list);
@@ -1032,12 +1122,18 @@ int todo_write_meta(char** argv, int argc, int list) {
 #endif
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
+#ifdef Console
         printf("Reading DB data Failed, running re-init\n\r");
+#endif
         if (todo_initdb()==0) {
+#ifdef Console
             printf("Done\n\r");
+#endif
             }
         else {
+#ifdef Console
             printf("Shit happened, try to resolve it by yourself :(\n\r");
+#endif
             return -1;
             }
         return todo_write_meta(argv, argc, list);
@@ -1096,7 +1192,9 @@ int todo_write_meta(char** argv, int argc, int list) {
         }
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     if (retval) {
+#ifdef Console
         printf("Task were not added! (shit happens)\n\r");
+#endif
         return -1;
         }
     free(text);
