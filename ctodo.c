@@ -16,7 +16,7 @@
 #include <ctype.h>
 //________________________________________________________________________________
 //General properties _____________________________________________________________
-int retval, x, q_size = 255, ind = 0;
+int retval, x, ind = 0;
 char* dest;
 char** out;
 //Pointers _______________________________________________________________________
@@ -25,6 +25,7 @@ time_t timefile;
 sqlite3_stmt* stmt;
 //________________________________________________________________________________
 //Maximum sqlite query queue _____________________________________________________
+int q_size = 150;
 #ifdef WIN
 int q_cnt = 26;
 #else
@@ -37,7 +38,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v2.0.1\n";
+    return "  CTODO List Management Uti v2.0.2\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -59,7 +60,7 @@ char* todo_help() {
 //________________________________________________________________________________
 void timeUpdate(time_t t) {
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
+    sprintf_s(queries[ind++], q_size, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
 #else
     sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
 #endif
@@ -74,7 +75,7 @@ void timeUpdate(time_t t) {
 //________________________________________________________________________________
 void sql(char* command) {
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "%s", command);
+    sprintf_s(queries[ind++], q_size, "%s", command);
 #else
     sprintf(queries[ind++], "%s", command);
 #endif
@@ -162,7 +163,7 @@ int todo_initdb_meta() {
     ///Time of last synchronization
     ///</Option>
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", 0);
+    sprintf_s(queries[ind++], q_size, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", 0);
 #else
     sprintf(queries[ind++], "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", 0);
 #endif
@@ -300,7 +301,7 @@ int todo_set_meta(char** argv, int argc) {
             return 0;
             }
 #ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
+        sprintf_s(queries[ind++], q_size, "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
 #else
         sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
 #endif
@@ -333,7 +334,7 @@ int todo_history() {
     int git = 0, hg = 0, svn = 0;
     if (prelude() == -1) return -1;
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS");
+    sprintf_s(queries[ind++], q_size, "SELECT option, text FROM OPTIONS");
 #else
     sprintf(queries[ind++], "SELECT option, text FROM OPTIONS");
 #endif
@@ -431,7 +432,7 @@ int todo_sync_meta(char** argv) {
     filename = (char*)calloc(200, sizeof(char));
     syncdir = (char*)calloc(200, sizeof(char));
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS");
+    sprintf_s(queries[ind++], q_size, "SELECT option, text FROM OPTIONS");
 #else
     sprintf(queries[ind++], "SELECT option, text FROM OPTIONS");
 #endif
@@ -594,7 +595,7 @@ int todo_sync_meta(char** argv) {
                 ///Save list to syncfile
                 ///</TODO>
 #ifdef _MSC_VER
-                sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%s,'%s', 0)", token1, token2);
+                sprintf_s(queries[ind++], q_size, "INSERT INTO TODO VALUES(%s,'%s', 0)", token1, token2);
 #else
                 sprintf(queries[ind++], "INSERT INTO TODO VALUES(%s,'%s', 0)", token1, token2);
 #endif
@@ -700,7 +701,7 @@ void todo_edit_meta(char** argv, int argc) {
 #endif
         }
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
+    sprintf_s(queries[ind++], q_size, "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
 #else
     sprintf(queries[ind++], "UPDATE TODO SET text='%s' WHERE id = %s", text, argv[2]);
 #endif
@@ -724,7 +725,7 @@ void todo_swap_meta(char** argv) {
     int val1 = atoi(argv[2]);
     int val2 = atoi(argv[3]);
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
+    sprintf_s(queries[ind++], q_size, "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
 #else
     sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", 9999, val1);
 #endif
@@ -735,7 +736,7 @@ void todo_swap_meta(char** argv) {
 #endif
         }
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
+    sprintf_s(queries[ind++], q_size, "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
 #else
     sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val1, val2);
 #endif
@@ -746,7 +747,7 @@ void todo_swap_meta(char** argv) {
 #endif
         }
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
+    sprintf_s(queries[ind++], q_size, "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
 #else
     sprintf(queries[ind++], "UPDATE TODO SET id=%d WHERE id = %d", val2, 9999);
 #endif
@@ -775,7 +776,7 @@ void todo_reindex() {
 //________________________________________________________________________________
 void todo_mv_meta(char** argv) {
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
+    sprintf_s(queries[ind++], q_size, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
 #else
     sprintf(queries[ind++], "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
 #endif
@@ -803,7 +804,7 @@ void todo_clean_custom(char* db) {
 //________________________________________________________________________________
 void todo_rm_meta(char** argv) {
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "DELETE FROM TODO WHERE id = %s", argv[2]);
+    sprintf_s(queries[ind++], q_size, "DELETE FROM TODO WHERE id = %s", argv[2]);
 #else
     sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
 #endif
@@ -867,7 +868,7 @@ char** todo_read_meta(int list, int parcount) {
 #endif
     if (parcount > 0) {
 #ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE list = %d", list);
+        sprintf_s(queries[ind++], q_size, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE list = %d", list);
 #else
         sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE list = %d", list);
 #endif
@@ -896,7 +897,7 @@ char** todo_read_meta(int list, int parcount) {
         }
     if (parcount > 0) {
 #ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE list = %d", list);
+        sprintf_s(queries[ind++], q_size, "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE list = %d", list);
 #else
         sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE list = %d", list);
 #endif
@@ -925,7 +926,7 @@ char** todo_read_meta(int list, int parcount) {
         }
     if (parcount > 0) {
 #ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "SELECT id, text, LENGTH(text) FROM TODO WHERE list = %d", list);
+        sprintf_s(queries[ind++], q_size, "SELECT id, text, LENGTH(text) FROM TODO WHERE list = %d", list);
 #else
         sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE list = %d", list);
 #endif
@@ -1080,7 +1081,7 @@ int todo_write_meta(char** argv, int argc, int list) {
     ///Getting options from local database
     ///<Summary>
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
+    sprintf_s(queries[ind++], q_size, "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
 #else
     sprintf(queries[ind++], "SELECT option, text FROM OPTIONS WHERE option = 12 or option = 13");
 #endif
@@ -1116,7 +1117,7 @@ int todo_write_meta(char** argv, int argc, int list) {
     ///Writing to local database
     ///<Summary>
 #ifdef _MSC_VER
-    sprintf_s(queries[ind++], 255, "SELECT COALESCE(MAX(id),0) FROM TODO");
+    sprintf_s(queries[ind++], q_size, "SELECT COALESCE(MAX(id),0) FROM TODO");
 #else
     sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO");
 #endif
@@ -1178,14 +1179,14 @@ int todo_write_meta(char** argv, int argc, int list) {
         sql("UPDATE TODO SET id = id + 1000000000");
         sql("UPDATE TODO SET id = id - (1000000000 - 1)");
 #ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(0,'%s',%d)", text, list);
+        sprintf_s(queries[ind++], q_size, "INSERT INTO TODO VALUES(0,'%s',%d)", text, list);
 #else
         sprintf(queries[ind++], "INSERT INTO TODO VALUES(0,'%s',%d)", text, list);
 #endif
         }
     else {
 #ifdef _MSC_VER
-        sprintf_s(queries[ind++], 255, "INSERT INTO TODO VALUES(%d,'%s', %d)", last + 1, text, list);
+        sprintf_s(queries[ind++], q_size, "INSERT INTO TODO VALUES(%d,'%s', %d)", last + 1, text, list);
 #else
         sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s', %d)", last + 1, text, list);
 #endif
