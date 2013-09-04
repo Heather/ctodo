@@ -7,16 +7,21 @@ if %PROCESSOR_ARCHITECTURE%==x86 (
 
 %MSBuild% ctodo_lib_100.vcxproj /p:Configuration=Release
 %MSBuild% cctodo_100.vcxproj /p:Configuration=Release
-
+echo ---------------------------
+echo   Make bin
+echo ---------------------------
+mkdir bin
+COPY Release\cctodo.exe bin\cctodo.exe
+rmdir /s /q Release
 echo ---------------------------
 echo   Clean up
 echo ---------------------------
-rm todo.db3
-rm testout
+del todo.db3
+del testout
 echo ---------------------------
 echo   Running CToDo Tests
 echo ---------------------------
-set todo=Release\cctodo_100.exe
+set todo=bin\cctodo.exe
 %todo% --help
 echo ---------------------------
 echo        Initdb
@@ -57,6 +62,6 @@ type testout
 echo ---------------------------
 echo        tests passed
 echo ---------------------------
-rm todo.db3
-rm testout
+del todo.db3
+del testout
 pause
