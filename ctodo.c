@@ -1,4 +1,7 @@
 //________________________________________________________________________________
+//Compilation options_____________________________________________________________
+
+//________________________________________________________________________________
 #ifdef _MSC_VER
 #include "sqlite3.h"
 #else
@@ -20,11 +23,11 @@ time_t timefile;
 sqlite3_stmt* stmt;
 //________________________________________________________________________________
 //Maximum sqlite query queue _____________________________________________________
-#ifdef _MSC_VER
-int q_cnt = 12;
+#ifdef WIN
+int q_cnt = 26;
 #else
 char* home;
-int q_cnt = 14;
+int q_cnt = 30;
 #endif
 //________________________________________________________________________________
 //Sqlite handlers ________________________________________________________________
@@ -32,7 +35,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v1.3.5\n";
+    return "  CTODO List Management Uti v2.0.0\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -167,7 +170,7 @@ int todo_initdb_meta() {
     ///</Option>
     sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (4,'0')");
     ///<Option>
-    ///Use veracity (vv) for synchronization
+    ///Use darcs (darcs) for synchronization
     ///</Option>
     sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (5'0')");
     ///<Option>
@@ -186,7 +189,7 @@ int todo_initdb_meta() {
 #else
     sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (0,'.')");
 #endif
-#ifndef _MSC_VER
+#ifndef WIN32
     ///<Option>
     ///Path for HOME (only for linux)
     ///</Option>
@@ -239,7 +242,7 @@ int todo_set_meta(char** argv, int argc) {
         else if ((strcmp(argv[2], "git") == 0)
                  || (strcmp(argv[2], "hg") == 0)
                  || (strcmp(argv[2], "svn") == 0)
-                 || (strcmp(argv[2], "vv") == 0)) {
+                 || (strcmp(argv[2], "darcs") == 0)) {
             if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0)) {
                 if (strcmp(argv[2], "git") == 0) {
                     opt = 2;
@@ -250,7 +253,7 @@ int todo_set_meta(char** argv, int argc) {
                 else if (strcmp(argv[2], "svn") == 0) {
                     opt = 4;
                     }
-                else if (strcmp(argv[2], "vv") == 0) {
+                else if (strcmp(argv[2], "darcs") == 0) {
                     opt = 5;
                     }
                 }
@@ -310,8 +313,15 @@ int todo_history() {
 #endif
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
-        printf("Sync data Failed, run initdb first\n\r");
-        return -1;
+        printf("Reading DB data Failed, running re-init\n\r");
+        if (todo_initdb()==0) {
+            printf("Done\n\r");
+            }
+        else {
+            printf("Shit happened, try to resolve it by yourself :(\n\r");
+            return -1;
+            }
+        return todo_history();
         }
 	syncdir = (char*)calloc(200, sizeof(char));
     while (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -371,7 +381,7 @@ int todo_sync_meta(char** argv) {
 #ifndef _MSC_VER
     char* home;
 #endif
-    int git = 0, hg = 0, svn = 0, vv = 0;
+    int git = 0, hg = 0, svn = 0, darcs = 0;
     int timeDB = 0;
     int i = 0;
     char line[150];
@@ -395,8 +405,15 @@ int todo_sync_meta(char** argv) {
 #endif
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
-        printf("Sync data Failed, run initdb first\n\r");
-        return -1;
+        printf("Reading DB data Failed, running re-init\n\r");
+        if (todo_initdb()==0) {
+            printf("Done\n\r");
+            }
+        else {
+            printf("Shit happened, try to resolve it by yourself :(\n\r");
+            return -1;
+            }
+        return todo_sync_meta(argv);
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         if (strcmp((const char*)sqlite3_column_text(stmt, 0), "0") == 0) {
@@ -419,7 +436,7 @@ int todo_sync_meta(char** argv) {
             svn = atoi((const char*)sqlite3_column_text(stmt, 1));
             }
         else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "5") == 0) {
-            vv = atoi((const char*)sqlite3_column_text(stmt, 1));
+            darcs = atoi((const char*)sqlite3_column_text(stmt, 1));
             }
         if (strcmp((const char*)sqlite3_column_text(stmt, 0), "15") == 0) {
 #ifdef _MSC_VER
@@ -434,7 +451,7 @@ int todo_sync_meta(char** argv) {
             }
 #endif
         }
-    if (git == 1 || hg == 1 || svn == 1 || vv == 1) {
+    if (git == 1 || hg == 1 || svn == 1 || darcs == 1) {
 #ifndef _MSC_VER
         putenv(home);
 #endif
@@ -459,11 +476,11 @@ int todo_sync_meta(char** argv) {
             sprintf(cmd, "cd %s;svn update", syncdir);
 #endif
             }
-        else if (vv == 1) {
+        else if (darcs == 1) {
 #ifdef _MSC_VER
-            sprintf_s(cmd, 200, "cd %s;vv pull", syncdir);
+            sprintf_s(cmd, 200, "cd %s;darcs pull", syncdir);
 #else
-            sprintf(cmd, "cd %s;vv pull", syncdir);
+            sprintf(cmd, "cd %s;darcs pull", syncdir);
 #endif
             }
         if (system(cmd)) {
@@ -500,7 +517,15 @@ int todo_sync_meta(char** argv) {
                 queries[ind++] = "DELETE FROM TODO";
                 retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
                 if (retval) {
-                    printf("failed to clean db, run initdb first\n\r");
+                    printf("Reading DB data Failed, running re-init\n\r");
+                    if (todo_initdb()==0) {
+                        printf("Done\n\r");
+                        }
+                    else {
+                        printf("Shit happened, try to resolve it by yourself :(\n\r");
+                        return -1;
+                        }
+                    return todo_sync_meta(argv);
                     }
                 }
             else {
@@ -549,7 +574,7 @@ int todo_sync_meta(char** argv) {
                     , sqlite3_column_text(stmt, 1));
             }
         fclose(f);
-        if (git == 1 || hg == 1 || svn == 1 || vv == 1) {
+        if (git == 1 || hg == 1 || svn == 1 || darcs == 1) {
 #ifndef _MSC_VER
             putenv(home);
 #endif
@@ -574,11 +599,11 @@ int todo_sync_meta(char** argv) {
                 sprintf(cmd, "cd %s;svn commit  -m \"TODO LIST UPDATE\"", syncdir);
 #endif
                 }
-            else if (vv == 1) {
+            else if (darcs == 1) {
 #ifdef _MSC_VER
-                sprintf_s(cmd, 200, "cd %s;vv commit -m \"TODO LIST UPDATE\";vv push", syncdir);
+                sprintf_s(cmd, 200, "cd %s;darcs commit -m \"TODO LIST UPDATE\";darcs push", syncdir);
 #else
-                sprintf(cmd, "cd %s;vv commit -m \"TODO LIST UPDATE\"; vv push", syncdir);
+                sprintf(cmd, "cd %s;darcs commit -m \"TODO LIST UPDATE\"; darcs push", syncdir);
 #endif
                 }
             if (system(cmd) == -1) {
@@ -782,8 +807,15 @@ char** todo_read_meta(int list, int parcount) {
     else queries[ind++] = "SELECT COALESCE(MAX(id),0) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
-        printf("Reading data from DB Failed, run initdb first\n\r");
-        return NULL;
+        printf("Reading DB data Failed, running re-init\n\r");
+        if (todo_initdb()==0) {
+            printf("Done\n\r");
+            }
+        else {
+            printf("Shit happened, try to resolve it by yourself :(\n\r");
+            return NULL;
+            }
+        return todo_read_meta(list, parcount);
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         maxl1 = strlen((const char*)sqlite3_column_text(stmt, 0));
@@ -798,8 +830,15 @@ char** todo_read_meta(int list, int parcount) {
     else queries[ind++] = "SELECT COALESCE(MAX(LENGTH(text)),0) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
-        printf("Reading data from DB Failed, run initdb first\n\r");
-        return NULL;
+        printf("Reading DB data Failed, running re-init\n\r");
+        if (todo_initdb()==0) {
+            printf("Done\n\r");
+            }
+        else {
+            printf("Shit happened, try to resolve it by yourself :(\n\r");
+            return NULL;
+            }
+        return todo_read_meta(list, parcount);
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         maxl2 = atoi((const char*)sqlite3_column_text(stmt, 0));
@@ -814,8 +853,15 @@ char** todo_read_meta(int list, int parcount) {
     else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
-        printf("Selecting data from DB Failed, run initdb first\n\r");
-        return NULL;
+        printf("Reading DB data Failed, running re-init\n\r");
+        if (todo_initdb()==0) {
+            printf("Done\n\r");
+            }
+        else {
+            printf("Shit happened, try to resolve it by yourself :(\n\r");
+            return NULL;
+            }
+        return todo_read_meta(list, parcount);
         }
     lineborder1 = (char*)calloc(255, sizeof(char));
 #ifndef WIN32
@@ -954,8 +1000,15 @@ int todo_write_meta(char** argv, int argc, int list) {
 #endif
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
-        printf("Sync data Failed, run initdb first\n\r");
-        return -1;
+        printf("Reading DB data Failed, running re-init\n\r");
+        if (todo_initdb()==0) {
+            printf("Done\n\r");
+            }
+        else {
+            printf("Shit happened, try to resolve it by yourself :(\n\r");
+            return -1;
+            }
+        return todo_write_meta(argv, argc, list);
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0) {
@@ -979,8 +1032,15 @@ int todo_write_meta(char** argv, int argc, int list) {
 #endif
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
-        printf("Inserting data to DB Failed, run initdb first\n\r");
-        return -1;
+        printf("Reading DB data Failed, running re-init\n\r");
+        if (todo_initdb()==0) {
+            printf("Done\n\r");
+            }
+        else {
+            printf("Shit happened, try to resolve it by yourself :(\n\r");
+            return -1;
+            }
+        return todo_write_meta(argv, argc, list);
         }
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         last = atoi((const char*)sqlite3_column_text(stmt, 0));

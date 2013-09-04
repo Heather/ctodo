@@ -11,7 +11,7 @@
 char* dest;
 char* db;
 char* cctodo_version() {
-    return "  CCTODO Client v1.3.5\n";
+    return "  CCTODO Client v2.0.0\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -49,7 +49,7 @@ char* cctodo_help() {
         - git - execute git synchronization 1/0 for enable/disable (default 1)\n\
         - hg - execute mercurial synchronization 1/0 for enable/disable (default 0)\n\
         - svn - execute subversion synchronization 1/0 for enable/disable (default 0)\n\
-        - vv - execute veracity synchronization 1/0 for enable/disable (default 0)\n\
+        - darcs - execute darcs synchronization 1/0 for enable/disable (default 0)\n\
       - end - always end todo notes with additional word (default 0)\n\
       - ending - word, using for end feature (default 'be a man')\n");
 #ifndef WIN32

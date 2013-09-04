@@ -4,7 +4,14 @@ if %PROCESSOR_ARCHITECTURE%==x86 (
 ) else (
 	set MSBUILD=%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe
 )
-
+echo ---------------------------
+echo   Clean up
+echo ---------------------------
+del todo.db3
+del testout
+rmdir /s /q bin
+rmdir /s /q lib
+echo ---------------------------
 %MSBuild% ctodo_lib_110.vcxproj /p:Configuration=Release
 %MSBuild% cctodo_110.vcxproj /p:Configuration=Release
 echo ---------------------------
@@ -13,11 +20,6 @@ echo ---------------------------
 mkdir bin
 COPY Release\cctodo.exe bin\cctodo.exe
 rmdir /s /q Release
-echo ---------------------------
-echo   Clean up
-echo ---------------------------
-del todo.db3
-del testout
 echo ---------------------------
 echo   Running CToDo Tests
 echo ---------------------------
