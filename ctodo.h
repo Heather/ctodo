@@ -33,5 +33,5 @@ extern int todo_write_custom(char** argv, int argc, int list, char* db);
 extern void todo_close();
 //________________________________________________________________________________
 #endif // CTODO_H
-
+//________________________________________________________________________________
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

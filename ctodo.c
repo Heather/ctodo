@@ -27,10 +27,10 @@ sqlite3_stmt* stmt;
 //Maximum sqlite query queue _____________________________________________________
 int q_size = 150;
 #ifdef WIN
-int q_cnt = 26;
+    int q_cnt = 26;
 #else
-char* home;
-int q_cnt = 30;
+    char* home;
+    int q_cnt = 30;
 #endif
 //________________________________________________________________________________
 //Sqlite handlers ________________________________________________________________
@@ -38,7 +38,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-    return "  CTODO List Management Uti v2.0.2\n";
+    return "  CTODO List Management Uti v2.1.0\n";
     }
 //________________________________________________________________________________
 char* todo_help() {
@@ -70,8 +70,7 @@ void timeUpdate(time_t t) {
         printf("Failed to update db time\n\r");
 #endif
         return;
-        }
-    }
+    }   }
 //________________________________________________________________________________
 void sql(char* command) {
 #ifdef _MSC_VER
@@ -98,9 +97,8 @@ int prelude() {
     char* temp = (char*)calloc(200, sizeof(char));
 #endif
     queries = (char**)malloc(sizeof(char*) * q_cnt);
-    for (x = 0; x < q_cnt; x++) {
+    for (x = 0; x < q_cnt; x++)
         queries[x] = (char*)malloc(sizeof(char) * q_size);
-        }
 #ifdef _MSC_VER
     retval = sqlite3_open("todo.db3", &handle);
 #else
@@ -121,9 +119,8 @@ int prelude_custom(char* db) {
     timefile = 0;
     f = NULL;
     queries = (char**)malloc(sizeof(char*) * q_cnt);
-    for (x = 0; x < q_cnt; x++) {
+    for (x = 0; x < q_cnt; x++)
         queries[x] = (char*)malloc(sizeof(char) * q_size);
-        }
     retval = sqlite3_open(db, &handle);
     if (retval) {
 #ifdef Console
@@ -154,7 +151,6 @@ int todo_initdb_meta() {
         }
     sql("CREATE TABLE IF NOT EXISTS OPTIONS (option INTEGER PRIMARY KEY,text TEXT NOT NULL)");
     sql("CREATE TABLE IF NOT EXISTS NAMELIST (option INTEGER PRIMARY KEY,name TEXT NOT NULL)");
-
     ///<Option>
     ///Sync file for tex serialization
     ///</Option>
@@ -235,97 +231,70 @@ int todo_set_meta(char** argv, int argc) {
         printf("set what?\n\r");
 #endif
         }
-    else {
-        if (strcmp(argv[2], "syncfile") == 0) {
-            opt = 15;
-            }
-        else if (strcmp(argv[2], "syncdir") == 0) {
-            opt = 0;
-            }
-        else if (strcmp(argv[2], "ending") == 0) {
-            opt = 13;
-            }
-        else if (strcmp(argv[2], "color") == 0) {
-            opt = 21;
-            }
-        else if (strcmp(argv[2], "end") == 0) {
-            if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0)) {
-                opt = 12;
-                }
-            else {
-#ifdef Console
-                printf("Use 1 or 0 for this option\n\r");
-#endif
-                }
-            }
-        else if ((strcmp(argv[2], "git") == 0)
-                 || (strcmp(argv[2], "hg") == 0)
-                 || (strcmp(argv[2], "svn") == 0)
-                 || (strcmp(argv[2], "darcs") == 0)) {
-            if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0)) {
-                if (strcmp(argv[2], "git") == 0) {
-                    opt = 2;
-                    }
-                else if (strcmp(argv[2], "hg") == 0) {
-                    opt = 3;
-                    }
-                else if (strcmp(argv[2], "svn") == 0) {
-                    opt = 4;
-                    }
-                else if (strcmp(argv[2], "darcs") == 0) {
-                    opt = 5;
-                    }
-                }
-            else {
-#ifdef Console
-                printf("Use 1 or 0 for this option\n\r");
-#endif
-                }
-            }
-#ifndef _MSC_VER
-        else if (strcmp(argv[2], "home") == 0) {
-            sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 20", argv[3]);
-            retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
-            if (retval) {
-#ifdef Console
-                printf("Option home is not changed! (shit happens)\n\r");
-#endif
-                return -1;
-                }
-            }
-#endif
+    else if (strcmp(argv[2], "syncfile") == 0)  opt = 15;
+    else if (strcmp(argv[2], "syncdir") == 0)   opt = 0;
+    else if (strcmp(argv[2], "ending") == 0)    opt = 13;
+    else if (strcmp(argv[2], "color") == 0)     opt = 21;
+    else if (strcmp(argv[2], "end") == 0)
+        if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0))
+            opt = 12;
         else {
 #ifdef Console
-            printf("There is no such option\n\r");
+            printf("Use 1 or 0 for this option\n\r");
 #endif
-            return 0;
             }
-#ifdef _MSC_VER
-        sprintf_s(queries[ind++], q_size, "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
-#else
-        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
+    else if ((strcmp(argv[2], "git") == 0)
+                 || (strcmp(argv[2], "hg") == 0)
+                 || (strcmp(argv[2], "svn") == 0)
+                 || (strcmp(argv[2], "darcs") == 0))
+        if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0))
+            if (strcmp(argv[2], "git") == 0)            opt = 2;
+            else if (strcmp(argv[2], "hg") == 0)        opt = 3;
+            else if (strcmp(argv[2], "svn") == 0)       opt = 4;
+            else if (strcmp(argv[2], "darcs") == 0)     opt = 5;
+        else {
+#ifdef Console
+            printf("Use 1 or 0 for this option\n\r");
 #endif
+            }
+#ifndef _MSC_VER
+    else if (strcmp(argv[2], "home") == 0) {
+        sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = 20", argv[3]);
         retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
         if (retval) {
 #ifdef Console
-            printf("Option is not changed! (shit happens)\n\r");
+            printf("Option home is not changed! (shit happens)\n\r");
 #endif
             return -1;
-            }
+        }   }
+#endif
+    else {
+#ifdef Console
+        printf("There is no such option\n\r");
+#endif
+        return 0;
+        }
+#ifdef _MSC_VER
+    sprintf_s(queries[ind++], q_size, "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
+#else
+    sprintf(queries[ind++], "UPDATE OPTIONS SET text='%s' WHERE option = %d", argv[3], opt);
+#endif
+    retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
+    if (retval) {
+#ifdef Console
+        printf("Option is not changed! (shit happens)\n\r");
+#endif
+        return -1;
         }
     return 0;
     }
 int todo_set(char** argv, int argc) {
     if (prelude() == -1) return -1;
-    else {
-        return todo_set_meta(argv, argc);
-        }
+    else return todo_set_meta(argv, argc);
     }
 int todo_set_custom(char** argv, int argc, char* db) {
     if (prelude_custom(db) == -1) return -1;
-    else {
-        return todo_set_meta(argv, argc);
-        }
+    else return todo_set_meta(argv, argc);
     }
 //________________________________________________________________________________
 int todo_history() {
@@ -357,57 +326,47 @@ int todo_history() {
         return todo_history();
         }
 	syncdir = (char*)calloc(200, sizeof(char));
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
-        if (strcmp((const char*)sqlite3_column_text(stmt, 0), "0") == 0) {
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+        if (strcmp((const char*)sqlite3_column_text(stmt, 0), "0") == 0)
 #ifdef _MSC_VER
             sprintf_s(syncdir, 200, "%s", sqlite3_column_text(stmt, 1));
 #else
             sprintf(syncdir, "%s", sqlite3_column_text(stmt, 1));
 #endif
-            }
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "2") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "2") == 0)
             git = atoi((const char*)sqlite3_column_text(stmt, 1));
-            }
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "3") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "3") == 0)
             hg = atoi((const char*)sqlite3_column_text(stmt, 1));
-            }
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "4") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "4") == 0)
             svn = atoi((const char*)sqlite3_column_text(stmt, 1));
-            }
-	    }
-        if (git == 1 || hg == 1 || svn == 1) {
+    if (git == 1 || hg == 1 || svn == 1) {
 #ifndef _MSC_VER
-            putenv(home);
+        putenv(home);
 #endif
-            if (git == 1) {
+        if (git == 1)
 #ifdef _MSC_VER
-                sprintf_s(cmd, 200, "cd %s;git log", syncdir);
+            sprintf_s(cmd, 200, "cd %s;git log", syncdir);
 #else
-                sprintf(cmd, "cd %s;git log", syncdir);
+            sprintf(cmd, "cd %s;git log", syncdir);
 #endif
-                }
-            else if (hg == 1) {
+        else if (hg == 1)
 #ifdef _MSC_VER
-                sprintf_s(cmd, 200, "cd %s;hg log", syncdir);
+            sprintf_s(cmd, 200, "cd %s;hg log", syncdir);
 #else
-                sprintf(cmd, "cd %s;hg log", syncdir);
+            sprintf(cmd, "cd %s;hg log", syncdir);
 #endif
-                }
-            else if (svn == 1) {
+        else if (svn == 1)
 #ifdef _MSC_VER
-                sprintf_s(cmd, 200, "cd %s;svn log", syncdir);
+            sprintf_s(cmd, 200, "cd %s;svn log", syncdir);
 #else
-                sprintf(cmd, "cd %s;svn log", syncdir);
+            sprintf(cmd, "cd %s;svn log", syncdir);
 #endif
-                }
-            if (system(cmd) == -1) {
-                return -1;
-                }
-            }
-		free(syncdir);
-		free(cmd);
-        return 0;
+        if (system(cmd) == -1) return -1;
         }
+    free(syncdir);
+    free(cmd);
+    return 0;
+    }
 //________________________________________________________________________________
 int todo_sync_meta(char** argv) {
     char* filename;
@@ -454,77 +413,62 @@ int todo_sync_meta(char** argv) {
             }
         return todo_sync_meta(argv);
         }
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
-        if (strcmp((const char*)sqlite3_column_text(stmt, 0), "0") == 0) {
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+        if (strcmp((const char*)sqlite3_column_text(stmt, 0), "0") == 0)
 #ifdef _MSC_VER
             sprintf_s(syncdir, 200, "%s", sqlite3_column_text(stmt, 1));
 #else
             sprintf(syncdir, "%s", sqlite3_column_text(stmt, 1));
 #endif
-            }
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "1") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "1") == 0)
             timeDB = atoi((const char*)sqlite3_column_text(stmt, 1));
-            }
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "2") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "2") == 0)
             git = atoi((const char*)sqlite3_column_text(stmt, 1));
-            }
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "3") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "3") == 0)
             hg = atoi((const char*)sqlite3_column_text(stmt, 1));
-            }
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "4") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "4") == 0)
             svn = atoi((const char*)sqlite3_column_text(stmt, 1));
-            }
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "5") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "5") == 0)
             darcs = atoi((const char*)sqlite3_column_text(stmt, 1));
-            }
-        if (strcmp((const char*)sqlite3_column_text(stmt, 0), "15") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "15") == 0)
 #ifdef _MSC_VER
             sprintf_s(filename, 200, "%s/%s", syncdir, sqlite3_column_text(stmt, 1));
 #else
             sprintf(filename, "%s/%s", syncdir, sqlite3_column_text(stmt, 1));
 #endif
-            }
 #ifndef _MSC_VER
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "20") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "20") == 0)
             sprintf(home, "HOME=%s", sqlite3_column_text(stmt, 1));
-            }
 #endif
-        }
     if (git == 1 || hg == 1 || svn == 1 || darcs == 1) {
 #ifndef _MSC_VER
         putenv(home);
 #endif
-        if (git == 1) {
+        if (git == 1)
 #ifdef _MSC_VER
             sprintf_s(cmd, 200, "cd %s;git pull", syncdir);
 #else
             sprintf(cmd, "cd %s;git pull", syncdir);
 #endif
-            }
-        else if (hg == 1) {
+        else if (hg == 1)
 #ifdef _MSC_VER
             sprintf_s(cmd, 200, "cd %s;hg pull --update", syncdir);
 #else
             sprintf(cmd, "cd %s;hg pull --update", syncdir);
 #endif
-            }
-        else if (svn == 1) {
+        else if (svn == 1)
 #ifdef _MSC_VER
             sprintf_s(cmd, 200, "cd %s;svn update", syncdir);
 #else
             sprintf(cmd, "cd %s;svn update", syncdir);
 #endif
-            }
-        else if (darcs == 1) {
+        else if (darcs == 1)
 #ifdef _MSC_VER
             sprintf_s(cmd, 200, "cd %s;darcs pull", syncdir);
 #else
             sprintf(cmd, "cd %s;darcs pull", syncdir);
 #endif
-            }
-        if (system(cmd)) {
-            return -1;
-            }
+        if (system(cmd)) return -1;
         }
 #ifdef Console
     printf("Sync file: %s\n\r", filename);
@@ -548,9 +492,7 @@ int todo_sync_meta(char** argv) {
             printf("Timefile: %s\n\r", ctime(&timefile));
 #endif
 #endif
-            if (timeDB > (int)timefile) {
-                break;
-                }
+            if (timeDB > (int)timefile) break;
             else if (timeDB == (int)timefile) {
 #ifdef Console
                 printf("Everything is up to date\n\r");
@@ -604,9 +546,7 @@ int todo_sync_meta(char** argv) {
 #ifdef Console
                     printf("Task were not added! (shit happens)\n\r");
 #endif
-                    }
-                }
-            }
+            }   }   }
         i++;
         }
     fclose(f);
@@ -623,47 +563,40 @@ int todo_sync_meta(char** argv) {
         fprintf(f, "%d\n", (int)now);
         fprintf(f, "\n");
         timeUpdate(now);
-        while (sqlite3_step(stmt) == SQLITE_ROW) {
+        while (sqlite3_step(stmt) == SQLITE_ROW)
             fprintf(f, " - %s|%s\n"
                     , sqlite3_column_text(stmt, 0)
                     , sqlite3_column_text(stmt, 1));
-            }
         fclose(f);
         if (git == 1 || hg == 1 || svn == 1 || darcs == 1) {
 #ifndef _MSC_VER
             putenv(home);
 #endif
-            if (git == 1) {
+            if (git == 1)
 #ifdef _MSC_VER
                 sprintf_s(cmd, 200, "cd %s;git commit -am \"TODO LIST UPDATE\";git push", syncdir);
 #else
                 sprintf(cmd, "cd %s;git commit -am \"TODO LIST UPDATE\";git push", syncdir);
 #endif
-                }
-            else if (hg == 1) {
+            else if (hg == 1)
 #ifdef _MSC_VER
                 sprintf_s(cmd, 200, "cd %s;hg commit -m \"TODO LIST UPDATE\";hg push", syncdir);
 #else
                 sprintf(cmd, "cd %s;hg commit -m \"TODO LIST UPDATE\";hg push", syncdir);
 #endif
-                }
-            else if (svn == 1) {
+            else if (svn == 1)
 #ifdef _MSC_VER
                 sprintf_s(cmd, 200, "cd %s;svn commit  -m \"TODO LIST UPDATE\"", syncdir);
 #else
                 sprintf(cmd, "cd %s;svn commit  -m \"TODO LIST UPDATE\"", syncdir);
 #endif
-                }
-            else if (darcs == 1) {
+            else if (darcs == 1)
 #ifdef _MSC_VER
                 sprintf_s(cmd, 200, "cd %s;darcs commit -m \"TODO LIST UPDATE\";darcs push", syncdir);
 #else
                 sprintf(cmd, "cd %s;darcs commit -m \"TODO LIST UPDATE\"; darcs push", syncdir);
 #endif
-                }
-            if (system(cmd) == -1) {
-                return -1;
-                }
+            if (system(cmd) == -1) return -1;
             }
 #ifdef Console
         printf("synchronization complete, syncfile updated\n\r");
@@ -715,10 +648,10 @@ void todo_edit_meta(char** argv, int argc) {
     timeUpdate(time(0));
     }
 void todo_edit(char** argv, int argc) {
-    if (prelude() != -1) { todo_edit_meta(argv, argc); }
+    if (prelude() != -1) todo_edit_meta(argv, argc);
     }
 void todo_edit_custom(char** argv, int argc, char* db) {
-    if (prelude_custom(db) != -1) { todo_edit_meta(argv, argc); }
+    if (prelude_custom(db) != -1) todo_edit_meta(argv, argc);
     }
 //________________________________________________________________________________
 void todo_swap_meta(char** argv) {
@@ -771,8 +704,7 @@ void todo_reindex() {
         sql("UPDATE TODO SET id = id + 1000000000");
         sql("UPDATE TODO SET id = rowid");
         timeUpdate(time(0));
-        }
-    }
+    }   }
 //________________________________________________________________________________
 void todo_mv_meta(char** argv) {
 #ifdef _MSC_VER
@@ -784,10 +716,10 @@ void todo_mv_meta(char** argv) {
     timeUpdate(time(0));
     }
 void todo_mv(char** argv) {
-    if (prelude() != -1) { todo_mv_meta(argv); }
+    if (prelude() != -1) todo_mv_meta(argv);
     }
 void todo_mv_custom(char** argv, char* db) {
-    if (prelude_custom(db) != -1) { todo_mv_meta(argv); }
+    if (prelude_custom(db) != -1) todo_mv_meta(argv);
     }
 //________________________________________________________________________________
 void todo_clean_meta() {
@@ -796,10 +728,10 @@ void todo_clean_meta() {
     timeUpdate(time(0));
     }
 void todo_clean() {
-    if (prelude() != -1) { todo_clean_meta(); }
+    if (prelude() != -1) todo_clean_meta();
     }
 void todo_clean_custom(char* db) {
-    if (prelude_custom(db) != -1) { todo_clean_meta(); }
+    if (prelude_custom(db) != -1) todo_clean_meta();
     }
 //________________________________________________________________________________
 void todo_rm_meta(char** argv) {
@@ -812,10 +744,10 @@ void todo_rm_meta(char** argv) {
     timeUpdate(time(0));
     }
 void todo_rm(char** argv) {
-    if (prelude() != -1) { todo_rm_meta(argv); }
+    if (prelude() != -1) todo_rm_meta(argv);
     }
 void todo_rm_custom(char** argv, char* db) {
-    if (prelude_custom(db) != -1) { todo_rm_meta(argv); }
+    if (prelude_custom(db) != -1) todo_rm_meta(argv);
     }
 //________________________________________________________________________________
 char** todo_read_meta(int list, int parcount) {
@@ -825,9 +757,8 @@ char** todo_read_meta(int list, int parcount) {
     int maxl2 = 0, maxl1 = 0;
     int i, maxi1, maxi2;
     out = (char**)malloc(sizeof(char*) * 100);
-    for (x = 0; x < 100; x++) {
+    for (x = 0; x < 100; x++)
         out[x] = (char*)malloc(sizeof(char) * 255);
-        }
 #ifndef WIN32
     char* colorscheme;
     char* lineborder2;
@@ -841,38 +772,29 @@ char** todo_read_meta(int list, int parcount) {
         printf("Failed to get color scheme\n\r");
 #endif
         }
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
+    while (sqlite3_step(stmt) == SQLITE_ROW)
         if (strcmp((const char*)sqlite3_column_text(stmt, 0), "21") == 0) {
             colorscheme = (char*)calloc(50, sizeof(char));
-            if (strcmp((const char*)sqlite3_column_text(stmt, 1), "red") == 0) {
-                sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 37, 41);
-                }
-            else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "blink") == 0) {
-                sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 50, 5);
-                }
-            else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "green") == 0) {
-                sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 68, 32);
-                }
-            else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "pink") == 0) {
-                sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 35, 2);
-                }
-            else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "black") == 0) {
-                sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 6, 66);
-                }
-            else {
-                sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 37, 41);
-                }
+            if (strcmp((const char*)sqlite3_column_text(stmt, 1), "red") == 0)
+                 sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 37, 41);
+            else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "blink") == 0)
+                 sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 50, 5);
+            else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "green") == 0)
+                 sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 68, 32);
+            else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "pink") == 0)
+                 sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 35, 2);
+            else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "black") == 0)
+                 sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 6, 66);
+            else sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 37, 41);
             break;
             }
-        }
 #endif
-    if (parcount > 0) {
+    if (parcount > 0)
 #ifdef _MSC_VER
         sprintf_s(queries[ind++], q_size, "SELECT COALESCE(MAX(id),0) FROM TODO WHERE list = %d", list);
 #else
         sprintf(queries[ind++], "SELECT COALESCE(MAX(id),0) FROM TODO WHERE list = %d", list);
 #endif
-        }
     else queries[ind++] = "SELECT COALESCE(MAX(id),0) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
@@ -892,16 +814,14 @@ char** todo_read_meta(int list, int parcount) {
             }
         return todo_read_meta(list, parcount);
         }
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
+    while (sqlite3_step(stmt) == SQLITE_ROW)
         maxl1 = strlen((const char*)sqlite3_column_text(stmt, 0));
-        }
-    if (parcount > 0) {
+    if (parcount > 0)
 #ifdef _MSC_VER
         sprintf_s(queries[ind++], q_size, "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE list = %d", list);
 #else
         sprintf(queries[ind++], "SELECT COALESCE(MAX(LENGTH(text)),0) FROM TODO WHERE list = %d", list);
 #endif
-        }
     else queries[ind++] = "SELECT COALESCE(MAX(LENGTH(text)),0) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
@@ -921,16 +841,14 @@ char** todo_read_meta(int list, int parcount) {
             }
         return todo_read_meta(list, parcount);
         }
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
+    while (sqlite3_step(stmt) == SQLITE_ROW)
         maxl2 = atoi((const char*)sqlite3_column_text(stmt, 0));
-        }
-    if (parcount > 0) {
+    if (parcount > 0)
 #ifdef _MSC_VER
         sprintf_s(queries[ind++], q_size, "SELECT id, text, LENGTH(text) FROM TODO WHERE list = %d", list);
 #else
         sprintf(queries[ind++], "SELECT id, text, LENGTH(text) FROM TODO WHERE list = %d", list);
 #endif
-        }
     else queries[ind++] = "SELECT id, text, LENGTH(text) from TODO";
     retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
     if (retval) {
@@ -956,7 +874,7 @@ char** todo_read_meta(int list, int parcount) {
 #endif
     spaces1    = (char*)calloc(200, sizeof(char));
     spaces2    = (char*)calloc(200, sizeof(char));
-    for (i = 0; i < ((maxl2 + maxl1) + 5); i++) {
+    for (i = 0; i < ((maxl2 + maxl1) + 5); i++)
         if (i == 2 + maxl1) {
 #ifdef WIN32
 #ifdef _MSC_VER
@@ -981,7 +899,6 @@ char** todo_read_meta(int list, int parcount) {
             strcat(lineborder2, "═");
 #endif
             }
-        }
 #ifdef WIN32
 #ifdef _MSC_VER
     sprintf_s(out[0], 255, "%s", lineborder1);
@@ -1004,20 +921,18 @@ char** todo_read_meta(int list, int parcount) {
         strcpy(spaces1, "");
         strcpy(spaces2, "");
 #endif
-        for (i = 0; i < maxi1; i++) {
+        for (i = 0; i < maxi1; i++)
 #ifdef _MSC_VER
             strcat_s(spaces1, 200, " ");
 #else
             strcat(spaces1, " ");
 #endif
-            }
-        for (i = 0; i < maxi2; i++) {
+        for (i = 0; i < maxi2; i++)
 #ifdef _MSC_VER
             strcat_s(spaces2, 200, " ");
 #else
             strcat(spaces2, " ");
 #endif
-            }
 #ifdef WIN32
 #ifdef _MSC_VER
         sprintf_s(out[x], 255, "%s %s",
@@ -1101,18 +1016,15 @@ int todo_write_meta(char** argv, int argc, int list) {
             }
         return todo_write_meta(argv, argc, list);
         }
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
-        if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0) {
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+        if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0)
 #ifdef _MSC_VER
             sprintf_s(ending, 200, "%s", sqlite3_column_text(stmt, 1));
 #else
             sprintf(ending, "%s", sqlite3_column_text(stmt, 1));
 #endif
-            }
-        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "12") == 0) {
+        else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "12") == 0)
             useending = atoi((const char*)sqlite3_column_text(stmt, 1));
-            }
-        }
     ///<Summary>
     ///Writing to local database
     ///<Summary>
@@ -1139,42 +1051,33 @@ int todo_write_meta(char** argv, int argc, int list) {
             }
         return todo_write_meta(argv, argc, list);
         }
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
+    while (sqlite3_step(stmt) == SQLITE_ROW)
         last = atoi((const char*)sqlite3_column_text(stmt, 0));
-        }
     text = (char*)calloc(200, sizeof(char));
-    if (useending == 1) {
+    if (useending == 1)
         limit = 200 - strlen(ending);
-        }
-    for (argi = 1; argi < argc; argi++) {
-        if (strlen(text) + strlen(argv[argi]) + sizeof(char)  >= (unsigned int)limit) {
+    for (argi = 1; argi < argc; argi++)
+        if (strlen(text) + strlen(argv[argi]) + sizeof(char)  >= (unsigned int)limit)
             break;
-            }
+        else if ((strcmp(argv[argi], "--motivate") == 0))
+            useending = 1;
+        else if ((strcmp(argv[argi], "--first") == 0) || (strcmp(argv[argi], "-1") == 0))
+            first = 1;
         else {
-            if ((strcmp(argv[argi], "--motivate") == 0)) {
-                useending = 1;
-                }
-            else if ((strcmp(argv[argi], "--first") == 0) || (strcmp(argv[argi], "-1") == 0)) {
-                first = 1;
-                }
-            else {
 #ifdef _MSC_VER
-                strcat_s(text, 200, argv[argi]);
-                strcat_s(text, 200, " ");
+            strcat_s(text, 200, argv[argi]);
+            strcat_s(text, 200, " ");
 #else
-                strcat(text, argv[argi]);
-                strcat(text, " ");
+            strcat(text, argv[argi]);
+            strcat(text, " ");
 #endif
-                }
             }
-        }
-    if (useending == 1) {
+    if (useending == 1)
 #ifdef _MSC_VER
         strcat_s(text, 200, ending);
 #else
         strcat(text, ending);
 #endif
-        }
     if (first == 1) {
         sql("UPDATE TODO SET id = id + 1000000000");
         sql("UPDATE TODO SET id = id - (1000000000 - 1)");
@@ -1184,13 +1087,12 @@ int todo_write_meta(char** argv, int argc, int list) {
         sprintf(queries[ind++], "INSERT INTO TODO VALUES(0,'%s',%d)", text, list);
 #endif
         }
-    else {
+    else
 #ifdef _MSC_VER
         sprintf_s(queries[ind++], q_size, "INSERT INTO TODO VALUES(%d,'%s', %d)", last + 1, text, list);
 #else
         sprintf(queries[ind++], "INSERT INTO TODO VALUES(%d,'%s', %d)", last + 1, text, list);
 #endif
-        }
     retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
     if (retval) {
 #ifdef Console
