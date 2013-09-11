@@ -11,7 +11,7 @@
 char* dest;
 char* db;
 char* cctodo_version() {
-    return "  CCTODO Client v2.0.0\n";
+    return "  CCTODO Client v2.0.1\n";
     }
 char* cctodo_help() {
     dest = (char*)calloc(4000, sizeof(char));
@@ -197,7 +197,7 @@ int main(int argc, char* argv[]) {
                     }
                 }
             }
-        else if (strcmp(argv[1], "initdb") == 0) {
+        else if (strcmp(argv[1], "initdb") == 0 && argc == 2) {
             if (dbcheck(argc, argv) == 0) {
                 todo_initdb();
                 }
@@ -221,10 +221,10 @@ int main(int argc, char* argv[]) {
                     }
                 }
             }
-        else if (strcmp(argv[1], "history") == 0) {
+        else if (strcmp(argv[1], "history") == 0 && argc == 2) {
             return todo_history();
             }
-        else if (strcmp(argv[1], "sync") == 0) {
+        else if (strcmp(argv[1], "sync") == 0 && argc == 2) {
             if (dbcheck(argc, argv) == 0) {
                 return todo_sync(argv);
                 }
@@ -256,7 +256,7 @@ int main(int argc, char* argv[]) {
                 }
             return 0;
             }
-        else if (strcmp(argv[1], "reindex") == 0) {
+        else if (strcmp(argv[1], "reindex") == 0 && argc == 2) {
             char answer;
             printf("This feature is currently broken, do you want to test it? (y/n)");
 #ifdef _MSC_VER
@@ -282,7 +282,7 @@ int main(int argc, char* argv[]) {
                 }
             return 0;
             }
-        else if (strcmp(argv[1], "clean") == 0) {
+        else if (strcmp(argv[1], "clean") == 0 && argc == 2) {
             char answer;
             printf("Are you sure that you want to clean all the tasks? (y/n) ");
 #ifdef _MSC_VER
