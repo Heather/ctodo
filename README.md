@@ -1,6 +1,8 @@
 TODO List management util: Usage & Version
 =======================================================
 
+[![Build Status](https://travis-ci.org/Heather/ctodo.png?branch=master)](https://travis-ci.org/Heather/ctodo)
+
  - ctodo : general c library
  - cctodo : simple ctodo client in C
  
