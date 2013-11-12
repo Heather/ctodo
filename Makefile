@@ -4,7 +4,7 @@
 
 CC=gcc
 CFLAGS=-lsqlite3 -O3
-XCFLAGS=-O3
+XCFLAGS=-lpthread -O3
 CSRC=cctodo.c
 CLIBS=ctodo.c
 XCSRC=contrib/sqlite/sqlite3.c ctodo.c cctodo.c
