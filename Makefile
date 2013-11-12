@@ -19,16 +19,16 @@ all: cctodo
 
 rebuild: clean | all
 
-cctodo:	$(CSRC) | ctodo
+cctodo: $(CSRC) | ctodo
 	$(CC) ${INCLUDES} -o todo $^ ${CFLAGS} ${LIBS}
 
-ctodo:	$(CLIBS)
+ctodo: $(CLIBS)
 	$(CC) ${INCLUDES} -c -o ${LIBS} $^ $(CFLAGS)
-    
-ctodo_inherit_sqlite: $(XCSRC)
-    $(CC) ${XINCLUDES} -o todo $^ ${CFLAGS}
 
-.PHONY: clean all rebuild
+inheritsqlite: $(XCSRC)
+	$(CC) ${XINCLUDES} -o todo $^ ${CFLAGS}
+
+.PHONY: clean all rebuild inheritsqlite
 
 clean:
 	@echo " --- Clean binaries --- "
