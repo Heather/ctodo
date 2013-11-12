@@ -1,5 +1,4 @@
 compiler:
-  - clang
   - gcc
 script: 
   - make ctodo_inherit_sqlite
