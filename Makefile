@@ -4,6 +4,7 @@
 
 CC=gcc
 CFLAGS=-lsqlite3 -O3
+XCFLAGS=-O3
 CSRC=cctodo.c
 CLIBS=ctodo.c
 XCSRC=contrib/sqlite/sqlite3.c ctodo.c cctodo.c
@@ -26,7 +27,7 @@ ctodo: $(CLIBS)
 	$(CC) ${INCLUDES} -c -o ${LIBS} $^ $(CFLAGS)
 
 inheritsqlite: $(XCSRC)
-	$(CC) ${XINCLUDES} -o todo $^ ${CFLAGS}
+	$(CC) ${XINCLUDES} -o todo $^ ${XCFLAGS}
 
 .PHONY: clean all rebuild inheritsqlite
 
