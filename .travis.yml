@@ -1,6 +1,7 @@
 before_install:
   - sudo apt-get update
-install: make get-deps
+install: 
+  - sudo apt-get install sqlite3
 compiler:
   - clang
   - gcc
