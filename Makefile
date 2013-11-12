@@ -6,8 +6,10 @@ CC=gcc
 CFLAGS=-lsqlite3 -O3
 CSRC=cctodo.c
 CLIBS=ctodo.c
+XCSRC=.contrib/sqlite/sqlite3.c ctodo.c cctodo.c
 LIBS=todo.o
 INCLUDES = -I .
+XINCLUDES = -I ../contrib/sqlite
 INSTALL   ?= install
 MKDIR     ?= $(INSTALL) -d
 BINDIR    ?= $(PREFIX)/bin
@@ -22,6 +24,9 @@ cctodo:	$(CSRC) | ctodo
 
 ctodo:	$(CLIBS)
 	$(CC) ${INCLUDES} -c -o ${LIBS} $^ $(CFLAGS)
+    
+ctodo_inherit_sqlite: $(XCSRC)
+    $(CC) ${XINCLUDES} -o todo $^ ${CFLAGS}
 
 .PHONY: clean all rebuild
 

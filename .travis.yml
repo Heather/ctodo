@@ -1,8 +1,5 @@
-before_install:
-  - sudo apt-get update
-install: 
-  - sudo apt-get install libsqlite3-dev
 compiler:
   - clang
   - gcc
-script: make
+script: 
+  - make ctodo_inherit_sqlite
