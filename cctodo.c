@@ -11,7 +11,7 @@
 char* dest;
 char* db;
 char* cctodo_version() {
-	return "  CCTODO Client v2.1.1\n";
+	return "  CCTODO Client v2.1.2\n";
 }
 char* cctodo_help() {
 	dest = (char*)calloc(4000, sizeof(char));
@@ -221,10 +221,11 @@ int main(int argc, char* argv[]) {
 #else
 			if (scanf("%c", &answer) > 0)
 #endif
-			if (answer == 'y')
-			if (dbcheck(argc, argv) == 0)
-				todo_clean();
-			else todo_clean_custom(db);
+			if (answer == 'y') {
+                if (dbcheck(argc, argv) == 0)
+                    todo_clean();
+                else todo_clean_custom(db);
+            }
 			return 0;
 		} else if (strcmp(argv[1], "rm") == 0) {
 			if (argc < 3) printf("remove what?\n\r");
