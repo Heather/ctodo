@@ -44,8 +44,7 @@ run `build.bat` in `./mingw`
 For Windows / MSVC
 ------------------
 
- - for VS 2012 run `build_Release.bat` in `./msvc`
- - for VS 2010 run `build_Release_100.bat` in `./msvc`
+ - run `sln` file from Visual Studio or use `MSBuild`
 
 License
 -------
