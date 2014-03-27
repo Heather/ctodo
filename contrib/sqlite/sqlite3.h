@@ -107,9 +107,9 @@ extern "C" {
 ** [sqlite3_libversion_number()], [sqlite3_sourceid()],
 ** [sqlite_version()] and [sqlite_source_id()].
 */
-#define SQLITE_VERSION        "3.8.3"
-#define SQLITE_VERSION_NUMBER 3008003
-#define SQLITE_SOURCE_ID      "2013-12-17 16:32:56 93121d3097a43997af3c0de65bd9bd7663845fa2"
+#define SQLITE_VERSION        "3.8.4.2"
+#define SQLITE_VERSION_NUMBER 3008004
+#define SQLITE_SOURCE_ID      "2014-03-26 18:51:19 02ea166372bdb2ef9d8dfbb05e78a97609673a8e"
 
 /*
 ** CAPI3REF: Run-Time Library Version Numbers
@@ -2400,11 +2400,13 @@ SQLITE_API sqlite3_int64 sqlite3_memory_highwater(int resetFlag);
 ** applications to access the same PRNG for other purposes.
 **
 ** ^A call to this routine stores N bytes of randomness into buffer P.
+** ^If N is less than one, then P can be a NULL pointer.
 **
-** ^The first time this routine is invoked (either internally or by
-** the application) the PRNG is seeded using randomness obtained
-** from the xRandomness method of the default [sqlite3_vfs] object.
-** ^On all subsequent invocations, the pseudo-randomness is generated
+** ^If this routine has not been previously called or if the previous
+** call had N less than one, then the PRNG is seeded using randomness
+** obtained from the xRandomness method of the default [sqlite3_vfs] object.
+** ^If the previous call to this routine had an N of 1 or more then
+** the pseudo-randomness is generated
 ** internally and without recourse to the [sqlite3_vfs] xRandomness
 ** method.
 */
@@ -2564,6 +2566,7 @@ SQLITE_API int sqlite3_set_authorizer(
 #define SQLITE_FUNCTION             31   /* NULL            Function Name   */
 #define SQLITE_SAVEPOINT            32   /* Operation       Savepoint Name  */
 #define SQLITE_COPY                  0   /* No longer used */
+#define SQLITE_RECURSIVE            33   /* NULL            NULL            */
 
 /*
 ** CAPI3REF: Tracing And Profiling Functions
@@ -6119,7 +6122,8 @@ SQLITE_API int sqlite3_test_control(int op, ...);
 #define SQLITE_TESTCTRL_LOCALTIME_FAULT         18
 #define SQLITE_TESTCTRL_EXPLAIN_STMT            19
 #define SQLITE_TESTCTRL_NEVER_CORRUPT           20
-#define SQLITE_TESTCTRL_LAST                    20
+#define SQLITE_TESTCTRL_VDBE_COVERAGE           21
+#define SQLITE_TESTCTRL_LAST                    21
 
 /*
 ** CAPI3REF: SQLite Runtime Status
