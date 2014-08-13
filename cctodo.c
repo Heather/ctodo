@@ -261,4 +261,3 @@ int main(int argc, char* argv[]) {
 	todo_close();
 }
 //________________________________________________________________________________
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

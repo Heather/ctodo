@@ -54,7 +54,7 @@ char* todo_help() {
 	strcat(dest,
 #endif
 		"  Cross-platform todo list management library\n\
-		  Copyright (C)  2012-2013  Heather\n");
+		  Copyright (C)  2012-2014  Heather\n");
 	return &dest[0];
 }
 //________________________________________________________________________________
@@ -1046,22 +1046,23 @@ int todo_write_meta(char** argv, int argc, int list) {
 	text = (char*)calloc(200, sizeof(char));
 	if (useending == 1)
 		limit = 200 - strlen(ending);
-	for (argi = 1; argi < argc; argi++)
-	if (strlen(text) + strlen(argv[argi]) + sizeof(char) >= (unsigned int)limit)
-		break;
-	else if ((strcmp(argv[argi], "--motivate") == 0))
-		useending = 1;
-	else if ((strcmp(argv[argi], "--first") == 0) || (strcmp(argv[argi], "-1") == 0))
-		first = 1;
-	else {
+	for (argi = 1; argi < argc; argi++) {
+        if (strlen(text) + strlen(argv[argi]) + sizeof(char) >= (unsigned int)limit)
+            break;
+        else if ((strcmp(argv[argi], "--motivate") == 0))
+            useending = 1;
+        else if ((strcmp(argv[argi], "--first") == 0) || (strcmp(argv[argi], "-1") == 0))
+            first = 1;
+        else {
 #ifdef _MSC_VER
-		strcat_s(text, 200, argv[argi]);
-		strcat_s(text, 200, " ");
+            strcat_s(text, 200, argv[argi]);
+            strcat_s(text, 200, " ");
 #else
-		strcat(text, argv[argi]);
-		strcat(text, " ");
+            strcat(text, argv[argi]);
+            strcat(text, " ");
 #endif
-	}
+        }
+    }
 	if (useending == 1)
 #ifdef _MSC_VER
 		strcat_s(text, 200, ending);
@@ -1103,4 +1104,3 @@ int todo_write_custom(char** argv, int argc, int list, char* db) {
 	return todo_write_meta(argv, argc, list);
 }
 //________________________________________________________________________________
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
