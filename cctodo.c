@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
 			printf("%s", cctodo_version());
 			printf("%s", todo_version());
 			return 0;
-		} else if (strcmp(argv[1], "--help") == 0) {
+		} else if ((strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "-h") == 0)) {
 			printf("%s", cctodo_help());
 			printf("%s", todo_help());
 			return 0;

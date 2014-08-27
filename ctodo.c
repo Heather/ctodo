@@ -38,7 +38,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-	return "  CTODO List Management Uti v2.1.1\n";
+	return "  CTODO List Management Uti v2.1.2\n";
 }
 //________________________________________________________________________________
 char* todo_help() {
@@ -57,6 +57,11 @@ char* todo_help() {
 		  Copyright (C)  2012-2014  Heather\n");
 	return &dest[0];
 }
+#ifdef Console
+void shitHappended() {
+    printf("Shit happened, try to resolve it by yourself :(\n\r");
+}
+#endif
 //________________________________________________________________________________
 void timeUpdate(time_t t) {
 #ifdef _MSC_VER
@@ -318,7 +323,7 @@ int todo_history() {
 #endif
 		} else {
 #ifdef Console
-			printf("Shit happened, try to resolve it by yourself :(\n\r");
+			shitHappended();
 #endif
 			return -1;
 		}
@@ -405,7 +410,7 @@ int todo_sync_meta(char** argv) {
 #endif
 		} else {
 #ifdef Console
-			printf("Shit happened, try to resolve it by yourself :(\n\r");
+			shitHappended();
 #endif
 			return -1;
 		}
@@ -511,7 +516,7 @@ int todo_sync_meta(char** argv) {
 #endif
 					} else {
 #ifdef Console
-						printf("Shit happened, try to resolve it by yourself :(\n\r");
+						shitHappended();
 #endif
 						return -1;
 					}
@@ -803,7 +808,7 @@ char** todo_read_meta(int list, int parcount) {
 #endif
 		} else {
 #ifdef Console
-			printf("Shit happened, try to resolve it by yourself :(\n\r");
+			shitHappended();
 #endif
 			return NULL;
 		}
@@ -829,7 +834,7 @@ char** todo_read_meta(int list, int parcount) {
 #endif
 		} else {
 #ifdef Console
-			printf("Shit happened, try to resolve it by yourself :(\n\r");
+			shitHappended();
 #endif
 			return NULL;
 		}
@@ -855,7 +860,7 @@ char** todo_read_meta(int list, int parcount) {
 #endif
 		} else {
 #ifdef Console
-			printf("Shit happened, try to resolve it by yourself :(\n\r");
+			shitHappended();
 #endif
 			return NULL;
 		}
@@ -1001,21 +1006,22 @@ int todo_write_meta(char** argv, int argc, int list) {
 #endif
 		} else {
 #ifdef Console
-			printf("Shit happened, try to resolve it by yourself :(\n\r");
+			shitHappended();
 #endif
 			return -1;
 		}
 		return todo_write_meta(argv, argc, list);
 	}
 	while (sqlite3_step(stmt) == SQLITE_ROW)
-	if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0)
+	if (strcmp((const char*)sqlite3_column_text(stmt, 0), "13") == 0) {
 #ifdef _MSC_VER
 		sprintf_s(ending, 200, "%s", sqlite3_column_text(stmt, 1));
 #else
 		sprintf(ending, "%s", sqlite3_column_text(stmt, 1));
 #endif
-	else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "12") == 0)
+	} else if (strcmp((const char*)sqlite3_column_text(stmt, 0), "12") == 0) {
 		useending = atoi((const char*)sqlite3_column_text(stmt, 1));
+    }
 	///<Summary>
 	///Writing to local database
 	///<Summary>
@@ -1035,7 +1041,7 @@ int todo_write_meta(char** argv, int argc, int list) {
 #endif
 		} else {
 #ifdef Console
-			printf("Shit happened, try to resolve it by yourself :(\n\r");
+			shitHappended();
 #endif
 			return -1;
 		}
