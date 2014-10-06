@@ -11,7 +11,7 @@
 char* dest;
 char* db;
 char* cctodo_version() {
-	return "  CCTODO Client v2.1.2\n";
+	return "  CCTODO Client v2.1.3\n";
 }
 char* cctodo_help() {
 	dest = (char*)calloc(4000, sizeof(char));
@@ -38,7 +38,7 @@ char* cctodo_help() {
       - db <db3path> - use another database file (works for other commands too) \n\
   - edit or e <number> <msg> - edit task\n\
   - mv <number1> <number2> - move task\n\
-  - rm <number> - delete task\n\
+  - rm <number1,number2> - delete tasks\n\
   - clean - clean all tasks\n\
   - swap or s <number1> <number2> - swap elements\n\
   - sync - text synchronization to avoid binaries in vcs\n\

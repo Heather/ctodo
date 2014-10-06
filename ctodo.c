@@ -38,7 +38,7 @@ char** queries;
 sqlite3* handle;
 //________________________________________________________________________________
 char* todo_version() {
-	return "  CTODO List Management Uti v2.1.2\n";
+	return "  CTODO List Management Uti v2.1.3\n";
 }
 //________________________________________________________________________________
 char* todo_help() {
@@ -532,9 +532,6 @@ int todo_sync_meta(char** argv) {
 #endif
 				if (token1[1] == '-') token1 += 3;
 				rtrim(token2);
-				///<TODO>
-				///Save list to syncfile
-				///</TODO>
 #ifdef _MSC_VER
 				sprintf_s(queries[ind++], q_size, "INSERT INTO TODO VALUES(%s,'%s', 0)", token1, token2);
 #else
@@ -736,11 +733,19 @@ void todo_clean_custom(char* db) {
 }
 //________________________________________________________________________________
 void todo_rm_meta(char** argv) {
+    if (strstr(argv[2], ",") != NULL) {
+#ifdef _MSC_VER
+	sprintf_s(queries[ind++], q_size, "DELETE FROM TODO WHERE id IN (%s)", argv[2]);
+#else
+	sprintf(queries[ind++], "DELETE FROM TODO WHERE id IN (%s)", argv[2]);
+#endif
+    } else {
 #ifdef _MSC_VER
 	sprintf_s(queries[ind++], q_size, "DELETE FROM TODO WHERE id = %s", argv[2]);
 #else
 	sprintf(queries[ind++], "DELETE FROM TODO WHERE id = %s", argv[2]);
 #endif
+    }
 	retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
 	timeUpdate(time(0));
 }
