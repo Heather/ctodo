@@ -236,10 +236,10 @@ int todo_set_meta(char** argv, int argc) {
 #ifdef Console
 		printf("set what?\n\r");
 #endif
-	} else if (strcmp(argv[2], "syncfile") == 0)  opt = 15;
-	else if (strcmp(argv[2], "syncdir") == 0)   opt = 0;
-	else if (strcmp(argv[2], "ending") == 0)    opt = 13;
-	else if (strcmp(argv[2], "color") == 0)     opt = 21;
+	} else if (strcmp(argv[2], "syncfile") == 0)    opt = 15;
+	else if (strcmp(argv[2], "syncdir") == 0)       opt = 0;
+	else if (strcmp(argv[2], "ending") == 0)        opt = 13;
+	else if (strcmp(argv[2], "color") == 0)         opt = 21;
 	else if (strcmp(argv[2], "end") == 0)
 	if ((strcmp(argv[3], "1") == 0) || (strcmp(argv[3], "0") == 0))
 		opt = 12;

@@ -11,7 +11,7 @@
 char* dest;
 char* db;
 char* cctodo_version() {
-	return "  CCTODO Client v2.1.3\n";
+	return "  CCTODO Client v2.1.4\n";
 }
 char* cctodo_help() {
 	dest = (char*)calloc(4000, sizeof(char));
@@ -29,12 +29,12 @@ char* cctodo_help() {
     todo <command> <arguments>\n\
   - initdb - init empty database structure\n\
     (set default database options without data lose, useful if you or some update broke it)\n\
-  - <without options> - to read all, --list to read all from specified list\n\
-      --list - read specified list, by default reads all lists\n\
+  - <without options> - to read all, --list / -l to read all from specified list\n\
+      --list / -l - read specified list, by default reads all lists\n\
   - <msg> - just write todo <msg> to add new node to your todo list\n\
       --first or -1 to put task on top priority\n\
       --motivate - end todo note with additional word (see ending option)\n\
-      --list - write to specified list\n\
+      --list / -l - write to specified list\n\
       - db <db3path> - use another database file (works for other commands too) \n\
   - edit or e <number> <msg> - edit task\n\
   - mv <number1> <number2> - move task\n\
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
 			printf("%s", cctodo_help());
 			printf("%s", todo_help());
 			return 0;
-		} else if (strcmp(argv[1], "--list") == 0) {
+		} else if ((strcmp(argv[1], "--list") == 0) || (strcmp(argv[1], "-l") == 0)) {
 			if (argc < 3) {
 				printf("you need to specify list alike --list 1\n\r");
 				return -1;
