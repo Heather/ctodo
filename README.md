@@ -39,12 +39,7 @@ make install
 
 For Windows / MinGW
 -------------------
-run `build.bat` in `./mingw`
-
-For Windows / MSVC
-------------------
-
- - run `sln` file from Visual Studio or use `MSBuild`
+run `build.bat` in `./mingw` or in `./clang`
 
 License
 -------

@@ -1,0 +1,12 @@
+#           todo - Light TODO list
+#        Copyright (C)  2012-2014 Heather
+
+CC=clang
+
+CFLAGS=-O3 -Wall
+CSRC=../contrib/sqlite/sqlite3.c ../ctodo.c ../cctodo.c
+INCLUDES = -I ../contrib/sqlite
+
+cctodo:	$(CSRC)
+	$(CC) ${INCLUDES} -o todo.exe $^ ${CFLAGS}
+	strip todo.exe --strip-all
