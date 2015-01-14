@@ -1,11 +1,10 @@
-//________________________________________________________________________________
 #ifndef CTODO_H
 #define CTODO_H
-//________________________________________________________________________________
+
 #ifdef WIN32
 #include <Windows.h>
 #endif
-//________________________________________________________________________________
+
 extern void todo_initdb();
 extern void todo_initdb_custom(char* db);
 
@@ -44,6 +43,5 @@ extern int todo_write(char** argv, int argc, int list);
 extern int todo_write_custom(char** argv, int argc, int list, char* db);
 
 extern void todo_close();
-//________________________________________________________________________________
+
 #endif // CTODO_H
-//________________________________________________________________________________

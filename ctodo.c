@@ -1,9 +1,5 @@
-//________________________________________________________________________________
-//Compilation options:____________________________________________________________
-// - Console : debug console outputs, it's safe to disable _______________________
-//________________________________________________________________________________
 #define Console
-//________________________________________________________________________________
+
 #ifdef _MSC_VER
 #include "sqlite3.h"
 #else
@@ -14,17 +10,18 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-//________________________________________________________________________________
-//General properties _____________________________________________________________
+
+///General properties
 int retval, x, ind = 0;
 char* dest;
 char** out;
-//Pointers _______________________________________________________________________
+
+///Pointers
 FILE* f;
 time_t timefile;
 sqlite3_stmt* stmt;
-//________________________________________________________________________________
-//Maximum sqlite query queue _____________________________________________________
+
+///Maximum sqlite query
 int q_size = 150;
 #ifdef WIN
 int q_cnt = 26;
@@ -32,15 +29,15 @@ int q_cnt = 26;
 char* home;
 int q_cnt = 30;
 #endif
-//________________________________________________________________________________
-//Sqlite handlers ________________________________________________________________
+
+///Sqlite handlers
 char** queries;
 sqlite3* handle;
-//________________________________________________________________________________
+
 char* todo_version() {
 	return "  CTODO List Management Uti v2.1.3\n";
 }
-//________________________________________________________________________________
+
 char* todo_help() {
 	dest = (char*)calloc(4000, sizeof(char));
 #ifdef _MSC_VER
@@ -62,7 +59,7 @@ void shitHappended() {
     printf("Shit happened, try to resolve it by yourself :(\n\r");
 }
 #endif
-//________________________________________________________________________________
+
 void timeUpdate(time_t t) {
 #ifdef _MSC_VER
 	sprintf_s(queries[ind++], q_size, "INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (1,'%d')", (int)t);
@@ -77,7 +74,7 @@ void timeUpdate(time_t t) {
 		return;
 	}
 }
-//________________________________________________________________________________
+
 void sql(char* command) {
 #ifdef _MSC_VER
 	sprintf_s(queries[ind++], q_size, "%s", command);
@@ -86,7 +83,7 @@ void sql(char* command) {
 #endif
 	retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
 }
-//________________________________________________________________________________
+
 char* rtrim(char* str) {
 	char* ptr;
 	int len;
@@ -95,7 +92,7 @@ char* rtrim(char* str) {
 	ptr[1] = '\0';
 	return str;
 }
-//________________________________________________________________________________
+
 int prelude() {
 	timefile = 0;
 	f = NULL;
@@ -105,7 +102,7 @@ int prelude() {
 	queries = (char**)malloc(sizeof(char*)* q_cnt);
 	for (x = 0; x < q_cnt; x++)
 		queries[x] = (char*)malloc(sizeof(char)* q_size);
-#ifdef _MSC_VER
+#ifdef WIN32
 	retval = sqlite3_open("todo.db3", &handle);
 #else
 	home = (char*)getenv("HOME");
@@ -136,7 +133,7 @@ int prelude_custom(char* db) {
 	}
 	return 0;
 }
-//________________________________________________________________________________
+
 void todo_close() {
 	free(queries);
 	free(dest);
@@ -146,7 +143,7 @@ void todo_close() {
 	free(out);
 	sqlite3_close(handle);
 }
-//________________________________________________________________________________
+
 int todo_initdb_meta() {
 	sql("CREATE TABLE IF NOT EXISTS TODO (id INTEGER PRIMARY KEY,text TEXT NOT NULL, list INTEGER NOT NULL)");
 	if (retval) {
@@ -229,7 +226,7 @@ int todo_initdb_custom(char* db) {
 	if (prelude_custom(db) == -1) return -1;
 	return todo_initdb_meta();
 }
-//________________________________________________________________________________
+
 int todo_set_meta(char** argv, int argc) {
 	int opt = 0;
 	if (argc < 4) {
@@ -301,7 +298,7 @@ int todo_set_custom(char** argv, int argc, char* db) {
 	if (prelude_custom(db) == -1) return -1;
 	else return todo_set_meta(argv, argc);
 }
-//________________________________________________________________________________
+
 int todo_history() {
 	char* syncdir;
 	char* cmd = (char*)calloc(200, sizeof(char));
@@ -371,7 +368,7 @@ int todo_history() {
 	free(cmd);
 	return 0;
 }
-//________________________________________________________________________________
+
 int todo_sync_meta(char** argv) {
 	char* filename;
 #ifndef _MSC_VER
@@ -617,7 +614,7 @@ int todo_sync_custom(char** argv, char* db) {
 	if (prelude_custom(db) == -1) return -1;
 	return todo_sync_meta(argv);
 }
-//________________________________________________________________________________
+
 void todo_edit_meta(char** argv, int argc) {
 	int argi;
 	char* text = (char*)calloc(200, sizeof(char));
@@ -650,7 +647,7 @@ void todo_edit(char** argv, int argc) {
 void todo_edit_custom(char** argv, int argc, char* db) {
 	if (prelude_custom(db) != -1) todo_edit_meta(argv, argc);
 }
-//________________________________________________________________________________
+
 void todo_swap_meta(char** argv) {
 	int val1 = atoi(argv[2]);
 	int val2 = atoi(argv[3]);
@@ -695,7 +692,7 @@ void todo_swap(char** argv) {
 void todo_swap_custom(char** argv, char* db) {
 	if (prelude_custom(db) != -1) todo_swap_meta(argv);
 }
-//________________________________________________________________________________
+
 void todo_reindex() {
 	if (prelude() != -1) {
 		sql("UPDATE TODO SET id = id + 1000000000");
@@ -703,7 +700,7 @@ void todo_reindex() {
 		timeUpdate(time(0));
 	}
 }
-//________________________________________________________________________________
+
 void todo_mv_meta(char** argv) {
 #ifdef _MSC_VER
 	sprintf_s(queries[ind++], q_size, "UPDATE TODO SET id = %s WHERE id = %s", argv[3], argv[2]);
@@ -719,7 +716,7 @@ void todo_mv(char** argv) {
 void todo_mv_custom(char** argv, char* db) {
 	if (prelude_custom(db) != -1) todo_mv_meta(argv);
 }
-//________________________________________________________________________________
+
 void todo_clean_meta() {
 	queries[ind++] = "DELETE FROM TODO";
 	retval = sqlite3_exec(handle, queries[ind - 1], 0, 0, 0);
@@ -731,7 +728,7 @@ void todo_clean() {
 void todo_clean_custom(char* db) {
 	if (prelude_custom(db) != -1) todo_clean_meta();
 }
-//________________________________________________________________________________
+
 void todo_rm_meta(char** argv) {
     if (strstr(argv[2], ",") != NULL) {
 #ifdef _MSC_VER
@@ -755,7 +752,7 @@ void todo_rm(char** argv) {
 void todo_rm_custom(char** argv, char* db) {
 	if (prelude_custom(db) != -1) todo_rm_meta(argv);
 }
-//________________________________________________________________________________
+
 char** todo_read_meta(int list, int parcount) {
 	char* lineborder1;
 	char* spaces1;
@@ -985,7 +982,7 @@ char** todo_read_custom(int list, int parcount, char* db) {
 	if (prelude_custom(db) == -1) return NULL;
 	return todo_read_meta(list, parcount);
 }
-//________________________________________________________________________________
+
 int todo_write_meta(char** argv, int argc, int list) {
 	char* ending = (char*)calloc(200, sizeof(char));
 	char first = 0;
@@ -1114,4 +1111,3 @@ int todo_write_custom(char** argv, int argc, int list, char* db) {
 	if (prelude_custom(db) == -1) return -1;
 	return todo_write_meta(argv, argc, list);
 }
-//________________________________________________________________________________
