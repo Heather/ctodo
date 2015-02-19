@@ -44,3 +44,5 @@ run `build.bat` in `./mingw` or in `./clang`
 License
 -------
 Public domain
+
+![](http://fc01.deviantart.net/fs71/i/2012/099/7/b/rin_kagamine_extraction_by_blueangel06661-d4vjoxz.png)
