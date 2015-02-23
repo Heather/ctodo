@@ -35,7 +35,7 @@ char** queries;
 sqlite3* handle;
 
 char* todo_version() {
-	return "  CTODO List Management Uti v2.1.3\n";
+	return "  CTODO List Management Uti v2.1.4\n";
 }
 
 char* todo_help() {
@@ -96,7 +96,7 @@ char* rtrim(char* str) {
 int prelude() {
 	timefile = 0;
 	f = NULL;
-#ifndef _MSC_VER
+#ifndef WIN32
 	char* temp = (char*)calloc(200, sizeof(char));
 #endif
 	queries = (char**)malloc(sizeof(char*)* q_cnt);

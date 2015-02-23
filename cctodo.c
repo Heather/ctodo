@@ -10,7 +10,7 @@
 char* dest;
 char* db;
 char* cctodo_version() {
-	return "  CCTODO Client v2.1.4\n";
+	return "  CCTODO Client v2.1.5\n";
 }
 char* cctodo_help() {
 	dest = (char*)calloc(4000, sizeof(char));
@@ -26,7 +26,7 @@ char* cctodo_help() {
 #endif
              "  * usage:\n\
     todo <command> <arguments>\n\
-  - initdb - init empty database structure\n\
+  - --init - init empty database structure\n\
     (set default database options without data lose, useful if you or some update broke it)\n\
   - <without options> - to read all, --list / -l to read all from specified list\n\
       --list / -l - read specified list, by default reads all lists\n\
@@ -35,14 +35,14 @@ char* cctodo_help() {
       --motivate - end todo note with additional word (see ending option)\n\
       --list / -l - write to specified list\n\
       - db <db3path> - use another database file (works for other commands too) \n\
-  - edit or e <number> <msg> - edit task\n\
-  - mv <number1> <number2> - move task\n\
-  - rm <number1,number2> - delete tasks\n\
-  - clean - clean all tasks\n\
-  - swap or s <number1> <number2> - swap elements\n\
-  - sync - text synchronization to avoid binaries in vcs\n\
-  - history - read sync repository todo history \n\
-  - set <option> <value> - todo options, available options:\n\
+  - --edit or -e <number> <msg> - edit task\n\
+  - --mv <number1> <number2> - move task\n\
+  - --rm <number1,number2> - delete tasks\n\
+  - --clean - clean all tasks\n\
+  - --swap or -s <number1> <number2> - swap elements\n\
+  - --sync - text synchronization to avoid binaries in vcs\n\
+  - --history - read sync repository todo history \n\
+  - --set <option> <value> - todo options, available options:\n\
       - syncdir - directory for vcs synchronization\n\
       - syncfile - file for text serialization for synchronization (default 'readme.md')\n\
         - git - execute git synchronization 1/0 for enable/disable (default 1)\n\
@@ -167,36 +167,36 @@ int main(int argc, char* argv[]) {
 					} else return ctodo_read_custom(-1, db);
 				}
 			}
-		} else if (strcmp(argv[1], "initdb") == 0 && argc == 2) {
+		} else if (strcmp(argv[1], "--init") == 0 && argc == 2) {
 			if (dbcheck(argc, argv) == 0) todo_initdb();
 			else todo_initdb_custom(db);
 			printf("done.\n\r");
 			return 0;
-		} else if (strcmp(argv[1], "set") == 0) {
+		} else if (strcmp(argv[1], "--set") == 0) {
 			if (argc < 4) {
 				printf("set what?\n\r");
 				return 0;
 			} else if (dbcheck(argc, argv) == 0)
 				return todo_set(argv, argc);
 			else return todo_set_custom(argv, argc, db);
-		} else if (strcmp(argv[1], "history") == 0 && argc == 2) {
+		} else if (strcmp(argv[1], "--history") == 0 && argc == 2) {
 			return todo_history();
-		} else if (strcmp(argv[1], "sync") == 0 && argc == 2) {
+		} else if (strcmp(argv[1], "--sync") == 0 && argc == 2) {
 			if (dbcheck(argc, argv) == 0) return todo_sync(argv);
 			else return todo_sync_custom(argv, db);
-		} else if ((strcmp(argv[1], "edit") == 0) || (strcmp(argv[1], "e") == 0)) {
+		} else if ((strcmp(argv[1], "--edit") == 0) || (strcmp(argv[1], "-e") == 0)) {
 			if (argc < 3) printf("edit what?\n\r");
 			else if (dbcheck(argc, argv) == 0)
 				todo_edit(argv, argc);
 			else todo_edit_custom(argv, argc, db);
 			return 0;
-		} else if ((strcmp(argv[1], "swap") == 0) || (strcmp(argv[1], "s") == 0)) {
+		} else if ((strcmp(argv[1], "--swap") == 0) || (strcmp(argv[1], "-s") == 0)) {
 			if (argc < 3) printf("swap what?\n\r");
 			else if (dbcheck(argc, argv) == 0)
 				todo_swap(argv);
 			else todo_swap_custom(argv, db);
 			return 0;
-		} else if (strcmp(argv[1], "reindex") == 0 && argc == 2) {
+		} else if (strcmp(argv[1], "--reindex") == 0 && argc == 2) {
 			char answer;
 			printf("This feature is currently broken, do you want to test it? (y/n)");
 #ifdef _MSC_VER
@@ -206,13 +206,13 @@ int main(int argc, char* argv[]) {
 #endif
 			if (answer == 'y') todo_reindex();
 			return 0;
-		} else if (strcmp(argv[1], "mv") == 0) {
+		} else if (strcmp(argv[1], "--mv") == 0) {
 			if (argc < 4) printf("move what? you need to provide two indexes\n\r");
 			else if (dbcheck(argc, argv) == 0)
 				todo_mv(argv);
 			else todo_mv_custom(argv, db);
 			return 0;
-		} else if (strcmp(argv[1], "clean") == 0 && argc == 2) {
+		} else if (strcmp(argv[1], "--clean") == 0 && argc == 2) {
 			char answer;
 			printf("Are you sure that you want to clean all the tasks? (y/n) ");
 #ifdef _MSC_VER
@@ -226,7 +226,7 @@ int main(int argc, char* argv[]) {
                 else todo_clean_custom(db);
             }
 			return 0;
-		} else if (strcmp(argv[1], "rm") == 0) {
+		} else if (strcmp(argv[1], "--rm") == 0) {
 			if (argc < 3) printf("remove what?\n\r");
 			else if (dbcheck(argc, argv) == 0)
 				todo_rm(argv);

@@ -107,9 +107,9 @@ extern "C" {
 ** [sqlite3_libversion_number()], [sqlite3_sourceid()],
 ** [sqlite_version()] and [sqlite_source_id()].
 */
-#define SQLITE_VERSION        "3.8.8"
+#define SQLITE_VERSION        "3.8.8.2"
 #define SQLITE_VERSION_NUMBER 3008008
-#define SQLITE_SOURCE_ID      "2015-01-09 01:27:29 fe5788633131281a0f27c5b75993ce2ff958bfeb"
+#define SQLITE_SOURCE_ID      "2015-01-30 14:30:45 7757fc721220e136620a89c9d28247f28bbbc098"
 
 /*
 ** CAPI3REF: Run-Time Library Version Numbers
@@ -7491,6 +7491,10 @@ SQLITE_API int sqlite3_vtab_on_conflict(sqlite3 *);
 ** [sqlite3_stmt_scanstatus(S,X,T,V)] interface.  Each constant designates a
 ** different metric for sqlite3_stmt_scanstatus() to return.
 **
+** When the value returned to V is a string, space to hold that string is
+** managed by the prepared statement S and will be automatically freed when
+** S is finalized.
+**
 ** <dl>
 ** [[SQLITE_SCANSTAT_NLOOP]] <dt>SQLITE_SCANSTAT_NLOOP</dt>
 ** <dd>^The [sqlite3_int64] variable pointed to by the T parameter will be
@@ -7536,7 +7540,14 @@ SQLITE_API int sqlite3_vtab_on_conflict(sqlite3 *);
 /*
 ** CAPI3REF: Prepared Statement Scan Status
 **
-** Return status data for a single loop within query pStmt.
+** This interface returns information about the predicted and measured
+** performance for pStmt.  Advanced applications can use this
+** interface to compare the predicted and the measured performance and
+** issue warnings and/or rerun [ANALYZE] if discrepancies are found.
+**
+** Since this interface is expected to be rarely used, it is only
+** available if SQLite is compiled using the [SQLITE_ENABLE_STMT_SCANSTATUS]
+** compile-time option.
 **
 ** The "iScanStatusOp" parameter determines which status information to return.
 ** The "iScanStatusOp" must be one of the [scanstatus options] or the behavior
@@ -7553,9 +7564,6 @@ SQLITE_API int sqlite3_vtab_on_conflict(sqlite3 *);
 ** where there exist loops with no available statistics, this function behaves
 ** as if the loop did not exist - it returns non-zero and leave the variable
 ** that pOut points to unchanged.
-**
-** This API is only available if the library is built with pre-processor
-** symbol [SQLITE_ENABLE_STMT_SCANSTATUS] defined.
 **
 ** See also: [sqlite3_stmt_scanstatus_reset()]
 */
