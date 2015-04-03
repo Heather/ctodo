@@ -9,17 +9,10 @@ TODO List management util: Usage & Version
 =======================================================
  
  - good command line interface (use --help for details)
- - easy synchronization via your favorite vcs
+ - synchronization via your suppported vcs (git, hg, svn, darcs?)
  - crossplatform
  - native, library is written in C and Sqlite
- - you can manage your list just from anywhere
- - it could be your personal psychologist, trust me
- - it's fancy even has got CLI color schemas (after 1.0.4 ver)
- - smart application structure: library -> wrapper -> application
- - so you can write you own client implementations
-
-How to Build / Install
-=======================================================
+ - CLI color schemas
 
 For Gentoo
 ----------
