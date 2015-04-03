@@ -3,11 +3,7 @@ TODO List management util: Usage & Version
 
 [![Build Status](https://travis-ci.org/Heather/ctodo.png?branch=master)](https://travis-ci.org/Heather/ctodo)
 
- - ctodo : general c library
- - cctodo : simple ctodo client in C
- 
-=======================================================
- 
+ - ctodo : general c library <|> cctodo : simple ctodo client in C
  - good command line interface (use --help for details)
  - synchronization via your suppported vcs (git, hg, svn, darcs?)
  - crossplatform
@@ -16,8 +12,8 @@ TODO List management util: Usage & Version
 
 For Gentoo
 ----------
-Probably add my overlay and
 ```bash
+layman -a heather
 emerge todo
 ```
 
