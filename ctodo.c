@@ -208,7 +208,7 @@ int todo_initdb_meta() {
   ///<Option>
   ///Color scheme (only for linux)
   ///</Option>
-  sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (21,'red')");
+  sql("INSERT OR REPLACE INTO OPTIONS (option,text) VALUES (21,'black')");
   if (retval) {
 #ifdef Console
     printf("Instert deafaults options Failed, Shit happens?\n\r");
@@ -778,16 +778,16 @@ char** todo_read_meta(int list, int parcount) {
   while (sqlite3_step(stmt) == SQLITE_ROW)
   if (strcmp((const char*)sqlite3_column_text(stmt, 0), "21") == 0) {
     colorscheme = (char*)calloc(50, sizeof(char));
-    if (strcmp((const char*)sqlite3_column_text(stmt, 1), "red") == 0)
-      sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 37, 41);
+    if (strcmp((const char*)sqlite3_column_text(stmt, 1), "black") == 0)
+      sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 6, 66);
     else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "blink") == 0)
       sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 50, 5);
     else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "green") == 0)
       sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 68, 32);
     else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "pink") == 0)
       sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 35, 2);
-    else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "black") == 0)
-      sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 6, 66);
+    else if (strcmp((const char*)sqlite3_column_text(stmt, 1), "red") == 0)
+      sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 37, 41);
     else sprintf(colorscheme, "%c[%d;%d;%dm", 0x1B, 1, 37, 41);
     break;
   }
