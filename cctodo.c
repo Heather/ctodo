@@ -10,7 +10,7 @@
 char* dest;
 char* db;
 char* cctodo_version() {
-  return "  CCTODO Client v2.1.5\n";
+  return "  CCTODO Client v2.1.6\n";
 }
 char* cctodo_help() {
   dest = (char*)calloc(4000, sizeof(char));
@@ -42,7 +42,7 @@ char* cctodo_help() {
   - --swap or -s <number1> <number2> - swap elements\n\
   - --sync - text synchronization to avoid binaries in vcs\n\
   - --history - read sync repository todo history \n\
-  - --set <option> <value> - todo options, available options:\n\
+  - --set <option> <value> - todo options, available options (--show for read):\n\
       - syncdir - directory for vcs synchronization\n\
       - syncfile - file for text serialization for synchronization (default 'readme.md')\n\
         - git - execute git synchronization 1/0 for enable/disable (default 1)\n\
@@ -179,8 +179,17 @@ int main(int argc, char* argv[]) {
       } else if (dbcheck(argc, argv) == 0)
         return todo_set(argv, argc);
       else return todo_set_custom(argv, argc, db);
+    } else if (strcmp(argv[1], "--show") == 0) {
+      if (argc < 3) {
+        printf("show what?\n\r");
+        return 0;
+      } else if (dbcheck(argc, argv) == 0) {
+        return todo_show(argv, argc);
+      }
+      else return todo_show_custom(argv, argc, db);
     } else if (strcmp(argv[1], "--history") == 0 && argc == 2) {
-      return todo_history();
+      if (dbcheck(argc, argv) == 0) return todo_history();
+      else return todo_history_custom(db);
     } else if (strcmp(argv[1], "--sync") == 0 && argc == 2) {
       if (dbcheck(argc, argv) == 0) return todo_sync(argv);
       else return todo_sync_custom(argv, db);

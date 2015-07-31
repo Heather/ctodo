@@ -35,7 +35,7 @@ char** queries;
 sqlite3* handle;
 
 char* todo_version() {
-  return "  CTODO List Management Uti v2.1.4\n";
+  return "  CTODO List Management Uti v2.1.5\n";
 }
 
 char* todo_help() {
@@ -93,6 +93,7 @@ char* rtrim(char* str) {
   return str;
 }
 
+///TODO: clean allocated space
 int prelude() {
   timefile = 0;
   f = NULL;
@@ -299,11 +300,55 @@ int todo_set_custom(char** argv, int argc, char* db) {
   else return todo_set_meta(argv, argc);
 }
 
-int todo_history() {
+int todo_show_meta(char** argv, int argc) {
+  char* opt = (char*)calloc(3, sizeof(char));
+  char* answer = (char*)calloc(200, sizeof(char));
+  if (argc < 3) {
+#ifdef Console
+    printf("show what?\n\r");
+#endif
+  } else if (strcmp(argv[2], "syncfile") == 0) sprintf(opt, "15");
+  else if (strcmp(argv[2], "syncdir") == 0)    sprintf(opt, "0");
+  else if (strcmp(argv[2], "ending") == 0)     sprintf(opt, "13");
+  else if (strcmp(argv[2], "color") == 0)      sprintf(opt, "21");
+  #ifdef _MSC_VER
+    sprintf_s(queries[ind++], q_size, "SELECT option, text FROM OPTIONS");
+  #else
+    sprintf(queries[ind++], "SELECT option, text FROM OPTIONS");
+  #endif
+  retval = sqlite3_prepare_v2(handle, queries[ind - 1], -1, &stmt, 0);
+  if (retval) {
+#ifdef Console
+    ///TODO
+    shitHappended();
+#endif
+      return -1;
+  }
+  while (sqlite3_step(stmt) == SQLITE_ROW)
+  if (strcmp((const char*)sqlite3_column_text(stmt, 0), opt) == 0) {
+    #ifdef _MSC_VER
+        printf_s(": %s", sqlite3_column_text(stmt, 1));
+    #else
+        printf(": %s", sqlite3_column_text(stmt, 1));
+    #endif
+  }
+  free(opt);
+  free(answer);
+  return 0;
+}
+int todo_show(char** argv, int argc) {
+  if (prelude() == -1) return -1;
+  else return todo_show_meta(argv, argc);
+}
+int todo_show_custom(char** argv, int argc, char* db) {
+  if (prelude_custom(db) == -1) return -1;
+  else return todo_show_meta(argv, argc);
+}
+
+int todo_history_meta() {
   char* syncdir;
   char* cmd = (char*)calloc(200, sizeof(char));
   int git = 0, hg = 0, svn = 0;
-  if (prelude() == -1) return -1;
 #ifdef _MSC_VER
   sprintf_s(queries[ind++], q_size, "SELECT option, text FROM OPTIONS");
 #else
@@ -324,7 +369,7 @@ int todo_history() {
 #endif
       return -1;
     }
-    return todo_history();
+    return todo_history_meta();
   }
   syncdir = (char*)calloc(200, sizeof(char));
   while (sqlite3_step(stmt) == SQLITE_ROW)
@@ -367,6 +412,14 @@ int todo_history() {
   free(syncdir);
   free(cmd);
   return 0;
+}
+int todo_history() {
+  if (prelude() == -1) return -1;
+  else return todo_history_meta();
+}
+int todo_history_custom(char* db) {
+  if (prelude_custom(db) == -1) return -1;
+  else return todo_history_meta();
 }
 
 int todo_sync_meta(char** argv) {
