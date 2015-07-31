@@ -7,7 +7,7 @@ TODO List management util
  - command line interface (use --help for details)
  - synchronization via vcs
  - crossplatform
- - written in C and Sqlite
+ - written in C
 
 License
 -------
