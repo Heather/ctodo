@@ -2,5 +2,5 @@ notifications:
   email: false
 compiler:
   - gcc
-script: 
-  - make inheritsqlite
+script:
+  - make

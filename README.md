@@ -9,6 +9,3 @@ TODO List management util
  - crossplatform
  - written in C
 
-License
--------
-Public domain

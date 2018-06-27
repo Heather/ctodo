@@ -1,5 +1,5 @@
-#           todo - Light TODO list
-#       Copyright (C)  2012-2013 Heather
+#           ctodo - Light TODO list
+#       Copyright (C)  2012-2018 Cynede
 #
 
 CC=gcc
@@ -32,12 +32,13 @@ inheritsqlite: $(XCSRC)
 .PHONY: clean all rebuild inheritsqlite
 
 clean:
-	@echo " --- Clean binaries --- "
+	@echo "Cleaning binaries..."
 	rm -f ${LIBS}
 	rm -f todo
-	@echo " --- Clean temp files --- "
+	@echo "Cleaning temp files..."
 	find . -name '*~' -delete;
 	find . -name '#*#' -delete;
+	@echo "Cleaning complete."
 
 install:
 	$(MKDIR) $(DESTDIR)$(BINDIR)
