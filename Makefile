@@ -2,15 +2,11 @@
 #       Copyright (C)  2012-2018 Cynede
 #
 
-CC=gcc
 CFLAGS=-lsqlite3 -O3
-XCFLAGS=-lpthread -ldl -O3
 CSRC=cctodo.c
 CLIBS=ctodo.c
-XCSRC=contrib/sqlite/sqlite3.c ctodo.c cctodo.c
 LIBS=todo.o
 INCLUDES = -I .
-XINCLUDES = -I contrib/sqlite
 INSTALL   ?= install
 MKDIR     ?= $(INSTALL) -d
 BINDIR    ?= $(PREFIX)/bin
@@ -25,9 +21,6 @@ cctodo: $(CSRC) | ctodo
 
 ctodo: $(CLIBS)
 	$(CC) ${INCLUDES} -c -o ${LIBS} $^ $(CFLAGS)
-
-inheritsqlite: $(XCSRC)
-	$(CC) ${XINCLUDES} -o todo $^ ${XCFLAGS}
 
 .PHONY: clean all rebuild inheritsqlite
 

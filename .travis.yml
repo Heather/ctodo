@@ -4,14 +4,18 @@ notifications:
 language: c
 
 compiler:
-    - gcc
-    - clang
+  - gcc
+  - clang
 
 # Dependencies
 addons:
   apt:
+    source:
+      - travic-ci/sqlite3
     packages:
-    - libsqlite3-dev
+      - sqlite3
+      - libsqlite3-dev
+      - libsqlite3-0
 
 script:
   - make
