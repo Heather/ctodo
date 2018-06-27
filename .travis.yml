@@ -1,6 +1,17 @@
 notifications:
   email: false
+
+language: c
+
 compiler:
-  - gcc
+    - gcc
+    - clang
+
+# Dependencies
+addons:
+  apt:
+    packages:
+    - libsqlite3-dev
+
 script:
   - make
