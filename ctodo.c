@@ -35,7 +35,7 @@ char** queries;
 sqlite3* handle;
 
 char* todo_version() {
-  return "  CTODO List Management Uti v2.1.5\n";
+  return "  CTODO List Management Uti v2.1.6\n";
 }
 
 char* todo_help() {
@@ -51,7 +51,7 @@ char* todo_help() {
   strcat(dest,
 #endif
 "    Cross-platform todo list management library\n\
-    Copyright (C)  2012-2014  Heather\n");
+    Copyright (C) 2012-2018 Cynede\n");
   return &dest[0];
 }
 #ifdef Console
